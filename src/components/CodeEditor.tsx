@@ -1,7 +1,7 @@
 'use client';
 
 import { Editor } from '@monaco-editor/react';
-import { useTheme } from 'next-themes';
+import { useTheme } from './ThemeProvider';
 import { useEffect, useState } from 'react';
 
 interface CodeEditorProps {
@@ -11,6 +11,9 @@ interface CodeEditorProps {
   language?: string;
   readOnly?: boolean;
   placeholder?: string;
+  showLineNumbers?: boolean;
+  showMinimap?: boolean;
+  onRun?: (code: string) => void;
 }
 
 export function CodeEditor({ 
@@ -19,9 +22,12 @@ export function CodeEditor({
   height = 200, 
   language = 'python',
   readOnly = false,
-  placeholder = '# 在这里输入Python代码...'
+  placeholder = '# 在这里输入Python代码...',
+  showLineNumbers = true,
+  showMinimap = false,
+  onRun
 }: CodeEditorProps) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
@@ -33,25 +39,33 @@ export function CodeEditor({
   };
 
   const editorOptions = {
-    minimap: { enabled: false },
+    minimap: { enabled: showMinimap },
     fontSize: 14,
-    lineHeight: 20,
-    fontFamily: 'var(--font-geist-mono), Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
+    lineHeight: 21,
+    fontFamily: 'var(--font-mono), "JetBrains Mono", "Fira Code", Consolas, Monaco, monospace',
     scrollBeyondLastLine: false,
     automaticLayout: true,
     tabSize: 4,
+    insertSpaces: true,
     wordWrap: 'on' as const,
-    lineNumbers: 'on' as const,
+    lineNumbers: showLineNumbers ? 'on' as const : 'off' as const,
     glyphMargin: false,
-    folding: false,
+    folding: true,
     lineDecorationsWidth: 0,
     lineNumbersMinChars: 3,
     readOnly,
-    contextmenu: false,
+    contextmenu: !readOnly,
     selectOnLineNumbers: true,
     roundedSelection: false,
     cursorStyle: 'line' as const,
+    cursorBlinking: 'blink' as const,
     accessibilitySupport: 'off' as const,
+    smoothScrolling: true,
+    renderWhitespace: 'none' as const,
+    renderControlCharacters: false,
+    fontLigatures: true,
+    letterSpacing: 0.5,
+    // 智能提示配置
     suggest: {
       showKeywords: true,
       showSnippets: true,
@@ -59,6 +73,32 @@ export function CodeEditor({
       showClasses: true,
       showModules: true,
       showVariables: true,
+      showWords: true,
+      showMethods: true,
+      showProperties: true,
+      showConstructors: true,
+      showFields: true,
+      showTypes: true,
+      showConstants: true,
+      showEnums: true,
+      showEvents: true,
+      showOperators: true,
+      showUnits: true,
+      showValues: true,
+      showColors: true,
+      showFiles: true,
+      showReferences: true,
+      showFolders: true,
+      showTypeParameters: true,
+      showUsers: true,
+      showIssues: true,
+      showStructs: true,
+      showInterfaces: true,
+      showText: true,
+      localityBonus: true,
+      insertMode: 'insert' as const,
+      filterGraceful: true,
+      snippetsPreventQuickSuggestions: false,
     },
     quickSuggestions: {
       other: true,
@@ -67,19 +107,119 @@ export function CodeEditor({
     },
     parameterHints: {
       enabled: true,
+      cycle: true,
     },
     hover: {
       enabled: true,
+      delay: 300,
     },
+    // 格式化配置
+    formatOnType: true,
+    formatOnPaste: true,
+    // 缩进指引
+    renderIndentGuides: true,
+    // 括号匹配
+    matchBrackets: 'always' as const,
+    // 选中高亮
+    occurrencesHighlight: 'singleFile' as const,
+    selectionHighlight: true,
+    // 滚动条
+    scrollbar: {
+      vertical: 'auto' as const,
+      horizontal: 'auto' as const,
+      verticalScrollbarSize: 8,
+      horizontalScrollbarSize: 8,
+    },
+  };
+
+  // 自定义主题
+  const customTheme = resolvedTheme === 'dark' ? {
+    base: 'vs-dark' as const,
+    inherit: true,
+    rules: [
+      { token: 'comment', foreground: '6B7280', fontStyle: 'italic' },
+      { token: 'keyword', foreground: '60A5FA', fontStyle: 'bold' },
+      { token: 'string', foreground: '34D399' },
+      { token: 'number', foreground: 'FBBF24' },
+      { token: 'type', foreground: 'A78BFA' },
+      { token: 'function', foreground: 'F472B6' },
+      { token: 'variable', foreground: 'E5E7EB' },
+      { token: 'constant', foreground: 'FCD34D' },
+      { token: 'class', foreground: '8B5CF6' },
+      { token: 'decorator', foreground: 'F59E0B' },
+    ],
+    colors: {
+      'editor.background': '#1E293B',
+      'editor.foreground': '#F8FAFC',
+      'editorLineNumber.foreground': '#64748B',
+      'editorLineNumber.activeForeground': '#CBD5E1',
+      'editor.selectionBackground': '#374151',
+      'editor.lineHighlightBackground': '#334155',
+      'editorCursor.foreground': '#60A5FA',
+      'editor.findMatchBackground': '#0F172A',
+      'editor.findMatchHighlightBackground': '#1E40AF',
+      'editorBracketMatch.background': '#374151',
+      'editorBracketMatch.border': '#60A5FA',
+      'editorIndentGuide.background': '#374151',
+      'editorIndentGuide.activeBackground': '#475569',
+      'editorSuggestWidget.background': '#334155',
+      'editorSuggestWidget.border': '#475569',
+      'editorSuggestWidget.foreground': '#F8FAFC',
+      'editorSuggestWidget.selectedBackground': '#475569',
+      'editorHoverWidget.background': '#334155',
+      'editorHoverWidget.border': '#475569',
+      'scrollbarSlider.background': '#475569',
+      'scrollbarSlider.hoverBackground': '#64748B',
+      'scrollbarSlider.activeBackground': '#64748B',
+    }
+  } : {
+    base: 'vs' as const,
+    inherit: true,
+    rules: [
+      { token: 'comment', foreground: '6B7280', fontStyle: 'italic' },
+      { token: 'keyword', foreground: '2563EB', fontStyle: 'bold' },
+      { token: 'string', foreground: '059669' },
+      { token: 'number', foreground: 'D97706' },
+      { token: 'type', foreground: '7C3AED' },
+      { token: 'function', foreground: 'DB2777' },
+      { token: 'variable', foreground: '374151' },
+      { token: 'constant', foreground: 'B45309' },
+      { token: 'class', foreground: '6D28D9' },
+      { token: 'decorator', foreground: 'EA580C' },
+    ],
+    colors: {
+      'editor.background': '#F1F5F9',
+      'editor.foreground': '#374151',
+      'editorLineNumber.foreground': '#94A3B8',
+      'editorLineNumber.activeForeground': '#64748B',
+      'editor.selectionBackground': '#DBEAFE',
+      'editor.lineHighlightBackground': '#F8FAFC',
+      'editorCursor.foreground': '#3B82F6',
+      'editor.findMatchBackground': '#FEF3C7',
+      'editor.findMatchHighlightBackground': '#BFDBFE',
+      'editorBracketMatch.background': '#DBEAFE',
+      'editorBracketMatch.border': '#3B82F6',
+      'editorIndentGuide.background': '#E2E8F0',
+      'editorIndentGuide.activeBackground': '#CBD5E1',
+      'editorSuggestWidget.background': '#FFFFFF',
+      'editorSuggestWidget.border': '#E2E8F0',
+      'editorSuggestWidget.foreground': '#374151',
+      'editorSuggestWidget.selectedBackground': '#F1F5F9',
+      'editorHoverWidget.background': '#FFFFFF',
+      'editorHoverWidget.border': '#E2E8F0',
+      'scrollbarSlider.background': '#CBD5E1',
+      'scrollbarSlider.hoverBackground': '#94A3B8',
+      'scrollbarSlider.activeBackground': '#94A3B8',
+    }
   };
 
   if (!mounted) {
     return (
       <div 
-        className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800"
+        className="code-editor border border-[var(--code-border)] rounded-lg p-4 bg-[var(--code-bg)] animate-pulse"
         style={{ height }}
       >
-        <div className="text-gray-500 dark:text-gray-400 font-mono text-sm">
+        <div className="text-[var(--text-muted)] font-mono text-sm">
           {placeholder}
         </div>
       </div>
@@ -87,15 +227,18 @@ export function CodeEditor({
   }
 
   return (
-    <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+    <div className="code-editor border border-[var(--code-border)] rounded-lg overflow-hidden shadow-code transition-all duration-200 hover:shadow-soft">
       <Editor
         height={height}
         language={language}
         value={code}
         onChange={handleEditorChange}
-        theme={theme === 'dark' ? 'vs-dark' : 'vs-light'}
+        theme={`custom-${resolvedTheme}`}
         options={editorOptions}
         beforeMount={(monaco) => {
+          // 定义自定义主题
+          monaco.editor.defineTheme(`custom-${resolvedTheme}`, customTheme);
+          
           // 配置Python语言特性
           monaco.languages.setLanguageConfiguration('python', {
             indentationRules: {
@@ -108,14 +251,144 @@ export function CodeEditor({
                 action: { indentAction: monaco.languages.IndentAction.Indent },
               },
             ],
+            autoClosingPairs: [
+              { open: '{', close: '}' },
+              { open: '[', close: ']' },
+              { open: '(', close: ')' },
+              { open: '"', close: '"', notIn: ['string'] },
+              { open: "'", close: "'", notIn: ['string'] },
+              { open: '"""', close: '"""' },
+              { open: "'''", close: "'''" },
+            ],
+            surroundingPairs: [
+              { open: '{', close: '}' },
+              { open: '[', close: ']' },
+              { open: '(', close: ')' },
+              { open: '"', close: '"' },
+              { open: "'", close: "'" },
+            ],
+            comments: {
+              lineComment: '#',
+              blockComment: ['"""', '"""'],
+            },
+            brackets: [
+              ['{', '}'],
+              ['[', ']'],
+              ['(', ')'],
+            ],
+            wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
+          });
+
+          // 注册Python代码片段
+          monaco.languages.registerCompletionItemProvider('python', {
+            provideCompletionItems: (model, position, context, token) => {
+              const word = model.getWordUntilPosition(position);
+              const range = {
+                startLineNumber: position.lineNumber,
+                endLineNumber: position.lineNumber,
+                startColumn: word.startColumn,
+                endColumn: word.endColumn,
+              };
+
+              const suggestions = [
+                {
+                  label: 'import',
+                  kind: monaco.languages.CompletionItemKind.Keyword,
+                  insertText: 'import ${1:module}',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                  documentation: 'Import a module',
+                  range: range,
+                },
+                {
+                  label: 'def',
+                  kind: monaco.languages.CompletionItemKind.Keyword,
+                  insertText: 'def ${1:function_name}(${2:params}):\n    ${3:pass}',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                  documentation: 'Define a function',
+                  range: range,
+                },
+                {
+                  label: 'class',
+                  kind: monaco.languages.CompletionItemKind.Keyword,
+                  insertText: 'class ${1:ClassName}:\n    def __init__(self${2:, params}):\n        ${3:pass}',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                  documentation: 'Define a class',
+                  range: range,
+                },
+                {
+                  label: 'if',
+                  kind: monaco.languages.CompletionItemKind.Keyword,
+                  insertText: 'if ${1:condition}:\n    ${2:pass}',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                  documentation: 'If statement',
+                  range: range,
+                },
+                {
+                  label: 'for',
+                  kind: monaco.languages.CompletionItemKind.Keyword,
+                  insertText: 'for ${1:item} in ${2:iterable}:\n    ${3:pass}',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                  documentation: 'For loop',
+                  range: range,
+                },
+                {
+                  label: 'while',
+                  kind: monaco.languages.CompletionItemKind.Keyword,
+                  insertText: 'while ${1:condition}:\n    ${2:pass}',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                  documentation: 'While loop',
+                  range: range,
+                },
+                {
+                  label: 'try',
+                  kind: monaco.languages.CompletionItemKind.Keyword,
+                  insertText: 'try:\n    ${1:pass}\nexcept ${2:Exception} as ${3:e}:\n    ${4:pass}',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                  documentation: 'Try-except block',
+                  range: range,
+                },
+              ];
+              return { suggestions };
+            },
           });
         }}
         onMount={(editor, monaco) => {
           // 编辑器挂载后的配置
           editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-            // Ctrl+Enter快捷键可以用于运行代码
-            const runEvent = new CustomEvent('runCode', { detail: { code: editor.getValue() } });
-            window.dispatchEvent(runEvent);
+            // Ctrl+Enter快捷键运行代码
+            const code = editor.getValue();
+            if (onRun) {
+              onRun(code);
+            } else {
+              const runEvent = new CustomEvent('runCode', { detail: { code } });
+              window.dispatchEvent(runEvent);
+            }
+          });
+
+          // 添加格式化快捷键
+          editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
+            editor.getAction('editor.action.formatDocument')?.run();
+          });
+
+          // 添加注释快捷键
+          editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Slash, () => {
+            editor.getAction('editor.action.commentLine')?.run();
+          });
+
+          // 设置焦点时的样式
+          editor.onDidFocusEditorText(() => {
+            const editorElement = editor.getDomNode();
+            if (editorElement) {
+              editorElement.style.outline = '2px solid var(--accent)';
+              editorElement.style.outlineOffset = '2px';
+            }
+          });
+
+          editor.onDidBlurEditorText(() => {
+            const editorElement = editor.getDomNode();
+            if (editorElement) {
+              editorElement.style.outline = 'none';
+            }
           });
         }}
       />

@@ -12,161 +12,169 @@ export default function BlogPage() {
   const displayPosts = selectedTag ? getPostsByTag(selectedTag) : allPosts;
 
   return (
-    <Layout
-      title="博客文章"
-      description="探索Python编程、数据科学和AI的交互式文章"
-    >
-      <div className="space-y-8">
-        {/* 页面标题 */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            博客文章
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            探索Python编程的世界，学习数据分析、人工智能和Web开发
-          </p>
-        </div>
+    <Layout>
+      <div className="max-w-content mx-auto px-4 py-8">
+        <div className="space-y-16">
+          {/* Hero Section - 简化设计 */}
+          <div className="text-center py-12 animate-fade-in">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-[var(--text-primary)] mb-6 leading-tight">
+              交互式编程博客
+            </h1>
+            <p className="text-lg md:text-xl text-[var(--text-secondary)] mb-8 leading-relaxed max-w-2xl mx-auto">
+              在浏览器中直接运行Python代码，探索编程、数据分析和AI的精彩世界
+            </p>
+            <div className="flex items-center justify-center gap-6 text-sm text-[var(--text-muted)]">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-success-500 rounded-full"></div>
+                <span>Python 3.11</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
+                <span>实时执行</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-warning-500 rounded-full"></div>
+                <span>无需安装</span>
+              </div>
+            </div>
+          </div>
 
-        {/* 标签筛选器 */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            按标签筛选文章
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setSelectedTag(null)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedTag === null
-                  ? 'bg-blue-500 text-white shadow-lg'
-                  : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-              }`}
-            >
-              全部 ({allPosts.length})
-            </button>
-            {allTags.map((tag) => (
+          {/* 标签筛选器 - 简化设计 */}
+          <div className="animate-slide-up">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 md:mb-0">
+                最新文章
+              </h2>
+              <div className="text-sm text-[var(--text-secondary)]">
+                共 {displayPosts.length} 篇文章
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 mb-8">
               <button
-                key={tag}
-                onClick={() => setSelectedTag(tag)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedTag === tag
-                    ? 'bg-blue-500 text-white shadow-lg'
-                    : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                onClick={() => setSelectedTag(null)}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  selectedTag === null
+                    ? 'bg-[var(--accent)] text-white'
+                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]'
                 }`}
               >
-                {tag} ({getPostsByTag(tag).length})
+                全部
               </button>
-            ))}
-          </div>
-          {selectedTag && (
-            <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
-              显示标签为 "{selectedTag}" 的文章 ({displayPosts.length} 篇)
-            </p>
-          )}
-        </div>
-
-        {/* 文章列表 */}
-        <div className="grid gap-6">
-          {displayPosts.map((post) => (
-            <article
-              key={post.id}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
-            >
-              <div className="p-6">
-                {/* 文章元数据 */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                    <time dateTime={post.date}>📅 {post.date}</time>
-                    <span>⏱️ {post.readTime}</span>
-                  </div>
-                </div>
-
-                {/* 标签 */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {post.tags.map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => setSelectedTag(tag)}
-                      className="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
-                
-                {/* 文章标题 */}
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                  <Link
-                    href={`/posts/${post.slug}`}
-                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  >
-                    {post.title}
-                  </Link>
-                </h2>
-                
-                {/* 文章摘要 */}
-                <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                  {post.excerpt}
-                </p>
-                
-                {/* 阅读链接 */}
-                <Link
-                  href={`/posts/${post.slug}`}
-                  className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors"
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => setSelectedTag(tag)}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    selectedTag === tag
+                      ? 'bg-[var(--accent)] text-white'
+                      : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]'
+                  }`}
                 >
-                  阅读全文 →
-                </Link>
+                  {tag}
+                </button>
+              ))}
+            </div>
+            
+            {selectedTag && (
+              <div className="mb-8 p-4 bg-[var(--accent-soft)] border border-[var(--accent)]/20 rounded-lg animate-fade-in">
+                <p className="text-sm text-[var(--accent)]">
+                  显示标签为 "{selectedTag}" 的文章
+                </p>
               </div>
-            </article>
-          ))}
-        </div>
-        
-        {/* 空状态 */}
-        {displayPosts.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">📝</div>
-            <p className="text-xl text-gray-600 dark:text-gray-400 mb-2">
-              没有找到符合条件的文章
-            </p>
-            <p className="text-gray-500 dark:text-gray-500">
-              请尝试选择其他标签或清除筛选条件
-            </p>
+            )}
           </div>
-        )}
-        
-        {/* 统计信息 */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
-            🚀 内容统计
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {allPosts.length}
+
+          {/* 文章列表 */}
+          <div className="animate-slide-up">
+            {displayPosts.length > 0 ? (
+              <div className="space-y-8">
+                {displayPosts.map((post, index) => (
+                  <article
+                    key={post.id}
+                    className="pb-8 border-b border-[var(--border)] last:border-b-0 group"
+                    style={{
+                      animationDelay: `${index * 100}ms`
+                    }}
+                  >
+                    <div className="flex flex-col md:flex-row md:items-start gap-6">
+                      {/* 文章信息 */}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-4 mb-3">
+                          <time 
+                            dateTime={post.date}
+                            className="text-sm text-[var(--text-muted)]"
+                          >
+                            {post.date}
+                          </time>
+                          <span className="text-[var(--text-muted)]">•</span>
+                          <span className="text-sm text-[var(--text-muted)]">
+                            {post.readTime}
+                          </span>
+                        </div>
+                        
+                        <h3 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] mb-3 leading-tight group-hover:text-[var(--accent)] transition-colors duration-200">
+                          <Link href={`/posts/${post.slug}`}>
+                            {post.title}
+                          </Link>
+                        </h3>
+                        
+                        <p className="text-[var(--text-secondary)] mb-4 leading-relaxed">
+                          {post.excerpt}
+                        </p>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-wrap gap-2">
+                            {post.tags.slice(0, 3).map((tag) => (
+                              <button
+                                key={tag}
+                                onClick={() => setSelectedTag(tag)}
+                                className="px-2 py-1 text-xs font-medium bg-[var(--bg-secondary)] text-[var(--text-muted)] rounded hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-all duration-200"
+                              >
+                                {tag}
+                              </button>
+                            ))}
+                          </div>
+                          
+                          <Link
+                            href={`/posts/${post.slug}`}
+                            className="text-[var(--accent)] hover:text-[var(--accent-hover)] font-medium text-sm transition-colors duration-200"
+                          >
+                            阅读全文 →
+                          </Link>
+                        </div>
+                      </div>
+                      
+                      {/* 交互式标识 */}
+                      <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-secondary)] px-3 py-1 rounded-full">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                        <span>可运行代码</span>
+                      </div>
+                    </div>
+                  </article>
+                ))}
               </div>
-              <div className="text-blue-800 dark:text-blue-200">篇文章</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                {allTags.length}
+            ) : (
+              /* 空状态 */
+              <div className="text-center py-16 animate-fade-in">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-3">
+                  没有找到相关文章
+                </h3>
+                <p className="text-[var(--text-secondary)] mb-6">
+                  没有找到标签为 "{selectedTag}" 的文章
+                </p>
+                <button
+                  onClick={() => setSelectedTag(null)}
+                  className="btn btn-primary"
+                >
+                  清除筛选
+                </button>
               </div>
-              <div className="text-purple-800 dark:text-purple-200">个标签</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {getPostsByTag('Python').length}
-              </div>
-              <div className="text-green-800 dark:text-green-200">Python教程</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                {getPostsByTag('AI').length}
-              </div>
-              <div className="text-orange-800 dark:text-orange-200">AI相关</div>
-            </div>
+            )}
           </div>
-          <p className="mt-4 text-blue-800 dark:text-blue-200">
-            我们正在准备更多精彩的Python教程和实践项目，敬请期待！
-          </p>
         </div>
       </div>
     </Layout>
