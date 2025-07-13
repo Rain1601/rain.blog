@@ -1,0 +1,335 @@
+import { InteractiveCodeBlock } from '@/components/InteractiveCodeBlock';
+
+# 使用OpenAI API进行文本生成
+
+在这篇文章中，我们将学习如何在Python中使用OpenAI API进行文本生成。Pyodide环境原生支持OpenAI库，让我们可以直接在浏览器中体验AI功能。
+
+## 1. 验证OpenAI库
+
+OpenAI库（v1.68.2）已经是Pyodide官方支持的包，可以直接使用：
+
+<InteractiveCodeBlock
+  code={`# 直接导入OpenAI库（Pyodide官方包）
+import openai
+print("✅ OpenAI库导入成功！")
+print(f"📦 OpenAI版本: {openai.__version__}")
+print("🎉 可以开始使用OpenAI功能了！")`}
+/>
+
+## 2. 获取API密钥
+
+**重要提示：** 您需要自己的OpenAI API密钥才能使用这些功能。
+
+### 如何获取API密钥：
+
+1. 访问 [OpenAI API平台](https://platform.openai.com/)
+2. 注册或登录您的账户
+3. 进入API密钥页面
+4. 创建新的API密钥
+5. 复制密钥并妥善保管
+
+### 安全使用提示：
+
+- ✅ 在生产环境中使用环境变量存储API密钥
+- ✅ 定期轮换API密钥
+- ✅ 监控API使用情况和费用
+- ❌ 不要在代码中硬编码API密钥
+- ❌ 不要在公共仓库中提交API密钥
+
+## 3. 配置OpenAI客户端
+
+**请在下面的代码中替换为您自己的API密钥：**
+
+<InteractiveCodeBlock
+  code={`import openai
+
+# 请替换为您的实际API密钥
+# 获取密钥：https://platform.openai.com/api-keys
+API_KEY = "请在这里输入您的API密钥"
+
+# 验证API密钥格式
+if API_KEY.startswith("sk-") and len(API_KEY) > 40:
+    try:
+        # 创建OpenAI客户端
+        client = openai.OpenAI(api_key=API_KEY)
+        print("✅ OpenAI客户端配置成功！")
+        print("🔑 API密钥格式正确")
+        print("📝 您现在可以使用OpenAI的功能了")
+    except Exception as e:
+        print(f"❌ 客户端配置失败: {e}")
+else:
+    print("❌ 请输入有效的API密钥")
+    print("💡 API密钥应该以'sk-'开头，长度超过40个字符")
+    print("🔗 获取密钥：https://platform.openai.com/api-keys")`}
+/>
+
+## 4. 文本生成示例
+
+确保您已经在上面正确配置了API密钥后，运行以下代码：
+
+<InteractiveCodeBlock
+  code={`def generate_text(prompt, max_tokens=100, temperature=0.7):
+    """
+    使用OpenAI API生成文本
+    
+    参数:
+    - prompt: 输入提示
+    - max_tokens: 最大生成token数
+    - temperature: 创造性程度 (0-1)
+    """
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=max_tokens,
+            temperature=temperature
+        )
+        
+        generated_text = response.choices[0].message.content
+        usage_info = response.usage
+        
+        print(f"✅ 生成完成！")
+        print(f"📝 生成的文本:\\n{generated_text}")
+        print(f"\\n📊 使用情况:")
+        print(f"   - 输入tokens: {usage_info.prompt_tokens}")
+        print(f"   - 输出tokens: {usage_info.completion_tokens}")
+        print(f"   - 总计tokens: {usage_info.total_tokens}")
+        
+        return generated_text
+        
+    except Exception as e:
+        print(f"❌ 生成失败: {str(e)}")
+        if "Invalid API key" in str(e):
+            print("💡 请检查您的API密钥是否正确")
+        elif "insufficient_quota" in str(e):
+            print("💡 您的API配额不足，请检查账户余额")
+        elif "rate_limit" in str(e):
+            print("💡 请求过于频繁，请稍后再试")
+        return None
+
+# 测试文本生成（请确保先配置API密钥）
+try:
+    if 'client' in globals():
+        prompt = "写一首关于Python编程的短诗"
+        result = generate_text(prompt)
+    else:
+        print("⚠️ 请先在上面的代码块中配置API密钥")
+except NameError:
+    print("⚠️ 请先在上面的代码块中配置API密钥")`}
+/>
+
+## 5. 代码生成助手
+
+创建一个智能的代码生成助手：
+
+<InteractiveCodeBlock
+  code={`def code_assistant(task_description, language="Python"):
+    """
+    AI代码生成助手
+    
+    参数:
+    - task_description: 任务描述
+    - language: 编程语言 (默认Python)
+    """
+    
+    if 'client' not in globals():
+        print("⚠️ 请先配置OpenAI API密钥")
+        return None
+    
+    prompt = f"""
+请为以下任务生成{language}代码：
+{task_description}
+
+要求：
+1. 提供完整可运行的代码
+2. 添加必要的注释
+3. 包含使用示例
+4. 遵循最佳实践
+"""
+    
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": f"你是一个专业的{language}代码生成助手。请生成高质量、可读性强的代码。"},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=500,
+            temperature=0.3
+        )
+        
+        generated_code = response.choices[0].message.content
+        
+        print(f"✅ 代码生成完成！")
+        print(f"📝 生成的{language}代码:")
+        print("="*50)
+        print(generated_code)
+        print("="*50)
+        
+        return generated_code
+        
+    except Exception as e:
+        print(f"❌ 代码生成失败: {str(e)}")
+        return None
+
+# 测试代码生成
+try:
+    if 'client' in globals():
+        task = "创建一个函数来计算斐波那契数列的前n个数字"
+        generated_code = code_assistant(task)
+    else:
+        print("⚠️ 请先在上面的代码块中配置API密钥")
+except NameError:
+    print("⚠️ 请先在上面的代码块中配置API密钥")`}
+/>
+
+## 6. 聊天对话功能
+
+创建一个简单的聊天对话系统：
+
+<InteractiveCodeBlock
+  code={`class ChatBot:
+    def __init__(self):
+        self.conversation_history = []
+        self.system_prompt = "你是一个友好且有帮助的AI助手。请用中文回答问题。"
+    
+    def chat(self, user_message):
+        """
+        与AI进行对话
+        """
+        if 'client' not in globals():
+            return "⚠️ 请先配置OpenAI API密钥"
+        
+        # 添加用户消息到历史记录
+        self.conversation_history.append({"role": "user", "content": user_message})
+        
+        # 准备消息列表
+        messages = [{"role": "system", "content": self.system_prompt}]
+        messages.extend(self.conversation_history[-6:])  # 保留最近6条对话
+        
+        try:
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=messages,
+                max_tokens=300,
+                temperature=0.7
+            )
+            
+            ai_response = response.choices[0].message.content
+            
+            # 添加AI回复到历史记录
+            self.conversation_history.append({"role": "assistant", "content": ai_response})
+            
+            return ai_response
+            
+        except Exception as e:
+            return f"❌ 对话失败: {str(e)}"
+    
+    def clear_history(self):
+        """清空对话历史"""
+        self.conversation_history = []
+        print("🔄 对话历史已清空")
+
+# 创建聊天机器人实例
+try:
+    if 'client' in globals():
+        chatbot = ChatBot()
+        print("🤖 AI聊天助手已准备好！")
+        print("💬 您可以开始对话了")
+        
+        # 示例对话
+        response1 = chatbot.chat("你好！请介绍一下自己")
+        print(f"🤖 AI: {response1}")
+        
+        response2 = chatbot.chat("能帮我解释一下机器学习吗？")
+        print(f"🤖 AI: {response2}")
+        
+    else:
+        print("⚠️ 请先在上面的代码块中配置API密钥")
+except NameError:
+    print("⚠️ 请先在上面的代码块中配置API密钥")`}
+/>
+
+## 7. API使用情况监控
+
+监控您的API使用情况和费用：
+
+<InteractiveCodeBlock
+  code={`def check_api_usage():
+    """
+    检查API使用情况
+    """
+    if 'client' not in globals():
+        print("⚠️ 请先配置OpenAI API密钥")
+        return
+    
+    print("📊 API使用情况检查")
+    print("="*40)
+    
+    try:
+        # 测试API连接
+        test_response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": "Hello"}],
+            max_tokens=5
+        )
+        
+        print("✅ API连接正常")
+        print(f"🔑 使用模型: {test_response.model}")
+        print(f"📝 测试tokens: {test_response.usage.total_tokens}")
+        
+        # 提供使用建议
+        print("\\n💡 使用建议:")
+        print("- 定期检查账户余额")
+        print("- 监控每日API调用次数")
+        print("- 使用适当的max_tokens限制")
+        print("- 考虑使用更便宜的模型（如gpt-3.5-turbo）")
+        
+    except Exception as e:
+        print(f"❌ API检查失败: {str(e)}")
+        
+        if "Invalid API key" in str(e):
+            print("💡 解决方案：")
+            print("   1. 检查API密钥是否正确")
+            print("   2. 确保密钥未过期")
+            print("   3. 重新生成API密钥")
+        elif "insufficient_quota" in str(e):
+            print("💡 解决方案：")
+            print("   1. 检查账户余额")
+            print("   2. 添加付费方式")
+            print("   3. 升级账户计划")
+
+# 检查API状态
+check_api_usage()`}
+/>
+
+## 总结
+
+通过本文，您学习了如何在浏览器中使用OpenAI API：
+
+### 🔧 技术要点
+
+1. **简单安装**：Pyodide官方支持OpenAI库，可直接安装
+2. **安全配置**：如何安全地使用API密钥
+3. **文本生成**：使用GPT模型生成各种文本内容
+4. **代码生成**：创建AI代码助手
+5. **聊天对话**：实现对话系统
+6. **使用监控**：监控API使用情况
+
+### 🔒 安全提醒
+
+- 始终保护您的API密钥
+- 监控API使用情况和费用
+- 在生产环境中使用环境变量
+- 遵循OpenAI的使用政策
+
+### 🚀 进一步学习
+
+- 探索不同的OpenAI模型
+- 学习提示工程技巧
+- 了解函数调用功能
+- 尝试图像生成API
+
+记住：负责任地使用AI技术，始终遵循OpenAI的使用政策和最佳实践！ 

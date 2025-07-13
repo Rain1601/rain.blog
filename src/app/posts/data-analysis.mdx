@@ -1,0 +1,334 @@
+import { InteractiveCodeBlock } from '@/components/InteractiveCodeBlock';
+
+# 数据分析入门
+
+欢迎来到数据分析入门教程！我们将学习如何使用Python进行数据分析，包括数据处理、统计分析和可视化。
+
+## 1. 安装必要的库
+
+首先安装数据分析所需的库：
+
+<InteractiveCodeBlock
+  code={`import micropip
+import asyncio
+
+async def install_data_packages():
+    """安装数据分析所需的库"""
+    print("📦 开始安装数据分析库...")
+    packages = ["pandas", "numpy", "matplotlib"]
+    
+    for package in packages:
+        print(f"   正在安装 {package}...")
+        await micropip.install(package)
+        print(f"   ✅ {package} 安装完成")
+    
+    print("🎉 所有数据分析库安装完成！")
+    
+# 在Pyodide中运行异步函数
+asyncio.create_task(install_data_packages())`}
+/>
+
+## 2. NumPy基础
+
+NumPy是Python数值计算的基础库：
+
+<InteractiveCodeBlock
+  code={`import numpy as np
+
+# 创建数组
+arr1 = np.array([1, 2, 3, 4, 5])
+arr2 = np.array([[1, 2, 3], [4, 5, 6]])
+
+print(f"一维数组: {arr1}")
+print(f"二维数组:\\n{arr2}")
+
+# 数组属性
+print(f"\\n数组形状: {arr2.shape}")
+print(f"数组维度: {arr2.ndim}")
+print(f"数据类型: {arr2.dtype}")
+
+# 数组运算
+print(f"\\n数组运算:")
+print(f"arr1 + 10: {arr1 + 10}")
+print(f"arr1 * 2: {arr1 * 2}")
+print(f"arr1 平方: {arr1 ** 2}")
+
+# 统计函数
+print(f"\\n统计函数:")
+print(f"最大值: {np.max(arr1)}")
+print(f"最小值: {np.min(arr1)}")
+print(f"平均值: {np.mean(arr1)}")
+print(f"标准差: {np.std(arr1)}")
+print(f"求和: {np.sum(arr1)}")`}
+/>
+
+## 3. Pandas基础
+
+Pandas是数据分析的核心库：
+
+<InteractiveCodeBlock
+  code={`import pandas as pd
+
+# 创建DataFrame
+data = {
+    'name': ['小明', '小红', '小华', '小李', '小张'],
+    'age': [25, 30, 35, 28, 32],
+    'city': ['北京', '上海', '广州', '深圳', '杭州'],
+    'salary': [8000, 12000, 15000, 9000, 11000]
+}
+
+df = pd.DataFrame(data)
+print("员工数据:")
+print(df)
+
+# 基本信息
+print(f"\\n数据形状: {df.shape}")
+print(f"列名: {list(df.columns)}")
+print(f"\\n数据类型:")
+print(df.dtypes)
+
+# 基本统计
+print(f"\\n基本统计:")
+print(df.describe())`}
+/>
+
+## 4. 数据筛选和过滤
+
+学习如何筛选和过滤数据：
+
+<InteractiveCodeBlock
+  code={`# 基于条件筛选
+print("年龄大于30岁的员工:")
+print(df[df['age'] > 30])
+
+print("\\n薪资在10000以上的员工:")
+print(df[df['salary'] >= 10000])
+
+print("\\n在北京或上海工作的员工:")
+print(df[df['city'].isin(['北京', '上海'])])
+
+# 多条件筛选
+print("\\n年龄大于28且薪资大于10000的员工:")
+print(df[(df['age'] > 28) & (df['salary'] > 10000)])
+
+# 选择特定列
+print("\\n只显示姓名和薪资:")
+print(df[['name', 'salary']])
+
+# 排序
+print("\\n按薪资排序:")
+print(df.sort_values('salary', ascending=False))`}
+/>
+
+## 5. 数据清洗
+
+处理缺失值和数据清洗：
+
+<InteractiveCodeBlock
+  code={`# 创建包含缺失值的数据
+import numpy as np
+
+data_with_missing = {
+    'name': ['张三', '李四', '王五', '赵六', '钱七'],
+    'age': [25, np.nan, 35, 28, 32],
+    'score': [85, 90, np.nan, 78, 88],
+    'city': ['北京', '上海', '广州', np.nan, '杭州']
+}
+
+df_missing = pd.DataFrame(data_with_missing)
+print("包含缺失值的数据:")
+print(df_missing)
+
+# 检查缺失值
+print("\\n缺失值统计:")
+print(df_missing.isnull().sum())
+
+# 删除包含缺失值的行
+print("\\n删除包含缺失值的行:")
+print(df_missing.dropna())
+
+# 填充缺失值
+print("\\n填充缺失值:")
+df_filled = df_missing.fillna({
+    'age': df_missing['age'].mean(),
+    'score': df_missing['score'].mean(),
+    'city': '未知'
+})
+print(df_filled)`}
+/>
+
+## 6. 数据可视化
+
+使用matplotlib进行数据可视化：
+
+<InteractiveCodeBlock
+  code={`import matplotlib.pyplot as plt
+import numpy as np
+
+# 创建图表数据
+x = np.linspace(0, 10, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+# 创建图表
+plt.figure(figsize=(10, 6))
+
+# 绘制线图
+plt.subplot(2, 2, 1)
+plt.plot(x, y1, 'b-', label='sin(x)')
+plt.plot(x, y2, 'r--', label='cos(x)')
+plt.title('三角函数图')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True)
+
+# 绘制柱状图
+plt.subplot(2, 2, 2)
+categories = ['A', 'B', 'C', 'D']
+values = [23, 45, 56, 78]
+plt.bar(categories, values, color=['red', 'green', 'blue', 'orange'])
+plt.title('柱状图示例')
+plt.xlabel('类别')
+plt.ylabel('数值')
+
+# 绘制散点图
+plt.subplot(2, 2, 3)
+x_scatter = np.random.randn(100)
+y_scatter = np.random.randn(100)
+plt.scatter(x_scatter, y_scatter, alpha=0.5)
+plt.title('散点图示例')
+plt.xlabel('X值')
+plt.ylabel('Y值')
+
+# 绘制饼图
+plt.subplot(2, 2, 4)
+sizes = [15, 30, 45, 10]
+labels = ['A', 'B', 'C', 'D']
+plt.pie(sizes, labels=labels, autopct='%1.1f%%')
+plt.title('饼图示例')
+
+plt.tight_layout()
+plt.show()`}
+/>
+
+## 7. 实际应用案例
+
+让我们用一个实际的数据分析案例来综合运用所学知识：
+
+<InteractiveCodeBlock
+  code={`# 创建学生成绩数据
+student_data = {
+    'student_id': range(1, 101),
+    'name': [f'学生{i}' for i in range(1, 101)],
+    'math': np.random.normal(75, 15, 100),
+    'english': np.random.normal(80, 12, 100),
+    'science': np.random.normal(78, 18, 100),
+    'class': np.random.choice(['A班', 'B班', 'C班'], 100)
+}
+
+# 确保成绩在0-100范围内
+student_data['math'] = np.clip(student_data['math'], 0, 100)
+student_data['english'] = np.clip(student_data['english'], 0, 100)
+student_data['science'] = np.clip(student_data['science'], 0, 100)
+
+df_students = pd.DataFrame(student_data)
+
+# 计算总分和平均分
+df_students['total_score'] = df_students['math'] + df_students['english'] + df_students['science']
+df_students['average_score'] = df_students['total_score'] / 3
+
+print("学生成绩数据预览:")
+print(df_students.head())
+
+# 分析每个班级的平均成绩
+print("\\n各班级平均成绩:")
+class_stats = df_students.groupby('class')[['math', 'english', 'science', 'average_score']].mean()
+print(class_stats)
+
+# 找出各科目的最高分学生
+print("\\n各科目最高分学生:")
+for subject in ['math', 'english', 'science']:
+    best_student = df_students.loc[df_students[subject].idxmax()]
+    print(f"{subject}: {best_student['name']} - {best_student[subject]:.1f}分")
+
+# 成绩分布统计
+print("\\n成绩分布统计:")
+print(df_students[['math', 'english', 'science', 'average_score']].describe())
+
+# 优秀学生（平均分≥85）
+excellent_students = df_students[df_students['average_score'] >= 85]
+print(f"\\n优秀学生数量: {len(excellent_students)}")
+print(f"优秀学生比例: {len(excellent_students)/len(df_students)*100:.1f}%")`}
+/>
+
+## 8. 时间序列分析
+
+学习处理时间序列数据：
+
+<InteractiveCodeBlock
+  code={`# 创建时间序列数据
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# 生成日期范围
+date_range = pd.date_range(start='2024-01-01', end='2024-12-31', freq='D')
+
+# 生成模拟的股票价格数据
+np.random.seed(42)
+price_data = 100 + np.cumsum(np.random.randn(len(date_range)) * 0.5)
+
+# 创建时间序列DataFrame
+ts_data = pd.DataFrame({
+    'date': date_range,
+    'price': price_data
+})
+
+# 设置日期为索引
+ts_data.set_index('date', inplace=True)
+
+print("时间序列数据预览:")
+print(ts_data.head())
+
+# 计算移动平均
+ts_data['ma_7'] = ts_data['price'].rolling(window=7).mean()
+ts_data['ma_30'] = ts_data['price'].rolling(window=30).mean()
+
+# 计算价格变化
+ts_data['price_change'] = ts_data['price'].diff()
+ts_data['price_change_pct'] = ts_data['price'].pct_change()
+
+print("\\n添加技术指标后的数据:")
+print(ts_data.tail())
+
+# 按月份汇总
+monthly_stats = ts_data.resample('M').agg({
+    'price': ['mean', 'max', 'min', 'std'],
+    'price_change': 'sum'
+})
+
+print("\\n月度统计:")
+print(monthly_stats.head())
+
+# 找出价格最高和最低的日期
+max_price_date = ts_data['price'].idxmax()
+min_price_date = ts_data['price'].idxmin()
+
+print(f"\\n最高价格: {ts_data.loc[max_price_date, 'price']:.2f} (日期: {max_price_date.strftime('%Y-%m-%d')})")
+print(f"最低价格: {ts_data.loc[min_price_date, 'price']:.2f} (日期: {min_price_date.strftime('%Y-%m-%d')})")`}
+/>
+
+## 总结
+
+通过本教程，我们学习了：
+
+1. **NumPy基础** - 数值计算和数组操作
+2. **Pandas基础** - 数据结构和数据操作
+3. **数据清洗** - 处理缺失值和异常数据
+4. **数据筛选** - 条件查询和数据过滤
+5. **数据可视化** - 使用matplotlib创建图表
+6. **实际应用** - 学生成绩分析案例
+7. **时间序列** - 处理时间相关的数据
+
+这些技能为进一步的数据科学和机器学习学习打下了坚实的基础。继续练习和探索更多的数据分析技术吧！ 

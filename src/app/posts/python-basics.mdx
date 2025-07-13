@@ -1,0 +1,298 @@
+import { InteractiveCodeBlock } from '@/components/InteractiveCodeBlock';
+
+# Python基础教程
+
+欢迎来到Python基础教程！在这里，我们将学习Python编程语言的核心概念和基础语法。
+
+## 1. 变量和数据类型
+
+Python支持多种数据类型，让我们来探索一下：
+
+<InteractiveCodeBlock
+  code={`# 数字类型
+age = 25
+height = 175.5
+is_student = True
+
+print(f"年龄: {age} (类型: {type(age).__name__})")
+print(f"身高: {height} (类型: {type(height).__name__})")
+print(f"是否学生: {is_student} (类型: {type(is_student).__name__})")
+
+# 字符串
+name = "Python学习者"
+print(f"姓名: {name} (类型: {type(name).__name__})")
+
+# 列表
+fruits = ["苹果", "香蕉", "橙子"]
+print(f"水果列表: {fruits}")
+
+# 字典
+person = {"name": "小明", "age": 20, "city": "北京"}
+print(f"个人信息: {person}")`}
+/>
+
+## 2. 条件语句
+
+使用if语句来实现条件判断：
+
+<InteractiveCodeBlock
+  code={`# 条件判断示例
+score = 85
+
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+elif score >= 70:
+    grade = "C"
+elif score >= 60:
+    grade = "D"
+else:
+    grade = "F"
+
+print(f"分数: {score}, 等级: {grade}")
+
+# 复合条件
+age = 20
+has_license = True
+
+if age >= 18 and has_license:
+    print("可以开车")
+elif age >= 18:
+    print("年龄够了，但需要考驾照")
+else:
+    print("年龄不够，不能开车")`}
+/>
+
+## 3. 循环结构
+
+Python提供了for和while两种循环：
+
+<InteractiveCodeBlock
+  code={`# for循环
+print("=== for循环示例 ===")
+fruits = ["苹果", "香蕉", "橙子", "葡萄"]
+
+for fruit in fruits:
+    print(f"我喜欢{fruit}")
+
+# 使用range()
+print("\\n=== range()函数 ===")
+for i in range(1, 6):
+    print(f"第{i}次循环")
+
+# while循环
+print("\\n=== while循环示例 ===")
+count = 0
+while count < 3:
+    print(f"计数: {count}")
+    count += 1
+
+# 列表推导式
+print("\\n=== 列表推导式 ===")
+squares = [x**2 for x in range(1, 6)]
+print(f"平方数: {squares}")`}
+/>
+
+## 4. 函数定义
+
+函数是组织代码的重要方式：
+
+<InteractiveCodeBlock
+  code={`# 基本函数定义
+def greet(name):
+    return f"你好, {name}!"
+
+# 带默认参数的函数
+def introduce(name, age=18, city="北京"):
+    return f"我是{name}，今年{age}岁，来自{city}"
+
+# 可变参数函数
+def calculate_sum(*numbers):
+    total = 0
+    for num in numbers:
+        total += num
+    return total
+
+# 测试函数
+print(greet("小明"))
+print(introduce("小红", 20, "上海"))
+print(introduce("小华"))  # 使用默认值
+
+result = calculate_sum(1, 2, 3, 4, 5)
+print(f"求和结果: {result}")
+
+# Lambda函数
+multiply = lambda x, y: x * y
+print(f"3 * 4 = {multiply(3, 4)}")`}
+/>
+
+## 5. 列表操作
+
+列表是Python中最常用的数据结构之一：
+
+<InteractiveCodeBlock
+  code={`# 创建和操作列表
+numbers = [1, 2, 3, 4, 5]
+print(f"原始列表: {numbers}")
+
+# 添加元素
+numbers.append(6)
+numbers.insert(0, 0)
+print(f"添加元素后: {numbers}")
+
+# 删除元素
+numbers.remove(3)  # 删除值为3的元素
+popped = numbers.pop()  # 删除最后一个元素
+print(f"删除元素后: {numbers}")
+print(f"弹出的元素: {popped}")
+
+# 列表切片
+print(f"前3个元素: {numbers[:3]}")
+print(f"后3个元素: {numbers[-3:]}")
+print(f"每隔一个元素: {numbers[::2]}")
+
+# 列表方法
+numbers.sort()
+print(f"排序后: {numbers}")
+print(f"列表长度: {len(numbers)}")
+print(f"最大值: {max(numbers)}")
+print(f"最小值: {min(numbers)}")
+print(f"求和: {sum(numbers)}")`}
+/>
+
+## 6. 字典操作
+
+字典用于存储键值对：
+
+<InteractiveCodeBlock
+  code={`# 创建和操作字典
+student = {
+    "name": "小明",
+    "age": 20,
+    "major": "计算机科学",
+    "grades": [85, 90, 78, 92]
+}
+
+print(f"学生信息: {student}")
+
+# 访问值
+print(f"姓名: {student['name']}")
+print(f"年龄: {student.get('age', '未知')}")
+
+# 添加和修改
+student["email"] = "xiaoming@example.com"
+student["age"] = 21
+
+print(f"更新后: {student}")
+
+# 遍历字典
+print("\\n=== 遍历字典 ===")
+for key, value in student.items():
+    print(f"{key}: {value}")
+
+# 字典方法
+print(f"\\n所有键: {list(student.keys())}")
+print(f"所有值: {list(student.values())}")
+
+# 字典推导式
+grades_dict = {f"科目{i}": grade for i, grade in enumerate(student["grades"], 1)}
+print(f"成绩字典: {grades_dict}")`}
+/>
+
+## 7. 异常处理
+
+学习如何处理程序中的错误：
+
+<InteractiveCodeBlock
+  code={`# 基本异常处理
+def divide_numbers(a, b):
+    try:
+        result = a / b
+        return result
+    except ZeroDivisionError:
+        return "错误: 不能除以零"
+    except TypeError:
+        return "错误: 参数必须是数字"
+    except Exception as e:
+        return f"未知错误: {e}"
+
+# 测试异常处理
+print(divide_numbers(10, 2))    # 正常情况
+print(divide_numbers(10, 0))    # 除零错误
+print(divide_numbers(10, "a"))  # 类型错误
+
+# 文件操作示例（模拟）
+def read_file_content(filename):
+    try:
+        # 模拟文件读取
+        if filename == "test.txt":
+            return "这是测试文件内容"
+        else:
+            raise FileNotFoundError(f"文件 {filename} 不存在")
+    except FileNotFoundError as e:
+        return f"文件错误: {e}"
+    finally:
+        print("文件操作完成")
+
+print(read_file_content("test.txt"))
+print(read_file_content("missing.txt"))`}
+/>
+
+## 8. 类和对象
+
+面向对象编程的基础：
+
+<InteractiveCodeBlock
+  code={`# 定义类
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    
+    def greet(self):
+        return f"你好，我是{self.name}，今年{self.age}岁"
+    
+    def have_birthday(self):
+        self.age += 1
+        return f"{self.name}过生日了，现在{self.age}岁"
+
+# 创建对象
+person1 = Person("小明", 20)
+person2 = Person("小红", 18)
+
+print(person1.greet())
+print(person2.greet())
+
+print(person1.have_birthday())
+
+# 继承示例
+class Student(Person):
+    def __init__(self, name, age, major):
+        super().__init__(name, age)
+        self.major = major
+    
+    def study(self):
+        return f"{self.name}正在学习{self.major}"
+    
+    def greet(self):
+        return f"你好，我是{self.name}，{self.age}岁，专业是{self.major}"
+
+# 测试继承
+student = Student("小华", 19, "计算机科学")
+print(student.greet())
+print(student.study())`}
+/>
+
+## 总结
+
+通过本教程，我们学习了Python的基础知识：
+
+- 变量和数据类型
+- 条件语句和循环
+- 函数定义和调用
+- 列表和字典操作
+- 异常处理
+- 类和对象
+
+这些是Python编程的基础，掌握了这些概念后，你就可以开始编写更复杂的程序了！ 
