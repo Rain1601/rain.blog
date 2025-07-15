@@ -64,3 +64,7 @@ export function getPostsByCategory(category: string): Post[] {
     post.tags.some(tag => categoryTags.includes(tag))
   );
 } 
+
+export function getPostBySlug(slug: string): Post | undefined {
+  return getAllPosts().find(post => post.slug === slug);
+} 

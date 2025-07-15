@@ -42,7 +42,7 @@ export function CodeEditor({
     minimap: { enabled: showMinimap },
     fontSize: 14,
     lineHeight: 21,
-    fontFamily: 'var(--font-mono), "JetBrains Mono", "Fira Code", Consolas, Monaco, monospace',
+    fontFamily: '"JetBrains Mono", "Fira Code", Consolas, Monaco, monospace',
     scrollBeyondLastLine: false,
     automaticLayout: true,
     tabSize: 4,
@@ -216,10 +216,10 @@ export function CodeEditor({
   if (!mounted) {
     return (
       <div 
-        className="code-editor border border-[var(--code-border)] rounded-lg p-4 bg-[var(--code-bg)] animate-pulse"
+        className="code-editor border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800 animate-pulse"
         style={{ height }}
       >
-        <div className="text-[var(--text-muted)] font-mono text-sm">
+        <div className="text-gray-500 dark:text-gray-400 font-mono text-sm">
           {placeholder}
         </div>
       </div>
@@ -227,7 +227,7 @@ export function CodeEditor({
   }
 
   return (
-    <div className="code-editor border border-[var(--code-border)] rounded-lg overflow-hidden shadow-code transition-all duration-200 hover:shadow-soft">
+    <div className="code-editor border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden shadow-lg transition-all duration-200 hover:shadow-xl dark:shadow-gray-800/50">
       <Editor
         height={height}
         language={language}
@@ -361,7 +361,7 @@ export function CodeEditor({
               onRun(code);
             } else {
               const runEvent = new CustomEvent('runCode', { detail: { code } });
-              window.dispatchEvent(runEvent);
+            window.dispatchEvent(runEvent);
             }
           });
 
@@ -379,7 +379,7 @@ export function CodeEditor({
           editor.onDidFocusEditorText(() => {
             const editorElement = editor.getDomNode();
             if (editorElement) {
-              editorElement.style.outline = '2px solid var(--accent)';
+              editorElement.style.outline = '2px solid #3b82f6';
               editorElement.style.outlineOffset = '2px';
             }
           });

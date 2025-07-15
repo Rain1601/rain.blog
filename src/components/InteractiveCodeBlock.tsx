@@ -169,13 +169,13 @@ function InteractiveCodeBlockInner({
       {(title || description) && (
         <div className="mb-4">
           {title && (
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2 flex items-center gap-2">
-              <div className="w-2 h-2 bg-[var(--accent)] rounded-full"></div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
               {title}
             </h3>
           )}
           {description && (
-            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
               {description}
             </p>
           )}
@@ -183,15 +183,15 @@ function InteractiveCodeBlockInner({
       )}
 
       {/* 主容器 */}
-      <div className="bg-[var(--bg-elevated)] rounded-lg overflow-hidden shadow-code">
+      <div className="bg-white dark:bg-slate-800 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600 shadow-lg">
         {/* 控制栏 */}
-        <div className="px-4 py-3 bg-[var(--bg-secondary)] border-b border-[var(--border)]">
-          <div className="flex items-center justify-between">
+        <div className="px-4 py-3 bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
+        <div className="flex items-center justify-between">
             {/* 左侧：运行按钮和状态 */}
             <div className="flex items-center space-x-3">
-              <button
-                onClick={runCode}
-                disabled={isRunning || pyodideStatus !== 'ready'}
+            <button
+              onClick={runCode}
+              disabled={isRunning || pyodideStatus !== 'ready'}
                 aria-label={isRunning ? '代码正在运行中' : '运行Python代码'}
                 aria-describedby="run-button-help"
                 className={`
@@ -203,23 +203,23 @@ function InteractiveCodeBlockInner({
                   }
                   ${isRunning ? 'animate-pulse' : ''}
                 `}
-              >
-                {isRunning ? (
-                  <>
+            >
+              {isRunning ? (
+                <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" aria-hidden="true"></div>
                     <span className="animate-pulse">运行中...</span>
-                  </>
-                ) : (
-                  <>
+                </>
+              ) : (
+                <>
                     <svg className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m-6-8h8a2 2 0 012 2v8a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2z" />
-                    </svg>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m-6-8h8a2 2 0 012 2v8a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2z" />
+                  </svg>
                     <span className="transition-all duration-200">运行代码</span>
-                    <kbd className="px-2 py-1 text-xs bg-[var(--bg-elevated)] rounded border border-[var(--border)] transition-all duration-200 opacity-70 group-hover:opacity-100">
+                    <kbd className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600 transition-all duration-200 opacity-70 group-hover:opacity-100">
                       Ctrl+Enter
                     </kbd>
-                  </>
-                )}
+                </>
+              )}
                 
                 {/* 成功/失败状态指示器 */}
                 {result && (
@@ -238,39 +238,39 @@ function InteractiveCodeBlockInner({
                       )}
                     </svg>
                   </div>
-                )}
-              </button>
+              )}
+            </button>
 
               {/* 状态指示器 */}
               <div className="flex items-center space-x-2" role="status" aria-live="polite">
-                {pyodideStatus === 'loading' && (
-                  <div className="flex items-center space-x-2 text-sm text-[var(--text-secondary)] animate-pulse">
-                    <div className="w-2 h-2 bg-[var(--warning)] rounded-full animate-pulse" aria-hidden="true"></div>
-                    <span>正在加载Python环境...</span>
-                  </div>
-                )}
+            {pyodideStatus === 'loading' && (
+                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 animate-pulse">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" aria-hidden="true"></div>
+                <span>正在加载Python环境...</span>
+              </div>
+            )}
 
                 {pyodideStatus === 'ready' && (
-                  <div className="flex items-center space-x-2 text-sm text-[var(--success)]">
-                    <div className="w-2 h-2 bg-[var(--success)] rounded-full" aria-hidden="true"></div>
+                  <div className="flex items-center space-x-2 text-sm text-green-600 dark:text-green-400">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" aria-hidden="true"></div>
                     <span>Python 3.11</span>
-                  </div>
-                )}
-
-                {pyodideStatus === 'error' && (
-                  <div className="flex items-center space-x-2 text-sm text-[var(--error)]">
-                    <div className="w-2 h-2 bg-[var(--error)] rounded-full" aria-hidden="true"></div>
-                    <span>环境加载失败</span>
-                  </div>
-                )}
               </div>
-            </div>
+            )}
+
+            {pyodideStatus === 'error' && (
+                  <div className="flex items-center space-x-2 text-sm text-red-600 dark:text-red-400">
+                    <div className="w-2 h-2 bg-red-500 rounded-full" aria-hidden="true"></div>
+                    <span>环境加载失败</span>
+              </div>
+            )}
+              </div>
+          </div>
 
             {/* 右侧：工具按钮 */}
             <div className="flex items-center space-x-2" role="toolbar" aria-label="代码块工具">
-              <button
-                onClick={clearOutput}
-                disabled={!result}
+            <button
+              onClick={clearOutput}
+              disabled={!result}
                 aria-label="清空输出结果"
                 className={`
                   btn btn-secondary text-sm flex items-center space-x-1 
@@ -286,12 +286,12 @@ function InteractiveCodeBlockInner({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 <span>清空输出</span>
-              </button>
+            </button>
 
-              {enableClear && (
-                <button
-                  onClick={clearEnvironment}
-                  disabled={pyodideStatus !== 'ready'}
+            {enableClear && (
+              <button
+                onClick={clearEnvironment}
+                disabled={pyodideStatus !== 'ready'}
                   aria-label="清空Python环境"
                   className={`
                     btn btn-secondary text-sm flex items-center space-x-1 
@@ -307,13 +307,13 @@ function InteractiveCodeBlockInner({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                   <span>清空环境</span>
-                </button>
-              )}
+              </button>
+            )}
 
-              {enableReset && (
-                <button
-                  onClick={resetCode}
-                  disabled={currentCode === code}
+            {enableReset && (
+              <button
+                onClick={resetCode}
+                disabled={currentCode === code}
                   aria-label="重置代码到初始状态"
                   className={`
                     btn btn-secondary text-sm flex items-center space-x-1 
@@ -356,29 +356,29 @@ function InteractiveCodeBlockInner({
                   </svg>
                 )}
               </button>
-            </div>
           </div>
         </div>
+      </div>
 
-        {/* 代码编辑器 */}
-        <div className="relative">
-          <CodeEditor
-            code={currentCode}
-            onChange={setCurrentCode}
-            height={height}
-            readOnly={readOnly}
+      {/* 代码编辑器 */}
+      <div className="relative">
+        <CodeEditor
+          code={currentCode}
+          onChange={setCurrentCode}
+          height={height}
+          readOnly={readOnly}
             onRun={runCode}
-          />
-        </div>
+        />
+      </div>
 
-        {/* 输出显示 */}
+      {/* 输出显示 */}
         <div ref={outputRef}>
-          <OutputDisplay result={result} isRunning={isRunning} />
+      <OutputDisplay result={result} isRunning={isRunning} />
         </div>
       </div>
 
       {/* 帮助提示 */}
-      <div id="run-button-help" className="mt-3 text-xs text-[var(--text-muted)] flex items-center justify-between">
+      <div id="run-button-help" className="mt-3 text-xs text-gray-500 dark:text-gray-400 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <span>💡 提示：使用 Ctrl+Enter 快速运行代码</span>
         </div>
@@ -386,7 +386,7 @@ function InteractiveCodeBlockInner({
           <span>Powered by</span>
           <a 
             href="https://pyodide.org/" 
-            className="text-[var(--accent)] hover:underline"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="访问Pyodide官方网站（在新窗口中打开）"

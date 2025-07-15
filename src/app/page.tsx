@@ -2,142 +2,235 @@ import Link from 'next/link';
 import { Layout } from '@/components/Layout';
 import { InteractiveCodeBlock } from '@/components/InteractiveCodeBlock';
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <Layout
-      title="PyBlog"
-      description="在浏览器中运行Python代码的现代博客平台"
-    >
-      <div className="space-y-8">
-        {/* 特性介绍 */}
-        <section className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-8 rounded-lg">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            🚀 特性介绍
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6">
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+        {/* Hero Section - 全屏高度 */}
+        <section className="relative min-h-screen flex items-center overflow-hidden">
+          {/* Animated gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-pink-400/10 dark:from-blue-600/20 dark:via-purple-600/20 dark:to-pink-600/20 animate-gradient-x"></div>
+          
+          {/* Floating orbs for visual interest */}
+          <div className="absolute top-20 left-20 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+          <div className="absolute top-40 right-20 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-40 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+          
+          <div className="relative w-full max-w-7xl mx-auto px-6">
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-800 to-blue-600 dark:from-white dark:via-blue-400 dark:to-blue-600 mb-12 leading-tight animate-fade-in-up">
+                在浏览器中
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                  运行Python
+                </span>
+              </h1>
+              
+              <p className="text-2xl md:text-3xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto mb-16 leading-relaxed animate-fade-in-up animation-delay-200">
+                无需安装，无需配置。直接在浏览器中编写和运行Python代码，探索编程的乐趣。
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in-up animation-delay-400">
+                <Link 
+                  href="/blog"
+                  className="group relative inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 font-semibold text-lg transform hover:scale-105"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                  <span className="relative z-10 flex items-center">
+                    开始学习
+                    <svg className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </span>
+                </Link>
+                
+                <a 
+                  href="#demo"
+                  className="group relative inline-flex items-center px-10 py-5 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-gray-900 dark:text-white rounded-full border-2 border-gray-300 dark:border-gray-600 hover:border-transparent transition-all duration-300 font-semibold text-lg overflow-hidden transform hover:scale-105"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                  <span className="relative z-10 flex items-center">
+                    体验Demo
+                    <svg className="w-6 h-6 ml-3 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </span>
+                </a>
+              </div>
+              
+              {/* 向下滚动提示 */}
+              <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                交互式代码
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                基于Pyodide技术，在浏览器中直接运行Python代码，无需后端服务器
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                MDX支持
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                使用MDX格式编写文章，支持在Markdown中嵌入React组件
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                现代化设计
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                基于Tailwind CSS的现代化界面设计，支持暗色主题
-              </p>
             </div>
           </div>
         </section>
 
-        {/* 快速体验 */}
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-            🔥 快速体验
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-            试试下面的Python代码，直接在浏览器中运行：
-          </p>
-          
-          <InteractiveCodeBlock
-            code={`# 欢迎来到PyBlog！
-print("Hello, PyBlog!")
+        {/* 增加间距的分隔区域 */}
+        <div className="h-32"></div>
 
-# 尝试一些Python基础功能
-import math
+        {/* Features Section - 优化间距 */}
+        <section className="py-24 relative">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-32">
+              <h2 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-8">
+                为什么选择
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400"> PyBlog</span>
+                ？
+              </h2>
+              <p className="text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                基于Pyodide技术，在浏览器中提供完整的Python运行环境
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-12">
+              {/* Feature card 1 - 极简设计 */}
+              <div className="group relative">
+                <div className="relative h-full bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-900 rounded-3xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-800 hover:scale-105">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="relative">
+                    <div className="inline-flex p-5 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl shadow-lg mb-8">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">即时执行</h3>
+                    <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                      无需安装Python环境，代码在浏览器中直接运行，结果立即显示
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature card 2 - 极简设计 */}
+              <div className="group relative">
+                <div className="relative h-full bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-900 rounded-3xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-800 hover:scale-105">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="relative">
+                    <div className="inline-flex p-5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-lg mb-8">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">丰富的库</h3>
+                    <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                      支持NumPy、Pandas、Matplotlib等主流数据科学库
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature card 3 - 极简设计 */}
+              <div className="group relative">
+                <div className="relative h-full bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-900 rounded-3xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-800 hover:scale-105">
+                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-orange-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="relative">
+                    <div className="inline-flex p-5 bg-gradient-to-br from-pink-500 to-orange-500 rounded-2xl shadow-lg mb-8">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">交互学习</h3>
+                    <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                      边学边练，通过实际代码运行加深理解
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 增加间距的分隔区域 */}
+        <div className="h-32"></div>
+
+        {/* Demo Section - 优化间距 */}
+        <section id="demo" className="py-24 relative bg-gradient-to-b from-transparent via-blue-50/30 to-transparent dark:via-slate-800/30">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-20">
+              <h2 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-8">
+                立即体验
+              </h2>
+              <p className="text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                试试下面的Python代码，感受在浏览器中编程的乐趣
+              </p>
+            </div>
+            
+            <div className="relative group">
+              <div className="absolute -inset-4 bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 dark:from-blue-600/20 dark:via-purple-600/20 dark:to-pink-600/20 blur-3xl opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                {/* 模拟编辑器标题栏 */}
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">main.py</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-500">Python 3.11</span>
+                  </div>
+                </div>
+                <InteractiveCodeBlock
+                  code={`# 欢迎来到PyBlog！
+print("🐍 Hello, Python!")
+
+# 基础数据分析示例
 import random
 
-# 生成一些随机数
-numbers = [random.randint(1, 100) for _ in range(10)]
-print(f"随机数列表: {numbers}")
+# 生成随机数据
+data = [random.randint(1, 100) for _ in range(10)]
+print(f"随机数据: {data}")
 
 # 计算统计信息
-print(f"平均值: {sum(numbers) / len(numbers):.2f}")
-print(f"最大值: {max(numbers)}")
-print(f"最小值: {min(numbers)}")
+print(f"平均值: {sum(data) / len(data):.2f}")
+print(f"最大值: {max(data)}")
+print(f"最小值: {min(data)}")
 
-# 尝试一些数学运算
-print(f"圆周率: {math.pi:.6f}")
-print(f"自然常数: {math.e:.6f}")`}
-            title="Python基础示例"
-            description="这是一个基本的Python代码示例，展示了随机数生成和基础数学运算"
-            height={400}
-          />
-        </section>
+# 简单的数据可视化
+print("\\n📊 数据可视化:")
+for i, value in enumerate(data):
+    bar = "█" * (value // 5)
+    print(f"数据{i+1:2d}: {value:3d} {bar}")
 
-        {/* 支持的功能 */}
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-            📦 支持的Python包
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { name: 'NumPy', desc: '科学计算基础库' },
-              { name: 'Pandas', desc: '数据分析和处理' },
-              { name: 'Matplotlib', desc: '数据可视化' },
-              { name: 'SciPy', desc: '科学计算工具' },
-              { name: 'Scikit-learn', desc: '机器学习库' },
-              { name: 'SymPy', desc: '符号数学计算' },
-            ].map((pkg) => (
-              <div key={pkg.name} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <h3 className="font-semibold text-gray-900 dark:text-white">
-                  {pkg.name}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {pkg.desc}
-                </p>
+print("\\n🎉 试试修改代码，看看会发生什么！")`}
+                  height={450}
+                />
               </div>
-            ))}
+            </div>
           </div>
         </section>
 
-        {/* 开始使用 */}
-        <section className="bg-gray-50 dark:bg-gray-800 p-8 rounded-lg text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            🎯 开始使用
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-            查看我们的博客文章，了解如何在MDX中使用交互式Python代码块
-          </p>
-          <div className="flex justify-center space-x-4">
-            <Link
-              href="/blog/demo"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
-            >
-              查看示例文章
-            </Link>
+        {/* 增加间距的分隔区域 */}
+        <div className="h-32"></div>
+
+        {/* CTA Section - 简化设计，优化间距 */}
+        <section className="py-32 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-purple-600/5 to-pink-600/5"></div>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full blur-3xl opacity-10"></div>
+          
+          <div className="relative max-w-5xl mx-auto px-6 text-center">
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-blue-600 dark:from-white dark:to-blue-400 mb-8">
+              准备好开始学习了吗？
+            </h2>
+            <p className="text-2xl md:text-3xl text-gray-600 dark:text-gray-300 mb-16 max-w-3xl mx-auto">
+              探索更多教程和交互式代码示例，开启你的Python编程之旅
+            </p>
+            
             <Link
               href="/blog"
-              className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+              className="group inline-flex items-center px-14 py-6 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-full hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 font-semibold text-xl transform hover:scale-105"
             >
-              浏览所有文章
+              <svg className="w-7 h-7 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              浏览所有教程
+              <svg className="w-7 h-7 ml-4 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </Link>
           </div>
         </section>

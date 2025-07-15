@@ -15,7 +15,11 @@ export const metadata: Metadata = {
   description: "基于Pyodide和Next.js构建的现代博客平台，支持在浏览器中运行Python代码",
   keywords: ["Python", "Blog", "Pyodide", "Next.js", "Code", "Interactive"],
   authors: [{ name: "PyBlog Team" }],
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({

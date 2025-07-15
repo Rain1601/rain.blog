@@ -10,8 +10,8 @@ module.exports = {
     extend: {
       colors: {
         // 基础色彩系统
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        background: "#ffffff",
+        foreground: "#0f172a",
         
         // 主要色彩 - 灰蓝色系
         primary: {
@@ -166,7 +166,7 @@ module.exports = {
         'code': '0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
         'button': '0 2px 4px 0 rgba(59, 130, 246, 0.2)',
         'button-hover': '0 4px 12px 0 rgba(59, 130, 246, 0.3)',
-      },
+        },
       
       // 边框圆角
       borderRadius: {
