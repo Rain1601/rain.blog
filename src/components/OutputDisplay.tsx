@@ -70,7 +70,7 @@ export function OutputDisplay({ result, isRunning }: OutputDisplayProps) {
           <div className="flex items-center space-x-3">
             <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-          点击运行按钮执行代码
+              等待代码执行...
             </span>
           </div>
         </div>

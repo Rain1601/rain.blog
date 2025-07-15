@@ -11,10 +11,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "PyBlog - 支持Python交互代码的博客平台",
-  description: "基于Pyodide和Next.js构建的现代博客平台，支持在浏览器中运行Python代码",
-  keywords: ["Python", "Blog", "Pyodide", "Next.js", "Code", "Interactive"],
-  authors: [{ name: "PyBlog Team" }],
+  title: "Rain.Blog - 个人技术博客",
+  description: "分享技术见解与编程经验的个人博客，探索Python、AI和Web开发的精彩世界",
+  keywords: ["Python", "Blog", "AI", "Web开发", "编程", "技术分享", "个人博客"],
+  authors: [{ name: "Rain" }],
 };
 
 export const viewport = {

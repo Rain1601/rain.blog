@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { Layout } from '@/components/Layout';
 import { InteractiveCodeBlock } from '@/components/InteractiveCodeBlock';
 import { getPostBySlug, getAllPosts } from '@/utils/posts';
+import { use } from 'react';
 
-export default function PostPage({ params }: { params: { slug: string } }) {
-  const post = getPostBySlug(params.slug);
+export default function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
+  const post = getPostBySlug(slug);
 
   if (!post) {
     notFound();
@@ -20,20 +22,20 @@ export default function PostPage({ params }: { params: { slug: string } }) {
           {/* 极简文章头部 */}
           <header className="mb-16 animate-fade-in-down">
             {/* 返回链接 */}
-            <Link 
-              href="/blog"
+          <Link 
+            href="/blog"
               className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors mb-12 group"
-            >
+          >
               <svg className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
               返回博客
-            </Link>
-            
+          </Link>
+
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-8 leading-tight">
               {post.title}
-            </h1>
-            
+          </h1>
+          
             <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
               <time className="flex items-center gap-2">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,20 +49,20 @@ export default function PostPage({ params }: { params: { slug: string } }) {
                 </svg>
                 {post.readTime}
               </span>
-            </div>
-            
+          </div>
+
             {/* 标签 */}
             <div className="flex flex-wrap gap-3 mt-6">
               {post.tags.map((tag: string) => (
                 <Link
-                  key={tag}
+                key={tag}
                   href={`/blog?tag=${tag}`}
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
-                >
+              >
                   #{tag}
                 </Link>
-              ))}
-            </div>
+            ))}
+          </div>
           </header>
 
           {/* 文章内容 - 极简排版 */}
@@ -483,8 +485,8 @@ print(f"有效分数: {sum(1 for r in messy_data if 0 <= r.get('score', -1) <= 1
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 p-6 my-8 rounded-r-lg">
                   <p className="text-gray-700 dark:text-gray-300">
                     <strong>📊 练习建议：</strong>尝试修改数据生成逻辑，创建不同类型的数据集，并进行自己的分析。你可以添加更多的产品类别、扩展时间范围，或者计算更复杂的统计指标。
-                  </p>
-                </div>
+          </p>
+        </div>
               </>
             )}
           </div>

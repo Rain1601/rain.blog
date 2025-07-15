@@ -253,7 +253,7 @@ function InteractiveCodeBlockInner({
                 {pyodideStatus === 'ready' && (
                   <div className="flex items-center space-x-2 text-sm text-green-600 dark:text-green-400">
                     <div className="w-2 h-2 bg-green-500 rounded-full" aria-hidden="true"></div>
-                    <span>Python 3.11</span>
+                    <span>就绪</span>
               </div>
             )}
 
@@ -377,24 +377,7 @@ function InteractiveCodeBlockInner({
         </div>
       </div>
 
-      {/* 帮助提示 */}
-      <div id="run-button-help" className="mt-3 text-xs text-gray-500 dark:text-gray-400 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <span>💡 提示：使用 Ctrl+Enter 快速运行代码</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span>Powered by</span>
-          <a 
-            href="https://pyodide.org/" 
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="访问Pyodide官方网站（在新窗口中打开）"
-          >
-            Pyodide
-          </a>
-        </div>
-      </div>
+
     </div>
   );
 }
