@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Layout } from '@/components/Layout';
 import { InteractiveCodeBlock } from '@/components/InteractiveCodeBlock';
@@ -33,12 +35,34 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in-up animation-delay-400">
                 <Link 
                   href="/blog"
-                  className="group relative inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 font-semibold text-lg transform hover:scale-105"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '16px 32px',
+                    backgroundColor: '#2563eb',
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    borderRadius: '50px',
+                    boxShadow: '0 10px 30px rgba(37, 99, 235, 0.3)',
+                    textDecoration: 'none',
+                    border: 'none',
+                    transition: 'all 0.3s ease',
+                    transform: 'scale(1)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                    e.currentTarget.style.backgroundColor = '#1d4ed8';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    e.currentTarget.style.backgroundColor = '#2563eb';
+                  }}
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
-                  <span className="relative z-10 flex items-center">
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
                     开始学习
-                    <svg className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg style={{ width: '20px', height: '20px', marginLeft: '8px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </span>
@@ -46,12 +70,34 @@ export default function HomePage() {
                 
                 <a 
                   href="#demo"
-                  className="group relative inline-flex items-center px-10 py-5 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-gray-900 dark:text-white rounded-full border-2 border-gray-300 dark:border-gray-600 hover:border-transparent transition-all duration-300 font-semibold text-lg overflow-hidden transform hover:scale-105"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '16px 32px',
+                    backgroundColor: 'white',
+                    color: '#374151',
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    borderRadius: '50px',
+                    border: '2px solid #d1d5db',
+                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
+                    textDecoration: 'none',
+                    transition: 'all 0.3s ease',
+                    transform: 'scale(1)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                    e.currentTarget.style.borderColor = '#60a5fa';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    e.currentTarget.style.borderColor = '#d1d5db';
+                  }}
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
-                  <span className="relative z-10 flex items-center">
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
                     体验Demo
-                    <svg className="w-6 h-6 ml-3 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg style={{ width: '20px', height: '20px', marginLeft: '8px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -222,13 +268,35 @@ print("\\n🎉 试试修改代码，看看会发生什么！")`}
             
             <Link
               href="/blog"
-              className="group inline-flex items-center px-14 py-6 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-full hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 font-semibold text-xl transform hover:scale-105"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '20px 48px',
+                background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
+                color: 'white',
+                fontSize: '20px',
+                fontWeight: 'bold',
+                borderRadius: '50px',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                textDecoration: 'none',
+                border: 'none',
+                transition: 'all 0.3s ease',
+                transform: 'scale(1)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)';
+              }}
             >
-              <svg className="w-7 h-7 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               浏览所有教程
-              <svg className="w-7 h-7 ml-4 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </Link>
