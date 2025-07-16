@@ -1,36 +1,23 @@
 import { Post, PostMetadata } from '@/types/post';
+import { blogPosts, getTagInfo, getCategoryInfo, type BlogConfig } from '@/content/blog/config';
 
-// 文章数据配置
-const postsConfig: Record<string, PostMetadata> = {
-  'python-basics': {
-    title: 'Python基础教程',
-    excerpt: '学习Python的基础语法，包括变量、数据类型、控制结构等核心概念。',
-    tags: ['Python', '基础', '教程'],
-    date: '2024-01-15',
-    readTime: '15分钟',
-  },
-  'openai-integration': {
-    title: '使用OpenAI API进行文本生成',
-    excerpt: '学习如何在Python中使用OpenAI API进行文本生成、聊天对话等AI功能。',
-    tags: ['OpenAI', 'AI', 'API', '文本生成'],
-    date: '2024-01-16',
-    readTime: '20分钟',
-  },
-  'data-analysis': {
-    title: '数据分析入门',
-    excerpt: '使用pandas和numpy进行数据分析，包括数据清洗、统计分析和可视化。',
-    tags: ['数据分析', 'pandas', 'numpy', '可视化'],
-    date: '2024-01-17',
-    readTime: '25分钟',
-  },
-};
-
-export function getAllPosts(): Post[] {
-  return Object.entries(postsConfig).map(([slug, metadata]) => ({
+// 将BlogConfig转换为Post类型
+function blogConfigToPost(slug: string, config: BlogConfig): Post {
+  return {
     id: slug,
     slug,
-    ...metadata,
-  }));
+    title: config.title,
+    excerpt: config.excerpt,
+    tags: config.tags,
+    date: config.date,
+    readTime: config.readTime,
+  };
+}
+
+export function getAllPosts(): Post[] {
+  return Object.entries(blogPosts)
+    .filter(([, config]) => config.published) // 只返回已发布的文章
+    .map(([slug, config]) => blogConfigToPost(slug, config));
 }
 
 export function getPostsByTag(tag: string): Post[] {
@@ -41,30 +28,114 @@ export function getPostsByTag(tag: string): Post[] {
 
 export function getAllTags(): string[] {
   const tags = new Set<string>();
-  Object.values(postsConfig).forEach(post => {
-    post.tags.forEach(tag => tags.add(tag));
+  Object.values(blogPosts).forEach(post => {
+    if (post.published) {
+      post.tags.forEach(tag => tags.add(tag));
+    }
   });
   return Array.from(tags).sort();
 }
 
+// 新增：搜索文章功能
+export function searchPosts(query: string): Post[] {
+  const searchLower = query.toLowerCase().trim();
+  if (!searchLower) return [];
+  
+  return getAllPosts().filter(post => 
+    post.title.toLowerCase().includes(searchLower) ||
+    post.excerpt.toLowerCase().includes(searchLower) ||
+    post.tags.some(tag => tag.toLowerCase().includes(searchLower))
+  );
+}
+
+// 新增：综合搜索和标签筛选
+export function searchAndFilterPosts(query: string = '', tag: string | null = null): Post[] {
+  let posts = getAllPosts();
+  
+  // 标签筛选
+  if (tag) {
+    posts = posts.filter(post => 
+      post.tags.some(t => t.toLowerCase() === tag.toLowerCase())
+    );
+  }
+  
+  // 文本搜索
+  if (query.trim()) {
+    const searchLower = query.toLowerCase().trim();
+    posts = posts.filter(post => 
+      post.title.toLowerCase().includes(searchLower) ||
+      post.excerpt.toLowerCase().includes(searchLower) ||
+      post.tags.some(t => t.toLowerCase().includes(searchLower))
+    );
+  }
+  
+  // 按时间排序（最新的在前）
+  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
 export function getPostMetadata(slug: string): PostMetadata | null {
-  return postsConfig[slug] || null;
+  const config = blogPosts[slug];
+  if (!config || !config.published) return null;
+  
+  return {
+    title: config.title,
+    excerpt: config.excerpt,
+    tags: config.tags,
+    date: config.date,
+    readTime: config.readTime,
+  };
 }
 
 export function getPostsByCategory(category: string): Post[] {
-  const categoryMap: Record<string, string[]> = {
-    'ai': ['AI', 'OpenAI', '机器学习', '深度学习'],
-    'data': ['数据分析', 'pandas', 'numpy', '可视化'],
-    'basic': ['基础', '教程', 'Python'],
-    'advanced': ['高级', '进阶', '性能优化'],
-  };
-  
-  const categoryTags = categoryMap[category.toLowerCase()] || [];
-  return getAllPosts().filter(post => 
-    post.tags.some(tag => categoryTags.includes(tag))
-  );
-} 
+  return Object.entries(blogPosts)
+    .filter(([, config]) => config.published && config.category === category)
+    .map(([slug, config]) => blogConfigToPost(slug, config));
+}
 
 export function getPostBySlug(slug: string): Post | undefined {
-  return getAllPosts().find(post => post.slug === slug);
-} 
+  const config = blogPosts[slug];
+  if (!config || !config.published) return undefined;
+  
+  return blogConfigToPost(slug, config);
+}
+
+// 新增：获取博客配置
+export function getBlogConfig(slug: string): BlogConfig | undefined {
+  return blogPosts[slug];
+}
+
+// 新增：获取所有分类
+export function getAllCategories(): string[] {
+  const categories = new Set<string>();
+  Object.values(blogPosts).forEach(post => {
+    if (post.published) {
+      categories.add(post.category);
+    }
+  });
+  return Array.from(categories).sort();
+}
+
+// 新增：获取标签信息（包含颜色等）
+export function getTagWithInfo(tag: string) {
+  return {
+    name: tag,
+    ...getTagInfo(tag)
+  };
+}
+
+// 新增：获取分类信息
+export function getCategoryWithInfo(category: string) {
+  return {
+    slug: category,
+    ...getCategoryInfo(category)
+  };
+}
+
+// 新增：获取最新文章
+export function getLatestPosts(limit: number = 5): Post[] {
+  return getAllPosts()
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, limit);
+}
+
+ 

@@ -81,10 +81,21 @@ class PyodideManager {
 
       // 安装常用的Python包
       try {
-        await pyodide.loadPackage(['numpy', 'pandas', 'openai']);
-        console.log('✅ 常用Python包加载成功（包括OpenAI 1.68.2）');
+        await pyodide.loadPackage(['numpy', 'pandas', 'matplotlib', 'scipy']);
+        console.log('✅ 常用Python包加载成功');
       } catch (e) {
         console.warn('⚠️ 部分Python包加载失败:', e);
+      }
+
+      // 使用micropip安装更多包
+      try {
+        await pyodide.runPython(`
+import micropip
+await micropip.install(['openai', 'requests', 'seaborn', 'plotly'])
+`);
+        console.log('✅ 通过micropip安装的包加载成功');
+      } catch (e) {
+        console.warn('⚠️ micropip包安装失败:', e);
       }
       
       return pyodide;
@@ -108,6 +119,96 @@ class PyodideManager {
   }
 
   /**
+   * 检测代码中的导入语句并安装缺失的包
+   */
+  private async installMissingPackages(pyodide: PyodideInterface, code: string): Promise<void> {
+    // 从代码中提取import语句 - 支持更多模式
+    const importPatterns = [
+      /import\s+(\w+)(?:\s+as\s+\w+)?/g,  // import package 或 import package as alias
+      /from\s+(\w+)(?:\.\w+)*\s+import/g, // from package import ...
+      /import\s+(\w+)\.(\w+)/g,           // import package.module
+      /(\w+)\s*=\s*__import__\s*\(\s*['"]\s*(\w+)\s*['"]\s*\)/g // __import__ 语法
+    ];
+    
+    const packages = new Set<string>();
+    
+    for (const pattern of importPatterns) {
+      let match;
+      while ((match = pattern.exec(code)) !== null) {
+        const packageName = match[1];
+        if (packageName) {
+          packages.add(packageName);
+        }
+      }
+    }
+
+    // 检查常见的import别名模式
+    const aliasPatterns = [
+      /import\s+matplotlib\.pyplot\s+as\s+plt/g,
+      /import\s+numpy\s+as\s+np/g,
+      /import\s+pandas\s+as\s+pd/g,
+      /import\s+seaborn\s+as\s+sns/g
+    ];
+    
+    for (const pattern of aliasPatterns) {
+      if (pattern.test(code)) {
+        if (pattern.source.includes('matplotlib')) packages.add('matplotlib');
+        if (pattern.source.includes('numpy')) packages.add('numpy');
+        if (pattern.source.includes('pandas')) packages.add('pandas');
+        if (pattern.source.includes('seaborn')) packages.add('seaborn');
+      }
+    }
+
+    // 常见包的映射关系
+    const packageMapping: { [key: string]: string } = {
+      'matplotlib': 'matplotlib',
+      'numpy': 'numpy', 
+      'pandas': 'pandas',
+      'seaborn': 'seaborn',
+      'cv2': 'opencv-python',
+      'PIL': 'pillow',
+      'sklearn': 'scikit-learn',
+      'requests': 'requests',
+      'plotly': 'plotly',
+      'scipy': 'scipy'
+    };
+
+    // 检查和安装包
+    for (const pkg of packages) {
+      const actualPackage = packageMapping[pkg] || pkg;
+      
+      try {
+        // 检查包是否已经可用
+        await pyodide.runPython(`
+try:
+    import ${pkg}
+except ImportError:
+    raise ImportError("${pkg} not found")
+`);
+      } catch (e) {
+        // 包不可用，尝试安装
+        console.log(`🔄 正在安装缺失的包: ${actualPackage}`);
+        try {
+          // 先尝试用pyodide.loadPackage (这些包在Pyodide中预编译)
+          if (['numpy', 'pandas', 'matplotlib', 'scipy', 'sympy', 'networkx'].includes(actualPackage)) {
+            await pyodide.loadPackage([actualPackage]);
+          } else {
+            // 用micropip安装其他包
+            await pyodide.runPython(`
+import micropip
+await micropip.install("${actualPackage}")
+`);
+          }
+          console.log(`✅ 成功安装包: ${actualPackage}`);
+        } catch (installError) {
+          console.warn(`⚠️ 安装包失败: ${actualPackage}`, installError);
+          // 如果安装失败，不要阻止代码执行，让用户看到具体错误
+        }
+      }
+    }
+  }
+
+  /**
    * 执行Python代码
    */
   async executeCode(code: string): Promise<ExecutionResult> {
@@ -115,6 +216,9 @@ class PyodideManager {
     
     try {
       const pyodide = await this.getPyodide();
+      
+      // 尝试安装代码中需要的包
+      await this.installMissingPackages(pyodide, code);
       
       // 设置输出捕获
       let output = '';

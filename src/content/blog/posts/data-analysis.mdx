@@ -4,38 +4,6 @@ import { InteractiveCodeBlock } from '@/components/InteractiveCodeBlock';
 
 欢迎来到数据分析入门教程！我们将学习如何使用Python进行数据分析，包括数据处理、统计分析和可视化。
 
-## 0. 包加载验证
-
-首先验证所有必需的包都已正确加载：
-
-<InteractiveCodeBlock
-  code={`# 验证数据分析包是否可用
-import sys
-print("🔍 检查Python环境和包...")
-print(f"Python版本: {sys.version}")
-
-# 检查核心包
-packages_to_check = [
-    ('numpy', 'np'),
-    ('pandas', 'pd'), 
-    ('matplotlib', None),
-    ('matplotlib.pyplot', 'plt')
-]
-
-for package, alias in packages_to_check:
-    try:
-        if alias:
-            exec(f"import {package} as {alias}")
-            print(f"✅ {package} (as {alias}) - 加载成功")
-        else:
-            exec(f"import {package}")
-            print(f"✅ {package} - 加载成功")
-    except ImportError as e:
-        print(f"❌ {package} - 加载失败: {e}")
-
-print("\\n🎉 包验证完成！如果看到所有✅，说明环境配置正确。")`}
-/>
-
 ## 1. 安装必要的库
 
 首先安装数据分析所需的库：
@@ -194,14 +162,8 @@ print(df_filled)`}
 使用matplotlib进行数据可视化：
 
 <InteractiveCodeBlock
-  code={`# 导入可视化库
-try:
-    import matplotlib.pyplot as plt
-    import numpy as np
-    print("✅ matplotlib导入成功")
-except ImportError as e:
-    print(f"❌ matplotlib导入失败: {e}")
-    print("💡 这个问题应该已经通过智能包管理解决")
+  code={`import matplotlib.pyplot as plt
+import numpy as np
 
 # 创建图表数据
 x = np.linspace(0, 10, 100)
@@ -213,51 +175,41 @@ plt.figure(figsize=(10, 6))
 
 # 绘制线图
 plt.subplot(2, 2, 1)
-plt.plot(x, y1, 'b-', label='sin(x)', linewidth=2)
-plt.plot(x, y2, 'r--', label='cos(x)', linewidth=2)
-plt.title('三角函数图', fontsize=12, fontweight='bold')
-plt.xlabel('x轴')
-plt.ylabel('y轴')
+plt.plot(x, y1, 'b-', label='sin(x)')
+plt.plot(x, y2, 'r--', label='cos(x)')
+plt.title('三角函数图')
+plt.xlabel('x')
+plt.ylabel('y')
 plt.legend()
-plt.grid(True, alpha=0.3)
+plt.grid(True)
 
 # 绘制柱状图
 plt.subplot(2, 2, 2)
-categories = ['产品A', '产品B', '产品C', '产品D']
+categories = ['A', 'B', 'C', 'D']
 values = [23, 45, 56, 78]
-colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A']
-plt.bar(categories, values, color=colors)
-plt.title('产品销量对比', fontsize=12, fontweight='bold')
-plt.xlabel('产品类别')
-plt.ylabel('销量')
-plt.xticks(rotation=45)
+plt.bar(categories, values, color=['red', 'green', 'blue', 'orange'])
+plt.title('柱状图示例')
+plt.xlabel('类别')
+plt.ylabel('数值')
 
 # 绘制散点图
 plt.subplot(2, 2, 3)
-np.random.seed(42)
 x_scatter = np.random.randn(100)
 y_scatter = np.random.randn(100)
-colors_scatter = np.random.rand(100)
-plt.scatter(x_scatter, y_scatter, c=colors_scatter, alpha=0.6, s=50)
-plt.title('随机数据散点图', fontsize=12, fontweight='bold')
+plt.scatter(x_scatter, y_scatter, alpha=0.5)
+plt.title('散点图示例')
 plt.xlabel('X值')
 plt.ylabel('Y值')
-plt.colorbar()
 
 # 绘制饼图
 plt.subplot(2, 2, 4)
-sizes = [30, 25, 25, 20]
-labels = ['移动端', '桌面端', '平板端', '其他']
-colors = ['#FF9999', '#66B2FF', '#99FF99', '#FFCC99']
-explode = (0.05, 0, 0, 0)  # 突出显示第一块
-plt.pie(sizes, labels=labels, autopct='%1.1f%%', 
-        colors=colors, explode=explode, shadow=True)
-plt.title('设备使用分布', fontsize=12, fontweight='bold')
+sizes = [15, 30, 45, 10]
+labels = ['A', 'B', 'C', 'D']
+plt.pie(sizes, labels=labels, autopct='%1.1f%%')
+plt.title('饼图示例')
 
 plt.tight_layout()
-plt.show()
-
-print("📊 可视化图表已生成完成！")`}
+plt.show()`}
 />
 
 ## 7. 实际应用案例

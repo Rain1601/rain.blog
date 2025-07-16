@@ -1,7 +1,7 @@
 'use client';
 
 import { Editor } from '@monaco-editor/react';
-import { useTheme } from './ThemeProvider';
+import { useTheme } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 
 interface CodeEditorProps {
@@ -27,7 +27,8 @@ export function CodeEditor({
   showMinimap = false,
   onRun
 }: CodeEditorProps) {
-  const { resolvedTheme } = useTheme();
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
@@ -133,7 +134,7 @@ export function CodeEditor({
   };
 
   // 自定义主题
-  const customTheme = resolvedTheme === 'dark' ? {
+      const customTheme = isDark ? {
     base: 'vs-dark' as const,
     inherit: true,
     rules: [
@@ -176,40 +177,40 @@ export function CodeEditor({
     base: 'vs' as const,
     inherit: true,
     rules: [
-      { token: 'comment', foreground: '6B7280', fontStyle: 'italic' },
-      { token: 'keyword', foreground: '2563EB', fontStyle: 'bold' },
-      { token: 'string', foreground: '059669' },
-      { token: 'number', foreground: 'D97706' },
-      { token: 'type', foreground: '7C3AED' },
-      { token: 'function', foreground: 'DB2777' },
-      { token: 'variable', foreground: '374151' },
-      { token: 'constant', foreground: 'B45309' },
-      { token: 'class', foreground: '6D28D9' },
-      { token: 'decorator', foreground: 'EA580C' },
+      { token: 'comment', foreground: '9CA3AF', fontStyle: 'italic' },
+      { token: 'keyword', foreground: '60A5FA', fontStyle: 'bold' },
+      { token: 'string', foreground: '34D399' },
+      { token: 'number', foreground: 'FBBF24' },
+      { token: 'type', foreground: 'A78BFA' },
+      { token: 'function', foreground: 'F472B6' },
+      { token: 'variable', foreground: 'E5E7EB' },
+      { token: 'constant', foreground: 'FCD34D' },
+      { token: 'class', foreground: '8B5CF6' },
+      { token: 'decorator', foreground: 'F59E0B' },
     ],
     colors: {
-      'editor.background': '#F1F5F9',
-      'editor.foreground': '#374151',
-      'editorLineNumber.foreground': '#94A3B8',
-      'editorLineNumber.activeForeground': '#64748B',
-      'editor.selectionBackground': '#DBEAFE',
-      'editor.lineHighlightBackground': '#F8FAFC',
-      'editorCursor.foreground': '#3B82F6',
-      'editor.findMatchBackground': '#FEF3C7',
-      'editor.findMatchHighlightBackground': '#BFDBFE',
-      'editorBracketMatch.background': '#DBEAFE',
-      'editorBracketMatch.border': '#3B82F6',
-      'editorIndentGuide.background': '#E2E8F0',
-      'editorIndentGuide.activeBackground': '#CBD5E1',
-      'editorSuggestWidget.background': '#FFFFFF',
-      'editorSuggestWidget.border': '#E2E8F0',
-      'editorSuggestWidget.foreground': '#374151',
-      'editorSuggestWidget.selectedBackground': '#F1F5F9',
-      'editorHoverWidget.background': '#FFFFFF',
-      'editorHoverWidget.border': '#E2E8F0',
-      'scrollbarSlider.background': '#CBD5E1',
-      'scrollbarSlider.hoverBackground': '#94A3B8',
-      'scrollbarSlider.activeBackground': '#94A3B8',
+      'editor.background': '#111827',
+      'editor.foreground': '#E5E7EB',
+      'editorLineNumber.foreground': '#6B7280',
+      'editorLineNumber.activeForeground': '#9CA3AF',
+      'editor.selectionBackground': '#374151',
+      'editor.lineHighlightBackground': '#1F2937',
+      'editorCursor.foreground': '#60A5FA',
+      'editor.findMatchBackground': '#0F172A',
+      'editor.findMatchHighlightBackground': '#1E40AF',
+      'editorBracketMatch.background': '#374151',
+      'editorBracketMatch.border': '#60A5FA',
+      'editorIndentGuide.background': '#374151',
+      'editorIndentGuide.activeBackground': '#475569',
+      'editorSuggestWidget.background': '#1F2937',
+      'editorSuggestWidget.border': '#374151',
+      'editorSuggestWidget.foreground': '#E5E7EB',
+      'editorSuggestWidget.selectedBackground': '#374151',
+      'editorHoverWidget.background': '#1F2937',
+      'editorHoverWidget.border': '#374151',
+      'scrollbarSlider.background': '#475569',
+      'scrollbarSlider.hoverBackground': '#64748B',
+      'scrollbarSlider.activeBackground': '#64748B',
     }
   };
 
@@ -233,11 +234,11 @@ export function CodeEditor({
         language={language}
         value={code}
         onChange={handleEditorChange}
-        theme={`custom-${resolvedTheme}`}
+        theme={`custom-${isDark ? 'dark' : 'light'}`}
         options={editorOptions}
         beforeMount={(monaco) => {
           // 定义自定义主题
-          monaco.editor.defineTheme(`custom-${resolvedTheme}`, customTheme);
+                      monaco.editor.defineTheme(`custom-${isDark ? 'dark' : 'light'}`, customTheme);
           
           // 配置Python语言特性
           monaco.languages.setLanguageConfiguration('python', {

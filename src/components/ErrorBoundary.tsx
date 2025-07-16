@@ -1,6 +1,19 @@
 'use client';
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, ReactNode } from 'react';
+import { 
+  Box, 
+  Paper, 
+  Typography, 
+  Button, 
+  Alert, 
+  AlertTitle,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Stack
+} from '@mui/material';
+import { Warning, Refresh, ExpandMore, BugReport } from '@mui/icons-material';
 
 interface Props {
   children: ReactNode;
@@ -10,81 +23,103 @@ interface Props {
 interface State {
   hasError: boolean;
   error?: Error;
-  errorInfo?: ErrorInfo;
+  errorInfo?: React.ErrorInfo;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false,
-  };
+class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
-  public static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
-    this.setState({
-      error,
-      errorInfo,
-    });
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Error caught by ErrorBoundary:', error, errorInfo);
+    this.setState({ error, errorInfo });
   }
 
-  public render() {
+  render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
       }
 
       return (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 m-4">
-          <div className="flex items-center space-x-2 mb-4">
-            <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.96-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-            <h2 className="text-xl font-semibold text-red-800 dark:text-red-200">
+        <Box sx={{ p: 2 }}>
+          <Alert 
+            severity="error" 
+            icon={<Warning />}
+            sx={{ 
+              borderRadius: 2,
+              '& .MuiAlert-message': { width: '100%' }
+            }}
+          >
+            <AlertTitle sx={{ fontWeight: 600, mb: 2 }}>
               出现错误
-            </h2>
-          </div>
-          
-          <div className="space-y-3">
-            <p className="text-red-700 dark:text-red-300">
+            </AlertTitle>
+            
+            <Typography variant="body2" sx={{ mb: 3, color: 'error.dark' }}>
               很抱歉，此组件遇到了一个错误。请尝试刷新页面或联系支持。
-            </p>
+            </Typography>
             
             {this.state.error && (
-              <details className="bg-red-100 dark:bg-red-800/30 p-3 rounded">
-                <summary className="cursor-pointer text-red-800 dark:text-red-200 font-medium">
-                  错误详情
-                </summary>
-                <div className="mt-2 text-sm text-red-700 dark:text-red-300 font-mono">
-                  <p><strong>错误:</strong> {this.state.error.message}</p>
-                  {this.state.error.stack && (
-                    <pre className="mt-2 text-xs overflow-x-auto whitespace-pre-wrap">
-                      {this.state.error.stack}
-                    </pre>
-                  )}
-                </div>
-              </details>
+              <Accordion sx={{ mb: 2, bgcolor: 'error.light', '&:before': { display: 'none' } }}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                    错误详情
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Box sx={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      <strong>错误:</strong> {this.state.error.message}
+                    </Typography>
+                    {this.state.error.stack && (
+                      <Typography 
+                        variant="body2" 
+                        component="pre"
+                        sx={{ 
+                          fontSize: '0.75rem',
+                          overflow: 'auto',
+                          whiteSpace: 'pre-wrap',
+                          bgcolor: 'rgba(0,0,0,0.1)',
+                          p: 1,
+                          borderRadius: 1
+                        }}
+                      >
+                        {this.state.error.stack}
+                      </Typography>
+                    )}
+                  </Box>
+                </AccordionDetails>
+              </Accordion>
             )}
             
-            <div className="flex space-x-3">
-              <button
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="contained"
+                color="error"
+                startIcon={<Refresh />}
                 onClick={() => window.location.reload()}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors"
+                size="small"
               >
                 刷新页面
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<BugReport />}
                 onClick={() => this.setState({ hasError: false, error: undefined, errorInfo: undefined })}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
+                size="small"
               >
                 重试
-              </button>
-            </div>
-          </div>
-        </div>
+              </Button>
+            </Stack>
+          </Alert>
+        </Box>
       );
     }
 
@@ -92,12 +127,12 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-// 简化的错误边界组件用于包装单个组件
-export function withErrorBoundary<T extends object>(
-  Component: React.ComponentType<T>,
+// 用于函数组件的错误边界 Hook 替代方案
+export function withErrorBoundary<P extends object>(
+  Component: React.ComponentType<P>,
   fallback?: ReactNode
 ) {
-  return function WithErrorBoundaryComponent(props: T) {
+  return function WithErrorBoundaryComponent(props: P) {
     return (
       <ErrorBoundary fallback={fallback}>
         <Component {...props} />
@@ -106,36 +141,45 @@ export function withErrorBoundary<T extends object>(
   };
 }
 
-// 代码块专用错误边界
-export function CodeBlockErrorBoundary({ children }: { children: ReactNode }) {
+// 简单的错误提示组件
+export function ErrorMessage({ 
+  message = "加载失败，请重试", 
+  onRetry 
+}: { 
+  message?: string; 
+  onRetry?: () => void; 
+}) {
   return (
-    <ErrorBoundary
-      fallback={
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.96-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-            <h3 className="font-semibold text-yellow-800 dark:text-yellow-200">
-              代码块加载失败
-            </h3>
-          </div>
-          <p className="text-yellow-700 dark:text-yellow-300 text-sm">
-            交互式代码块无法正常加载。这可能是由于网络问题或浏览器兼容性问题引起的。
-          </p>
-          <div className="mt-3 text-sm text-yellow-600 dark:text-yellow-400">
-            <p>建议解决方案：</p>
-            <ul className="mt-1 list-disc list-inside space-y-1">
-              <li>刷新页面重试</li>
-              <li>检查网络连接</li>
-              <li>使用支持WebAssembly的现代浏览器</li>
-              <li>确保浏览器支持SharedArrayBuffer</li>
-            </ul>
-          </div>
-        </div>
-      }
-    >
-      {children}
-    </ErrorBoundary>
+    <Box sx={{ p: 3, textAlign: 'center' }}>
+      <Alert 
+        severity="warning" 
+        icon={<Warning />}
+        sx={{ 
+          display: 'inline-flex',
+          borderRadius: 2,
+          '& .MuiAlert-message': { 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center' 
+          }
+        }}
+      >
+        <Typography variant="body2" sx={{ mb: onRetry ? 2 : 0 }}>
+          {message}
+        </Typography>
+        {onRetry && (
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={onRetry}
+            startIcon={<Refresh />}
+          >
+            重试
+          </Button>
+        )}
+      </Alert>
+    </Box>
   );
-} 
+}
+
+export default ErrorBoundary; 

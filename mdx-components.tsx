@@ -5,14 +5,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     // 自定义标题组件 - 添加渐变色和更好的间距
     h1: ({ children }) => (
       <h1 style={{
-        fontSize: '2.5rem',
-        fontWeight: '800',
+        fontSize: '2.25rem',
+        fontWeight: '700',
         marginBottom: '2rem',
         marginTop: '2rem',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        backgroundClip: 'text',
+        color: '#e2e8f0',
         lineHeight: '1.2'
       }}>
         {children}
@@ -20,12 +17,12 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     h2: ({ children }) => (
       <h2 style={{
-        fontSize: '2rem',
-        fontWeight: '700',
+        fontSize: '1.875rem',
+        fontWeight: '600',
         marginBottom: '1.5rem',
         marginTop: '3rem',
-        color: '#1f2937',
-        borderLeft: '4px solid #667eea',
+        color: '#cbd5e1',
+        borderLeft: '3px solid #3b82f6',
         paddingLeft: '1rem',
         lineHeight: '1.3'
       }}>
@@ -38,7 +35,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         fontWeight: '600',
         marginBottom: '1rem',
         marginTop: '2rem',
-        color: '#374151',
+        color: '#9ca3af',
         lineHeight: '1.4'
       }}>
         {children}
@@ -48,51 +45,51 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     p: ({ children }) => (
       <p style={{
         marginBottom: '1.5rem',
-        color: '#4b5563',
-        lineHeight: '1.8',
-        fontSize: '1.1rem',
+        color: '#94a3b8',
+        lineHeight: '1.7',
+        fontSize: '1rem',
         fontWeight: '400'
       }}>
         {children}
       </p>
     ),
-    // 自定义代码块组件 - 现代化设计
+        // 自定义代码块组件 - Material-UI风格
     pre: ({ children }) => (
       <div style={{
-        marginBottom: '2rem',
-        marginTop: '1.5rem',
-        borderRadius: '12px',
-        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-        padding: '1.5rem',
-        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        overflow: 'hidden'
+        marginBottom: '1.5rem',
+        marginTop: '1rem',
+        borderRadius: '8px',
+        background: '#111827',
+        padding: '1rem',
+        border: '1px solid #1f2937',
+        overflow: 'hidden',
+        boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.5)'
       }}>
         <pre style={{
           fontFamily: '"Fira Code", "Monaco", "Cascadia Code", "Roboto Mono", monospace',
-          fontSize: '0.95rem',
-          lineHeight: '1.6',
+          fontSize: '0.875rem',
+          lineHeight: '1.4',
           color: '#e2e8f0',
           margin: '0',
           background: 'transparent',
           overflow: 'auto',
           whiteSpace: 'pre-wrap'
         }}>
-          {children}
-        </pre>
+        {children}
+      </pre>
       </div>
     ),
-    // 内联代码样式
+    // 内联代码样式 - 暗色主题
     code: ({ children }) => (
       <code style={{
-        background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
-        padding: '0.25rem 0.5rem',
-        borderRadius: '6px',
-        fontSize: '0.9rem',
+        background: '#1f2937',
+        padding: '0.2rem 0.4rem',
+        borderRadius: '4px',
+        fontSize: '0.875rem',
         fontFamily: '"Fira Code", monospace',
-        color: '#be123c',
+        color: '#60a5fa',
         fontWeight: '500',
-        border: '1px solid #e2e8f0'
+        border: '1px solid #374151'
       }}>
         {children}
       </code>
@@ -137,7 +134,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {children}
       </li>
     ),
-    // 自定义链接组件 - 悬浮效果
+    // 自定义链接组件
     a: ({ href, children }) => (
       <a 
         href={href} 
@@ -146,21 +143,10 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
           textDecoration: 'none',
           fontWeight: '500',
           borderBottom: '2px solid transparent',
-          transition: 'all 0.3s ease',
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text'
-        }}
-        onMouseEnter={(e) => {
-          const target = e.target as HTMLElement;
-          target.style.borderBottomColor = '#667eea';
-          target.style.transform = 'translateY(-1px)';
-        }}
-        onMouseLeave={(e) => {
-          const target = e.target as HTMLElement;
-          target.style.borderBottomColor = 'transparent';
-          target.style.transform = 'translateY(0)';
         }}
         target="_blank"
         rel="noopener noreferrer"

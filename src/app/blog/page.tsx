@@ -1,159 +1,310 @@
 'use client';
 
+import {
+  Box,
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  CardActionArea,
+  Chip,
+  Stack,
+  Button,
+  TextField,
+  InputAdornment,
+  IconButton
+} from '@mui/material';
+import { CalendarToday, Schedule, ArrowForward, Search, Clear } from '@mui/icons-material';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Layout } from '@/components/Layout';
-import { getAllPosts, getAllTags, getPostsByTag } from '@/utils/posts';
+
+import { getAllPosts, getAllTags, getPostsByTag, searchAndFilterPosts } from '@/utils/posts';
+import { Post } from '@/types/post';
+import { format } from 'date-fns';
+import { zhCN } from 'date-fns/locale';
+
 
 export default function BlogPage() {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState('');
   const allPosts = getAllPosts();
   const allTags = getAllTags();
-  const displayPosts = selectedTag ? getPostsByTag(selectedTag) : allPosts;
+  
+  // 使用综合搜索和筛选函数
+  const displayPosts = searchAndFilterPosts(searchText, selectedTag);
   
   // 计算每个标签的文章数
   const getTagCount = (tag: string) => {
     return getPostsByTag(tag).length;
   };
 
+  // 清除搜索
+  const clearSearch = () => {
+    setSearchText('');
+  };
+
+  // 清除所有筛选
+  const clearAllFilters = () => {
+    setSelectedTag(null);
+    setSearchText('');
+  };
+
   return (
-    <Layout>
-      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-slate-900 dark:to-slate-900">
-        <div className="relative max-w-6xl mx-auto px-6 py-20">
-          {/* 极简页头 */}
-          <header className="mb-20 animate-fade-in-down">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              博客文章
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl">
-              探索Python编程、数据分析和人工智能的精彩世界
-            </p>
-          </header>
+        <Box 
+          sx={{ 
+            bgcolor: 'background.default',
+            minHeight: '100vh',
+          }}
+        >
+          <Container maxWidth="md" sx={{ pb: 0 }}>
+            {/* 搜索框 */}
+            <Box sx={{ pt: { xs: 6, md: 10 }, pb: 4 }}>
+              <TextField
+                fullWidth
+                placeholder="搜索文章标题、内容或标签..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search color="action" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: searchText && (
+                    <InputAdornment position="end">
+                      <IconButton onClick={clearSearch} size="small">
+                        <Clear />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 3,
+                  },
+                }}
+              />
+            </Box>
 
-          {/* 极简标签筛选器 */}
-          <div className="mb-16 animate-fade-in-up">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">筛选：</span>
-              <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
-            </div>
-            
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setSelectedTag(null)}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
-                  selectedTag === null
-                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                }`}
+            {/* 标签过滤器 */}
+            <Box sx={{ mb: 6 }}>
+              <Typography 
+                variant="h6" 
+                sx={{ mb: 3, color: 'text.primary' }}
               >
-                全部 ({allPosts.length})
-              </button>
-              
-              {allTags.map((tag) => {
-                const count = getTagCount(tag);
-                const isSelected = selectedTag === tag;
-                
-                return (
-                  <button
+                按标签筛选
+              </Typography>
+              <Stack 
+                direction="row" 
+                spacing={1} 
+                sx={{ 
+                  flexWrap: 'wrap', 
+                  gap: 1
+                }}
+              >
+                <Chip
+                  label={`全部 (${allPosts.length})`}
+                  onClick={() => setSelectedTag(null)}
+                  color={selectedTag === null ? 'primary' : 'default'}
+                  variant={selectedTag === null ? 'filled' : 'outlined'}
+                  sx={{ 
+                    mb: 1,
+                    '&:hover': {
+                      transform: 'translateY(-1px)',
+                    },
+                    transition: 'all 0.2s ease'
+                  }}
+                />
+                {allTags.map((tag) => (
+                  <Chip
                     key={tag}
+                    label={`${tag} (${getTagCount(tag)})`}
                     onClick={() => setSelectedTag(tag)}
-                    className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
-                      isSelected
-                        ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                    }`}
-                  >
-                    {tag} ({count})
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+                    color={selectedTag === tag ? 'primary' : 'default'}
+                    variant={selectedTag === tag ? 'filled' : 'outlined'}
+                    sx={{ 
+                      mb: 1,
+                      '&:hover': {
+                        transform: 'translateY(-1px)',
+                      },
+                      transition: 'all 0.2s ease'
+                    }}
+                  />
+                ))}
+              </Stack>
+            </Box>
 
-          {/* 极简文章列表 */}
-          <div className="space-y-12">
-            {displayPosts.map((post, index) => (
-              <article
-                key={post.id}
-                className="group animate-fade-in-up"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                <Link href={`/posts/${post.slug}`} className="block">
-                  <div className="flex items-start justify-between gap-8">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
-                        <time>{post.date}</time>
-                        <span>·</span>
-                        <span>{post.readTime}</span>
-                      </div>
-                      
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        {post.title}
-                      </h2>
-                      
-                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4 line-clamp-2">
-                        {post.excerpt}
-                      </p>
-                      
-                      <div className="flex items-center gap-6">
-                        <div className="flex flex-wrap gap-2">
-                          {post.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="text-sm text-gray-500 dark:text-gray-400"
-                            >
-                              #{tag}
-                            </span>
-                          ))}
-                        </div>
-                        
-                        <span className="text-sm font-medium text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                          阅读更多 →
-                        </span>
-                      </div>
-                    </div>
-                    
-                    {/* 简约的装饰元素 */}
-                    <div className="hidden md:block w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-2xl flex-shrink-0 group-hover:scale-105 transition-transform">
-                      <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-400 dark:text-gray-600">
-                        {index + 1}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* 分隔线 */}
-                  {index < displayPosts.length - 1 && (
-                    <div className="mt-12 h-px bg-gray-200 dark:bg-gray-800"></div>
+            {/* 当前筛选状态 */}
+            {(selectedTag || searchText) && (
+              <Box sx={{ mb: 4 }}>
+                <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+                  <Typography variant="body2" color="text.secondary">
+                    当前筛选：
+                  </Typography>
+                  {selectedTag && (
+                    <Chip
+                      label={`标签: ${selectedTag}`}
+                      onDelete={() => setSelectedTag(null)}
+                      size="small"
+                      color="primary"
+                    />
                   )}
-                </Link>
-              </article>
-            ))}
-          </div>
-          
-          {/* 空状态 - 极简设计 */}
-          {displayPosts.length === 0 && (
-            <div className="text-center py-20 animate-fade-in">
-              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-10 h-10 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">
-                没有找到文章
-              </h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">
-                试试选择其他标签
-              </p>
-              <button
-                onClick={() => setSelectedTag(null)}
-                className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                  {searchText && (
+                    <Chip
+                      label={`搜索: ${searchText}`}
+                      onDelete={clearSearch}
+                      size="small"
+                      color="primary"
+                    />
+                  )}
+                  <Button 
+                    size="small" 
+                    onClick={clearAllFilters}
+                    sx={{ ml: 1 }}
+                  >
+                    清除所有筛选
+                  </Button>
+                </Stack>
+              </Box>
+            )}
+
+            {/* 文章列表 */}
+            <Box sx={{ mb: 0 }}>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  mb: 4, 
+                  color: 'text.primary',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1
+                }}
               >
-                查看全部文章
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </Layout>
+                找到 {displayPosts.length} 篇文章
+              </Typography>
+
+              <Stack spacing={3}>
+                {displayPosts.map((post) => (
+                  <Link 
+                    key={post.slug} 
+                    href={`/posts/${post.slug}`} 
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <Card 
+                      sx={{ 
+                        borderRadius: 3,
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                        }
+                      }}
+                    >
+                      <CardActionArea>
+                        <CardContent sx={{ p: 4 }}>
+                          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <CalendarToday sx={{ fontSize: 16, color: 'primary.main' }} />
+                              <Typography variant="body2" color="primary.main" fontWeight={600}>
+                                {format(new Date(post.date), 'yyyy年M月d日', { locale: zhCN })}
+                              </Typography>
+                            </Stack>
+                            
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <Schedule sx={{ fontSize: 16, color: 'text.secondary' }} />
+                              <Typography variant="body2" color="text.secondary">
+                                {post.readTime || '5分钟'}
+                              </Typography>
+                            </Stack>
+                          </Stack>
+
+                          <Typography 
+                            variant="h5" 
+                            component="h3" 
+                            sx={{ 
+                              mb: 2,
+                              fontWeight: 600,
+                              lineHeight: 1.3,
+                              color: 'text.primary',
+                            }}
+                          >
+                            {post.title}
+                          </Typography>
+
+                          {post.excerpt && (
+                            <Typography 
+                              variant="body1" 
+                              color="text.secondary" 
+                              sx={{ 
+                                mb: 3,
+                                lineHeight: 1.6,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden'
+                              }}
+                            >
+                              {post.excerpt}
+                            </Typography>
+                          )}
+
+                          <Stack 
+                            direction="row" 
+                            justifyContent="space-between" 
+                            alignItems="center"
+                          >
+                            <Stack direction="row" spacing={1}>
+                              {post.tags.slice(0, 3).map((tag) => (
+                                <Chip
+                                  key={tag}
+                                  label={tag}
+                                  size="small"
+                                  variant="outlined"
+                                  sx={{ 
+                                    fontSize: '0.75rem',
+                                    height: 24
+                                  }}
+                                />
+                              ))}
+                              {post.tags.length > 3 && (
+                                <Typography variant="body2" color="text.secondary">
+                                  +{post.tags.length - 3}
+                                </Typography>
+                              )}
+                            </Stack>
+
+                            <Stack direction="row" spacing={1} alignItems="center" color="primary.main">
+                              <Typography variant="body2" fontWeight={600}>
+                                阅读文章
+                              </Typography>
+                              <ArrowForward sx={{ fontSize: 16 }} />
+                            </Stack>
+                          </Stack>
+                        </CardContent>
+                      </CardActionArea>
+                    </Card>
+                  </Link>
+                ))}
+              </Stack>
+
+              {displayPosts.length === 0 && (
+                <Box sx={{ textAlign: 'center', py: 8 }}>
+                  <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
+                    没有找到相关文章
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    {searchText ? '尝试其他搜索关键词' : '尝试选择其他标签'}或查看所有文章
+                  </Typography>
+                  <Button 
+                    variant="outlined" 
+                    onClick={clearAllFilters}
+                    sx={{ mt: 2 }}
+                  >
+                    清除筛选条件
+                  </Button>
+                </Box>
+              )}
+            </Box>
+          </Container>
+        </Box>
   );
 } 
