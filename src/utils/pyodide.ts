@@ -185,7 +185,7 @@ try:
 except ImportError:
     raise ImportError("${pkg} not found")
 `);
-      } catch (e) {
+      } catch {
         // 包不可用，尝试安装
         console.log(`🔄 正在安装缺失的包: ${actualPackage}`);
         try {

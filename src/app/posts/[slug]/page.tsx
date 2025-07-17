@@ -1,5 +1,3 @@
-'use client';
-
 import { notFound } from 'next/navigation';
 import { 
   Container,
@@ -11,22 +9,21 @@ import {
 import { CalendarToday, Schedule } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
-import { MDXProvider } from '@mdx-js/react';
 import { getBlogConfig } from '@/utils/posts';
-import { mdxComponents } from '@/utils/mdx';
+import PostContent from '@/components/PostContent';
 
 // 获取文章内容的函数
 async function getPostContent(slug: string) {
   try {
-    const module = await import(`@/content/blog/posts/${slug}.mdx`);
-    return module.default;
+    const mdxModule = await import(`@/content/blog/posts/${slug}.mdx`);
+    return mdxModule.default;
   } catch {
     return null;
   }
 }
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   
   // 获取文章配置
   const config = getBlogConfig(slug);
@@ -36,9 +33,9 @@ export default async function PostPage({ params }: { params: { slug: string } })
   }
 
   // 动态导入MDX内容
-  const PostContent = await getPostContent(slug);
+  const MDXContent = await getPostContent(slug);
 
-  if (!PostContent) {
+  if (!MDXContent) {
     notFound();
   }
 
@@ -136,58 +133,10 @@ export default async function PostPage({ params }: { params: { slug: string } })
           </Box>
 
           {/* 文章内容 */}
-          <Box sx={{ 
-            p: { xs: 4, md: 6 },
-            '& .prose': {
-              maxWidth: 'none',
-              color: 'text.primary',
-              '& h1, & h2, & h3, & h4, & h5, & h6': {
-                color: 'text.primary',
-                fontWeight: 600,
-              },
-              '& p': {
-                color: 'text.secondary',
-                lineHeight: 1.7,
-                fontSize: '1.1rem',
-                mb: 3,
-              },
-              '& pre': {
-                background: 'rgba(0, 0, 0, 0.4)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: 2,
-              },
-              '& code': {
-                background: 'rgba(0, 0, 0, 0.3)',
-                color: '#e2e8f0',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: 1,
-                padding: '2px 6px',
-                fontSize: '0.9em',
-              },
-              '& blockquote': {
-                borderLeft: '4px solid',
-                borderColor: 'primary.main',
-                background: 'rgba(255, 255, 255, 0.05)',
-                margin: 0,
-                paddingLeft: 3,
-                paddingY: 2,
-                marginY: 3,
-              },
-              '& ul, & ol': {
-                paddingLeft: 3,
-                '& li': {
-                  color: 'text.secondary',
-                  lineHeight: 1.7,
-                  marginBottom: 1,
-                },
-              },
-            }
-          }}>
-            <MDXProvider components={mdxComponents}>
-              <div className="prose">
-                <PostContent />
-              </div>
-            </MDXProvider>
+          <Box sx={{ p: { xs: 4, md: 6 } }}>
+            <PostContent>
+              <MDXContent />
+            </PostContent>
           </Box>
         </Box>
       </Box>

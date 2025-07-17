@@ -1,5 +1,5 @@
 import { getBlogConfig } from './posts';
-import { InteractiveCodeBlock } from '@/components/InteractiveCodeBlock';
+import InteractiveCodeBlock from '@/components/InteractiveCodeBlock';
 
 // MDX文件路径映射
 const MDX_FILES = {
