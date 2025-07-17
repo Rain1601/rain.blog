@@ -167,55 +167,55 @@ export function CodeEditor({
     }
   }), []);
 
-  // 自定义语法高亮提供者
-  const tokenProvider = useMemo(() => ({
-    getInitialState: () => ({ line: 0 }),
-    tokenize: (line: string) => {
-      const tokens = [];
-      let currentIndex = 0;
-      
-      // 简单的Python语法高亮规则
-      const patterns = [
-        { regex: /#.*$/, tokenType: 'comment' },
-        { regex: /\b(def|class|if|elif|else|for|while|try|except|finally|with|as|import|from|return|yield|pass|break|continue|and|or|not|in|is|lambda|global|nonlocal)\b/, tokenType: 'keyword' },
-        { regex: /\b(True|False|None)\b/, tokenType: 'keyword' },
-        { regex: /\b\d+\.?\d*\b/, tokenType: 'number' },
-        { regex: /"[^"]*"|'[^']*'/, tokenType: 'string' },
-        { regex: /[+\-*/=<>!&|%^~]/, tokenType: 'operator' },
-        { regex: /[()[\]{},:;.]/, tokenType: 'delimiter' },
-        { regex: /\b[a-zA-Z_][a-zA-Z0-9_]*\b/, tokenType: 'identifier' },
-      ];
+  // 自定义语法高亮提供者 (currently not used but kept for future implementation)
+  // const tokenProvider = useMemo(() => ({
+  //   getInitialState: () => ({ line: 0 }),
+  //   tokenize: (line: string) => {
+  //     const tokens = [];
+  //     let currentIndex = 0;
+  //     
+  //     // 简单的Python语法高亮规则
+  //     const patterns = [
+  //       { regex: /#.*$/, tokenType: 'comment' },
+  //       { regex: /\b(def|class|if|elif|else|for|while|try|except|finally|with|as|import|from|return|yield|pass|break|continue|and|or|not|in|is|lambda|global|nonlocal)\b/, tokenType: 'keyword' },
+  //       { regex: /\b(True|False|None)\b/, tokenType: 'keyword' },
+  //       { regex: /\b\d+\.?\d*\b/, tokenType: 'number' },
+  //       { regex: /"[^"]*"|'[^']*'/, tokenType: 'string' },
+  //       { regex: /[+\-*/=<>!&|%^~]/, tokenType: 'operator' },
+  //       { regex: /[()[\]{},:;.]/, tokenType: 'delimiter' },
+  //       { regex: /\b[a-zA-Z_][a-zA-Z0-9_]*\b/, tokenType: 'identifier' },
+  //     ];
 
-      while (currentIndex < line.length) {
-        let matched = false;
-        
-        for (const pattern of patterns) {
-          const regex = new RegExp(pattern.regex.source, 'g');
-          regex.lastIndex = currentIndex;
-          const match = regex.exec(line);
-          
-          if (match && match.index === currentIndex) {
-            tokens.push({
-              startIndex: currentIndex,
-              scopes: pattern.tokenType
-            });
-            currentIndex = regex.lastIndex;
-            matched = true;
-            break;
-          }
-        }
-        
-        if (!matched) {
-          currentIndex++;
-        }
-      }
-      
-      return {
-        tokens,
-        endState: { line: 0 }
-      };
-    }
-  }), []);
+  //     while (currentIndex < line.length) {
+  //       let matched = false;
+  //       
+  //       for (const pattern of patterns) {
+  //         const regex = new RegExp(pattern.regex.source, 'g');
+  //         regex.lastIndex = currentIndex;
+  //         const match = regex.exec(line);
+  //         
+  //         if (match && match.index === currentIndex) {
+  //           tokens.push({
+  //             startIndex: currentIndex,
+  //             scopes: pattern.tokenType
+  //           });
+  //           currentIndex = regex.lastIndex;
+  //           matched = true;
+  //           break;
+  //         }
+  //       }
+  //       
+  //       if (!matched) {
+  //         currentIndex++;
+  //       }
+  //     }
+  //     
+  //     return {
+  //       tokens,
+  //       endState: { line: 0 }
+  //     };
+  //   }
+  // }), []);
 
   if (!mounted) {
     return (
@@ -285,7 +285,7 @@ export function CodeEditor({
 
           // 注册Python代码片段
           monaco.languages.registerCompletionItemProvider('python', {
-            provideCompletionItems: (model, position, context, token) => {
+            provideCompletionItems: (model, position) => {
               const word = model.getWordUntilPosition(position);
               const range = {
                 startLineNumber: position.lineNumber,

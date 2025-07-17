@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { notFound } from 'next/navigation';
 import { 
   Container,
@@ -18,28 +19,45 @@ import { mdxComponents } from '@/utils/mdx';
 // 获取文章内容的函数
 async function getPostContent(slug: string) {
   try {
-    const module = await import(`@/content/blog/posts/${slug}.mdx`);
-    return module.default;
+    const mdxModule = await import(`@/content/blog/posts/${slug}.mdx`);
+    return mdxModule.default;
   } catch {
     return null;
   }
 }
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const [slug, setSlug] = React.useState<string>('');
+  const [PostContent, setPostContent] = React.useState<React.ComponentType | null>(null);
+  
+  React.useEffect(() => {
+    params.then(p => setSlug(p.slug));
+  }, [params]);
+  
+  React.useEffect(() => {
+    if (slug) {
+      getPostContent(slug).then(content => {
+        if (!content) {
+          notFound();
+        }
+        setPostContent(() => content);
+      });
+    }
+  }, [slug]);
   
   // 获取文章配置
-  const config = getBlogConfig(slug);
+  const config = slug ? getBlogConfig(slug) : null;
+  
+  if (!slug) {
+    return <div>Loading...</div>;
+  }
   
   if (!config || !config.published) {
     notFound();
   }
 
-  // 动态导入MDX内容
-  const PostContent = await getPostContent(slug);
-
   if (!PostContent) {
-    notFound();
+    return <div>Loading...</div>;
   }
 
   return (
