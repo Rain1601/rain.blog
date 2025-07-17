@@ -19,7 +19,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import { getAllPosts, getAllTags, getPostsByTag, searchAndFilterPosts } from '@/utils/posts';
-import { Post } from '@/types/post';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 

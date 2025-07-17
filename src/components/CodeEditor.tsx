@@ -2,7 +2,7 @@
 
 import { Editor } from '@monaco-editor/react';
 import { useTheme } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 interface CodeEditorProps {
   code: string;
@@ -133,60 +133,20 @@ export function CodeEditor({
     },
   };
 
-  // 自定义主题
-      const customTheme = isDark ? {
+  const editorTheme = useMemo(() => ({
     base: 'vs-dark' as const,
     inherit: true,
     rules: [
-      { token: 'comment', foreground: '6B7280', fontStyle: 'italic' },
-      { token: 'keyword', foreground: '60A5FA', fontStyle: 'bold' },
-      { token: 'string', foreground: '34D399' },
-      { token: 'number', foreground: 'FBBF24' },
-      { token: 'type', foreground: 'A78BFA' },
-      { token: 'function', foreground: 'F472B6' },
-      { token: 'variable', foreground: 'E5E7EB' },
-      { token: 'constant', foreground: 'FCD34D' },
-      { token: 'class', foreground: '8B5CF6' },
-      { token: 'decorator', foreground: 'F59E0B' },
-    ],
-    colors: {
-      'editor.background': '#1E293B',
-      'editor.foreground': '#F8FAFC',
-      'editorLineNumber.foreground': '#64748B',
-      'editorLineNumber.activeForeground': '#CBD5E1',
-      'editor.selectionBackground': '#374151',
-      'editor.lineHighlightBackground': '#334155',
-      'editorCursor.foreground': '#60A5FA',
-      'editor.findMatchBackground': '#0F172A',
-      'editor.findMatchHighlightBackground': '#1E40AF',
-      'editorBracketMatch.background': '#374151',
-      'editorBracketMatch.border': '#60A5FA',
-      'editorIndentGuide.background': '#374151',
-      'editorIndentGuide.activeBackground': '#475569',
-      'editorSuggestWidget.background': '#334155',
-      'editorSuggestWidget.border': '#475569',
-      'editorSuggestWidget.foreground': '#F8FAFC',
-      'editorSuggestWidget.selectedBackground': '#475569',
-      'editorHoverWidget.background': '#334155',
-      'editorHoverWidget.border': '#475569',
-      'scrollbarSlider.background': '#475569',
-      'scrollbarSlider.hoverBackground': '#64748B',
-      'scrollbarSlider.activeBackground': '#64748B',
-    }
-  } : {
-    base: 'vs' as const,
-    inherit: true,
-    rules: [
-      { token: 'comment', foreground: '9CA3AF', fontStyle: 'italic' },
-      { token: 'keyword', foreground: '60A5FA', fontStyle: 'bold' },
-      { token: 'string', foreground: '34D399' },
-      { token: 'number', foreground: 'FBBF24' },
-      { token: 'type', foreground: 'A78BFA' },
-      { token: 'function', foreground: 'F472B6' },
-      { token: 'variable', foreground: 'E5E7EB' },
-      { token: 'constant', foreground: 'FCD34D' },
-      { token: 'class', foreground: '8B5CF6' },
-      { token: 'decorator', foreground: 'F59E0B' },
+      { token: 'comment', foreground: '6A9955' },
+      { token: 'keyword', foreground: 'C586C0' },
+      { token: 'string', foreground: 'CE9178' },
+      { token: 'number', foreground: 'B5CEA8' },
+      { token: 'operator', foreground: 'D4D4D4' },
+      { token: 'delimiter', foreground: 'D4D4D4' },
+      { token: 'type', foreground: '4EC9B0' },
+      { token: 'function', foreground: 'DCDCAA' },
+      { token: 'variable', foreground: '9CDCFE' },
+      { token: 'identifier', foreground: '9CDCFE' },
     ],
     colors: {
       'editor.background': '#111827',
@@ -195,24 +155,67 @@ export function CodeEditor({
       'editorLineNumber.activeForeground': '#9CA3AF',
       'editor.selectionBackground': '#374151',
       'editor.lineHighlightBackground': '#1F2937',
-      'editorCursor.foreground': '#60A5FA',
-      'editor.findMatchBackground': '#0F172A',
-      'editor.findMatchHighlightBackground': '#1E40AF',
-      'editorBracketMatch.background': '#374151',
-      'editorBracketMatch.border': '#60A5FA',
+      'editorCursor.foreground': '#F3F4F6',
+      'editorWhitespace.foreground': '#4B5563',
       'editorIndentGuide.background': '#374151',
-      'editorIndentGuide.activeBackground': '#475569',
-      'editorSuggestWidget.background': '#1F2937',
-      'editorSuggestWidget.border': '#374151',
-      'editorSuggestWidget.foreground': '#E5E7EB',
-      'editorSuggestWidget.selectedBackground': '#374151',
-      'editorHoverWidget.background': '#1F2937',
-      'editorHoverWidget.border': '#374151',
-      'scrollbarSlider.background': '#475569',
-      'scrollbarSlider.hoverBackground': '#64748B',
-      'scrollbarSlider.activeBackground': '#64748B',
+      'editorIndentGuide.activeBackground': '#6B7280',
+      'editor.selectionHighlightBackground': '#4B5563',
+      'editor.wordHighlightBackground': '#4B5563',
+      'editor.wordHighlightStrongBackground': '#6B7280',
+      'editorBracketMatch.background': '#6B7280',
+      'editorBracketMatch.border': '#9CA3AF',
     }
-  };
+  }), []);
+
+  // 自定义语法高亮提供者
+  const tokenProvider = useMemo(() => ({
+    getInitialState: () => ({ line: 0 }),
+    tokenize: (line: string) => {
+      const tokens = [];
+      let currentIndex = 0;
+      
+      // 简单的Python语法高亮规则
+      const patterns = [
+        { regex: /#.*$/, tokenType: 'comment' },
+        { regex: /\b(def|class|if|elif|else|for|while|try|except|finally|with|as|import|from|return|yield|pass|break|continue|and|or|not|in|is|lambda|global|nonlocal)\b/, tokenType: 'keyword' },
+        { regex: /\b(True|False|None)\b/, tokenType: 'keyword' },
+        { regex: /\b\d+\.?\d*\b/, tokenType: 'number' },
+        { regex: /"[^"]*"|'[^']*'/, tokenType: 'string' },
+        { regex: /[+\-*/=<>!&|%^~]/, tokenType: 'operator' },
+        { regex: /[()[\]{},:;.]/, tokenType: 'delimiter' },
+        { regex: /\b[a-zA-Z_][a-zA-Z0-9_]*\b/, tokenType: 'identifier' },
+      ];
+
+      while (currentIndex < line.length) {
+        let matched = false;
+        
+        for (const pattern of patterns) {
+          const regex = new RegExp(pattern.regex.source, 'g');
+          regex.lastIndex = currentIndex;
+          const match = regex.exec(line);
+          
+          if (match && match.index === currentIndex) {
+            tokens.push({
+              startIndex: currentIndex,
+              scopes: pattern.tokenType
+            });
+            currentIndex = regex.lastIndex;
+            matched = true;
+            break;
+          }
+        }
+        
+        if (!matched) {
+          currentIndex++;
+        }
+      }
+      
+      return {
+        tokens,
+        endState: { line: 0 }
+      };
+    }
+  }), []);
 
   if (!mounted) {
     return (
@@ -238,7 +241,7 @@ export function CodeEditor({
         options={editorOptions}
         beforeMount={(monaco) => {
           // 定义自定义主题
-                      monaco.editor.defineTheme(`custom-${isDark ? 'dark' : 'light'}`, customTheme);
+                      monaco.editor.defineTheme(`custom-${isDark ? 'dark' : 'light'}`, editorTheme);
           
           // 配置Python语言特性
           monaco.languages.setLanguageConfiguration('python', {

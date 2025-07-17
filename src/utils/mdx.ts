@@ -1,4 +1,5 @@
 import { getBlogConfig } from './posts';
+import { InteractiveCodeBlock } from '@/components/InteractiveCodeBlock';
 
 // MDX文件路径映射
 const MDX_FILES = {
@@ -6,6 +7,12 @@ const MDX_FILES = {
   'openai-integration': () => import('@/content/blog/posts/openai-integration.mdx'),
   'data-analysis': () => import('@/content/blog/posts/data-analysis.mdx'),
 } as const;
+
+// MDX组件映射
+export const mdxComponents = {
+  InteractiveCodeBlock,
+  // 可以添加其他自定义组件
+};
 
 export type MDXSlug = keyof typeof MDX_FILES;
 

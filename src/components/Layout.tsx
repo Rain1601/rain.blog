@@ -1,170 +1,132 @@
 'use client';
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { 
-  Box, 
-  Container, 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Button, 
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Container,
+  Button,
   IconButton,
   Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
+  Box,
+  useMediaQuery,
   useTheme,
-  useMediaQuery
 } from '@mui/material';
-import { Menu as MenuIcon, Create } from '@mui/icons-material';
+import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 interface LayoutProps {
   children: React.ReactNode;
-  title?: string;
-  description?: string;
 }
 
-export function Layout({ children, title, description }: LayoutProps) {
-  const [mounted, setMounted] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+export default function Layout({ children }: LayoutProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  useEffect(() => {
-    setMounted(true);
-    
-    // 添加normal-scroll类来重置移动端的position:fixed
-    if (typeof window !== 'undefined') {
-      document.body.classList.add('normal-scroll');
-    }
-    
-    return () => {
-      if (typeof window !== 'undefined') {
-        document.body.classList.remove('normal-scroll');
-      }
-    };
-  }, []);
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
-  const navigation = [
+  const navigationItems = [
     { name: '首页', href: '/' },
     { name: '博客', href: '/blog' },
   ];
 
+  const drawer = (
+    <Box sx={{ width: 250 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+        <IconButton onClick={handleDrawerToggle}>
+          <CloseIcon />
+        </IconButton>
+      </Box>
+      <List>
+        {navigationItems.map((item) => (
+          <ListItem key={item.name} disablePadding>
+            <ListItemButton 
+              component={Link} 
+              href={item.href}
+              onClick={handleDrawerToggle}
+            >
+              <ListItemText primary={item.name} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+
   return (
-    <Box sx={{ 
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)',
-      color: '#e2e8f0',
-      '@media (prefers-color-scheme: light)': {
-        background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)',
-        color: '#1e293b'
-      }
-    }}>
-      {/* 导航栏 */}
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <AppBar 
-        position="sticky" 
+        position="static" 
         elevation={0}
         sx={{ 
-          background: 'rgba(15, 23, 42, 0.95)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid #334155',
-          '@media (prefers-color-scheme: light)': {
-            background: 'rgba(248, 250, 252, 0.95)',
-            borderBottom: '1px solid #e2e8f0'
-          }
+          backgroundColor: 'background.paper',
+          borderBottom: '1px solid',
+          borderColor: 'divider'
         }}
       >
         <Container maxWidth="lg">
           <Toolbar sx={{ px: { xs: 0 } }}>
             {/* Logo */}
-            <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 2,
-                transition: 'transform 0.3s ease',
+            <Typography 
+              variant="h6" 
+              component={Link}
+              href="/"
+              sx={{
+                flexGrow: 1,
+                fontWeight: 700,
+                color: 'text.primary',
+                textDecoration: 'none',
+                fontSize: { xs: '1.25rem', md: '1.5rem' },
                 '&:hover': {
-                  transform: 'translateX(2px)'
-                }
-              }}>
-                <Box sx={{
-                  width: 40,
-                  height: 40,
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
-                  borderRadius: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    boxShadow: '0 6px 20px rgba(59, 130, 246, 0.4)',
-                    transform: 'scale(1.05)'
-                  }
-                }}>
-                  <Create sx={{ color: 'white', fontSize: 24 }} />
-                </Box>
-                <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
-                      fontWeight: 700,
-                      color: '#e2e8f0',
-                      transition: 'color 0.3s ease',
-                      '@media (prefers-color-scheme: light)': {
-                        color: '#1e293b'
-                      },
-                      '&:hover': {
-                        color: '#3b82f6'
-                      }
-                    }}
-                  >
-                    Rain's Blog
-                  </Typography>
-                </Box>
-              </Box>
-            </Link>
+                  color: 'primary.main',
+                },
+                transition: 'color 0.2s ease'
+              }}
+            >
+              Rain&apos;s Blog
+            </Typography>
 
-            <Box sx={{ flexGrow: 1 }} />
-
-            {/* 桌面导航链接 */}
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5 }}>
-              {navigation.map((item) => (
-                <Link key={item.name} href={item.href} style={{ textDecoration: 'none' }}>
-                  <Button
-                    sx={{
-                      color: '#cbd5e1',
-                      fontWeight: 500,
-                      px: 2,
-                      py: 1,
-                      borderRadius: 1,
-                      transition: 'all 0.2s ease',
-                      '@media (prefers-color-scheme: light)': {
-                        color: '#475569'
-                      },
-                      '&:hover': {
-                        color: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)'
-                      }
-                    }}
-                  >
-                    {item.name}
-                  </Button>
-                </Link>
+            {/* Desktop Navigation */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
+              {navigationItems.map((item) => (
+                <Button
+                  key={item.name}
+                  component={Link}
+                  href={item.href}
+                  sx={{
+                    color: 'text.primary',
+                    fontWeight: 500,
+                    px: 2,
+                    py: 1,
+                    borderRadius: 2,
+                    '&:hover': {
+                      backgroundColor: 'action.hover',
+                      color: 'primary.main',
+                    },
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {item.name}
+                </Button>
               ))}
             </Box>
 
-            {/* 移动端菜单按钮 */}
+            {/* Mobile menu button */}
             <IconButton
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              color="inherit"
+              aria-label="打开导航菜单"
+              edge="start"
+              onClick={handleDrawerToggle}
               sx={{ 
-                display: { xs: 'block', md: 'none' },
-                color: '#94a3b8',
-                '@media (prefers-color-scheme: light)': {
-                  color: '#64748b'
-                }
+                display: { md: 'none' },
+                color: 'text.primary'
               }}
             >
               <MenuIcon />
@@ -173,58 +135,29 @@ export function Layout({ children, title, description }: LayoutProps) {
         </Container>
       </AppBar>
 
-      {/* 移动端侧边栏 */}
+      {/* Mobile drawer */}
       <Drawer
+        variant="temporary"
         anchor="right"
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true,
+        }}
         sx={{
           display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': {
+          '& .MuiDrawer-paper': { 
+            boxSizing: 'border-box', 
             width: 250,
-            background: 'rgba(15, 23, 42, 0.98)',
-            backdropFilter: 'blur(12px)',
-            border: 'none',
-            '@media (prefers-color-scheme: light)': {
-              background: 'rgba(248, 250, 252, 0.98)'
-            }
-          }
+            backgroundColor: 'background.paper'
+          },
         }}
       >
-        <List sx={{ pt: 3 }}>
-          {navigation.map((item) => (
-            <ListItem key={item.name} disablePadding>
-              <Link href={item.href} style={{ textDecoration: 'none', width: '100%' }}>
-                <ListItemButton
-                  onClick={() => setMobileMenuOpen(false)}
-                  sx={{
-                    py: 1.5,
-                    '&:hover': {
-                      backgroundColor: 'rgba(59, 130, 246, 0.1)'
-                    }
-                  }}
-                >
-                  <ListItemText 
-                    primary={item.name}
-                    sx={{
-                      '& .MuiTypography-root': {
-                        color: '#94a3b8',
-                        fontWeight: 500,
-                        '@media (prefers-color-scheme: light)': {
-                          color: '#64748b'
-                        }
-                      }
-                    }}
-                  />
-                </ListItemButton>
-              </Link>
-            </ListItem>
-          ))}
-        </List>
+        {drawer}
       </Drawer>
 
-      {/* 主要内容 */}
-      <Box component="main">
+      {/* Main content */}
+      <Box component="main" sx={{ flexGrow: 1, backgroundColor: 'background.default' }}>
         {children}
       </Box>
     </Box>
