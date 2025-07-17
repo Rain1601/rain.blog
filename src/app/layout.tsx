@@ -2,7 +2,7 @@
 
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Layout } from '@/components/Layout';
+import Layout from '@/components/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';

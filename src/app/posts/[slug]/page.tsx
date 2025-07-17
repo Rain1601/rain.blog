@@ -1,5 +1,3 @@
-'use client';
-
 import { notFound } from 'next/navigation';
 import { 
   Container,
@@ -11,22 +9,21 @@ import {
 import { CalendarToday, Schedule } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
-import { MDXProvider } from '@mdx-js/react';
 import { getBlogConfig } from '@/utils/posts';
-import { mdxComponents } from '@/utils/mdx';
+import { MDXWrapper } from '@/components/MDXWrapper';
 
 // 获取文章内容的函数
 async function getPostContent(slug: string) {
   try {
-    const module = await import(`@/content/blog/posts/${slug}.mdx`);
-    return module.default;
+    const mdxModule = await import(`@/content/blog/posts/${slug}.mdx`);
+    return mdxModule.default;
   } catch {
     return null;
   }
 }
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   
   // 获取文章配置
   const config = getBlogConfig(slug);
@@ -183,11 +180,11 @@ export default async function PostPage({ params }: { params: { slug: string } })
               },
             }
           }}>
-            <MDXProvider components={mdxComponents}>
+            <MDXWrapper>
               <div className="prose">
                 <PostContent />
               </div>
-            </MDXProvider>
+            </MDXWrapper>
           </Box>
         </Box>
       </Box>
