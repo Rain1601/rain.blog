@@ -1,5 +1,6 @@
 import { getBlogConfig } from './posts';
-import { InteractiveCodeBlock } from '@/components/InteractiveCodeBlock';
+// Temporarily disable InteractiveCodeBlock for build
+// import InteractiveCodeBlock from '@/components/InteractiveCodeBlock';
 
 // MDX文件路径映射
 const MDX_FILES = {
@@ -8,9 +9,25 @@ const MDX_FILES = {
   'data-analysis': () => import('@/content/blog/posts/data-analysis.mdx'),
 } as const;
 
+// Placeholder component for InteractiveCodeBlock
+const InteractiveCodeBlockPlaceholder = ({ code }: { code: string }) => (
+  <div style={{ 
+    padding: '16px', 
+    backgroundColor: '#f5f5f5', 
+    border: '1px solid #ddd', 
+    borderRadius: '4px',
+    fontFamily: 'monospace',
+    whiteSpace: 'pre-wrap'
+  }}>
+    <strong>Interactive Code Block:</strong>
+    <br />
+    {code}
+  </div>
+);
+
 // MDX组件映射
 export const mdxComponents = {
-  InteractiveCodeBlock,
+  InteractiveCodeBlock: InteractiveCodeBlockPlaceholder,
   // 可以添加其他自定义组件
 };
 

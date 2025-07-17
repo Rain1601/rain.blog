@@ -13,12 +13,12 @@ import {
   ListItemButton,
   ListItemText,
   Box,
-  useMediaQuery,
-  useTheme,
+  // useMediaQuery,
+  // useTheme,
 } from '@mui/material';
 import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -26,7 +26,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const theme = useTheme();
+  // const theme = useTheme();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -162,4 +162,6 @@ export default function Layout({ children }: LayoutProps) {
       </Box>
     </Box>
   );
-} 
+}
+
+export { Layout };
