@@ -24,7 +24,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
 
@@ -162,4 +162,7 @@ export default function Layout({ children }: LayoutProps) {
       </Box>
     </Box>
   );
-} 
+}
+
+export { Layout };
+export default Layout; 
