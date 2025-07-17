@@ -269,4 +269,6 @@ const InteractiveCodeBlock: React.FC<InteractiveCodeBlockProps> = ({
   );
 };
 
+// Add named export alongside default export
+export { InteractiveCodeBlock };
 export default InteractiveCodeBlock; 
