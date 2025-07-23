@@ -4,32 +4,30 @@ import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-  Grid,
   Box,
   Chip,
   TextField,
   InputAdornment,
   Alert,
   Skeleton,
-  Divider,
   IconButton,
-  Tooltip
+  Tooltip,
+  Stack,
+  Button,
+  alpha,
+  useTheme
 } from '@mui/material';
 import {
   Search,
-  Article,
-  Schedule,
   GitHub,
   Refresh,
   TrendingUp,
-  LibraryBooks
+  LibraryBooks,
+  Timeline,
+  FilterList
 } from '@mui/icons-material';
 import { getAllPosts, getStats, BlogPost } from '@/utils/github';
-import Link from 'next/link';
+import BlogTimeline from '@/components/BlogTimeline';
 
 export default function GitHubBlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -37,11 +35,13 @@ export default function GitHubBlogPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedYear, setSelectedYear] = useState<string>('all');
   const [stats, setStats] = useState<{
     totalPosts: number;
     years: string[];
     latestPost?: BlogPost;
   }>({ totalPosts: 0, years: [] });
+  const theme = useTheme();
 
   // 加载数据
   const loadData = async () => {
@@ -70,67 +70,52 @@ export default function GitHubBlogPage() {
     loadData();
   }, []);
 
-  // 搜索功能
+  // 搜索和筛选功能
   useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredPosts(posts);
-    } else {
-      const filtered = posts.filter(post =>
+    let filtered = posts;
+    
+    // 年份筛选
+    if (selectedYear !== 'all') {
+      filtered = filtered.filter(post => post.year === selectedYear);
+    }
+    
+    // 搜索过滤
+    if (searchQuery.trim() !== '') {
+      filtered = filtered.filter(post =>
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.content.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setFilteredPosts(filtered);
     }
-  }, [searchQuery, posts]);
+    
+    setFilteredPosts(filtered);
+  }, [searchQuery, selectedYear, posts]);
 
   // 刷新数据
   const handleRefresh = () => {
     loadData();
   };
 
-  // 格式化日期
-  const formatDate = (dateString: string) => {
-    try {
-      const [year, month] = dateString.split('-');
-      const monthNames = [
-        '1月', '2月', '3月', '4月', '5月', '6月',
-        '7月', '8月', '9月', '10月', '11月', '12月'
-      ];
-      return `${year}年${monthNames[parseInt(month) - 1]}`;
-    } catch {
-      return dateString;
-    }
-  };
-
-  // 截取内容预览
-  const getPreview = (content: string, maxLength: number = 200) => {
-    const plainText = content.replace(/[#*`_\[\]()]/g, '').trim();
-    return plainText.length > maxLength 
-      ? plainText.substring(0, maxLength) + '...' 
-      : plainText;
-  };
 
   if (loading) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box sx={{ mb: 4 }}>
-          <Skeleton variant="text" width="60%" height={60} />
-          <Skeleton variant="text" width="40%" height={30} />
+        <Box sx={{ mb: 4, textAlign: 'center' }}>
+          <Skeleton variant="text" width="60%" height={80} sx={{ mx: 'auto' }} />
+          <Skeleton variant="text" width="40%" height={40} sx={{ mx: 'auto' }} />
         </Box>
         
-        <Grid container spacing={3}>
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Grid size={{ xs: 12, md: 6 }} key={i}>
-              <Card>
-                <CardContent>
-                  <Skeleton variant="text" width="80%" height={40} />
-                  <Skeleton variant="text" width="60%" height={20} />
-                  <Skeleton variant="rectangular" width="100%" height={100} sx={{ mt: 2 }} />
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <Box sx={{ mb: 4 }}>
+          <Skeleton variant="rectangular" width="100%" height={56} sx={{ borderRadius: 3 }} />
+        </Box>
+        
+        {[1, 2, 3].map((i) => (
+          <Box key={i} sx={{ display: 'flex', gap: 3, mb: 4 }}>
+            <Skeleton variant="circular" width={16} height={16} sx={{ mt: 1 }} />
+            <Box sx={{ flex: 1 }}>
+              <Skeleton variant="rectangular" width="100%" height={200} sx={{ borderRadius: 3 }} />
+            </Box>
+          </Box>
+        ))}
       </Container>
     );
   }
@@ -138,191 +123,182 @@ export default function GitHubBlogPage() {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* 页面头部 */}
-      <Box sx={{ mb: 4, textAlign: 'center' }}>
+      <Box sx={{ mb: 6, textAlign: 'center' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, mb: 2 }}>
-          <GitHub fontSize="large" color="primary" />
-          <Typography variant="h3" component="h1" fontWeight="bold">
-            GitHub 博客仓库
+          <Timeline fontSize="large" color="primary" />
+          <Typography 
+            variant="h2" 
+            component="h1" 
+            sx={{ 
+              fontWeight: 800,
+              background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-0.5px'
+            }}
+          >
+            博客时间线
           </Typography>
           <Tooltip title="刷新数据">
-            <IconButton onClick={handleRefresh} color="primary">
+            <IconButton onClick={handleRefresh} color="primary" size="large">
               <Refresh />
             </IconButton>
           </Tooltip>
         </Box>
-        <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
-          从 GitHub 仓库动态加载的博客文章
+        <Typography variant="h6" color="text.secondary" sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}>
+          记录技术成长的每一个足迹，从 GitHub 仓库实时同步
         </Typography>
 
         {/* 统计信息 */}
-        <Grid container justifyContent="center" spacing={3} sx={{ mb: 4 }}>
-          <Grid>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <LibraryBooks color="primary" />
-              <Typography variant="h6">
-                {stats.totalPosts} 篇文章
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <TrendingUp color="primary" />
-              <Typography variant="h6">
-                {stats.years.length} 个年份
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
-
-        {/* 年份标签 */}
-        {stats.years.length > 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap', mb: 3 }}>
-            {stats.years.map((year) => (
-              <Chip
-                key={year}
-                label={`${year}年`}
-                variant="outlined"
-                color="primary"
-                size="small"
-              />
-            ))}
+        <Stack direction="row" justifyContent="center" spacing={4} sx={{ mb: 4 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            px: 3,
+            py: 1.5,
+            bgcolor: alpha(theme.palette.primary.main, 0.1),
+            borderRadius: 3,
+            border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`
+          }}>
+            <LibraryBooks color="primary" />
+            <Typography variant="h6" fontWeight={700}>
+              {stats.totalPosts}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              篇文章
+            </Typography>
           </Box>
-        )}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            px: 3,
+            py: 1.5,
+            bgcolor: alpha(theme.palette.secondary.main, 0.1),
+            borderRadius: 3,
+            border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`
+          }}>
+            <TrendingUp color="secondary" />
+            <Typography variant="h6" fontWeight={700}>
+              {stats.years.length}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              个年份
+            </Typography>
+          </Box>
+        </Stack>
       </Box>
 
-      {/* 搜索栏 */}
-      <Box sx={{ mb: 4 }}>
+      {/* 搜索和筛选区域 */}
+      <Box sx={{ mb: 6 }}>
+        {/* 搜索栏 */}
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="搜索博客文章..."
+          placeholder="搜索博客文章标题或内容..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search color="action" />
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search color="action" />
+                </InputAdornment>
+              ),
+            }
           }}
           sx={{
             maxWidth: 600,
             mx: 'auto',
             display: 'block',
+            mb: 3,
             '& .MuiOutlinedInput-root': {
-              borderRadius: 3,
+              borderRadius: 4,
+              backgroundColor: alpha(theme.palette.background.paper, 0.8),
+              '&:hover': {
+                backgroundColor: theme.palette.background.paper,
+              }
             }
           }}
         />
+        
+        {/* 年份筛选 */}
+        {stats.years.length > 0 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <FilterList color="action" fontSize="small" />
+              <Chip
+                label="全部"
+                variant={selectedYear === 'all' ? 'filled' : 'outlined'}
+                color={selectedYear === 'all' ? 'primary' : 'default'}
+                onClick={() => setSelectedYear('all')}
+                size="medium"
+                sx={{ cursor: 'pointer' }}
+              />
+              {stats.years.map((year) => (
+                <Chip
+                  key={year}
+                  label={`${year}年`}
+                  variant={selectedYear === year ? 'filled' : 'outlined'}
+                  color={selectedYear === year ? 'primary' : 'default'}
+                  onClick={() => setSelectedYear(year)}
+                  size="medium"
+                  sx={{ cursor: 'pointer' }}
+                />
+              ))}
+            </Stack>
+          </Box>
+        )}
+        
+        {/* 结果统计 */}
+        {filteredPosts.length !== posts.length && (
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+            显示 {filteredPosts.length} / {posts.length} 篇文章
+          </Typography>
+        )}
       </Box>
 
       {/* 错误提示 */}
       {error && (
-        <Alert severity="error" sx={{ mb: 4 }}>
+        <Alert severity="error" sx={{ mb: 4, borderRadius: 3 }}>
           {error}
         </Alert>
       )}
 
-      {/* 文章列表 */}
-      {filteredPosts.length === 0 && !loading ? (
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Typography variant="h6" color="text.secondary">
-            {searchQuery ? '没有找到匹配的文章' : '暂无博客文章'}
-          </Typography>
-          {!searchQuery && (
-            <Button
-              startIcon={<GitHub />}
-              href="https://github.com/Rain1601/rain.blog.repo"
-              target="_blank"
-              sx={{ mt: 2 }}
-            >
-              查看 GitHub 仓库
-            </Button>
-          )}
-        </Box>
-      ) : (
-        <Grid container spacing={3}>
-          {filteredPosts.map((post) => (
-            <Grid size={{ xs: 12, md: 6 }} key={post.id}>
-              <Card
-                sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: 6,
-                  }
-                }}
-              >
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 2 }}>
-                    <Article color="primary" />
-                    <Typography variant="h6" component="h2" fontWeight="bold" sx={{ flexGrow: 1 }}>
-                      {post.title}
-                    </Typography>
-                  </Box>
-
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                    <Schedule fontSize="small" color="action" />
-                    <Typography variant="body2" color="text.secondary">
-                      {formatDate(post.date)}
-                    </Typography>
-                    <Chip
-                      label={`${post.year}年`}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Box>
-
-                  <Divider sx={{ my: 2 }} />
-
-                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    {getPreview(post.content)}
-                  </Typography>
-                </CardContent>
-
-                <CardActions sx={{ p: 2, pt: 0 }}>
-                  <Button
-                    component={Link}
-                    href={`/github-blog/${post.id}`}
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    startIcon={<Article />}
-                  >
-                    阅读全文
-                  </Button>
-                  <Button
-                    href={post.url}
-                    target="_blank"
-                    size="small"
-                    startIcon={<GitHub />}
-                  >
-                    GitHub
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      )}
+      {/* 时间线内容 */}
+      <BlogTimeline posts={filteredPosts} />
 
       {/* 底部信息 */}
-      <Box sx={{ mt: 6, textAlign: 'center', py: 3, borderTop: '1px solid', borderColor: 'divider' }}>
-        <Typography variant="body2" color="text.secondary">
-          博客内容来源于{' '}
+      <Box sx={{ 
+        mt: 8, 
+        textAlign: 'center', 
+        py: 4, 
+        borderTop: `1px solid ${alpha(theme.palette.divider, 0.3)}`,
+        bgcolor: alpha(theme.palette.background.paper, 0.5),
+        borderRadius: 3,
+        mx: -2
+      }}>
+        <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
+          <Typography variant="body2" color="text.secondary">
+            博客内容实时同步自
+          </Typography>
           <Button
             href="https://github.com/Rain1601/rain.blog.repo"
             target="_blank"
+            variant="outlined"
             size="small"
             startIcon={<GitHub />}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600
+            }}
           >
             GitHub 仓库
           </Button>
-        </Typography>
+        </Stack>
       </Box>
     </Container>
   );
