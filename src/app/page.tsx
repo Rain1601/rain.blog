@@ -11,7 +11,7 @@ import {
   Stack,
   Button
 } from '@mui/material';
-import { ArrowForward, Schedule, CalendarToday } from '@mui/icons-material';
+import { ArrowForward, Schedule, CalendarToday, GitHub } from '@mui/icons-material';
 import Link from 'next/link';
 
 import { getLatestPosts } from '@/utils/posts';
@@ -224,31 +224,66 @@ export default function HomePage() {
               </Box>
             </Box>
 
-            {/* View All Posts Button */}
+            {/* Navigation Buttons */}
             <Box sx={{ textAlign: 'center', pb: 8 }}>
-              <Link href="/blog" style={{ textDecoration: 'none' }}>
-                <Button 
-                  variant="contained" 
-                  size="large"
-                  endIcon={<ArrowForward />}
-                  sx={{ 
-                    py: 2,
-                    px: 4,
-                    fontSize: '1.1rem',
-                    borderRadius: 3,
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    boxShadow: '0 4px 14px 0 rgb(37 99 235 / 25%)',
-                    '&:hover': {
-                      boxShadow: '0 8px 25px 0 rgb(37 99 235 / 35%)',
-                      transform: 'translateY(-2px)',
-                    },
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  查看所有文章
-                </Button>
-            </Link>
+              <Stack 
+                direction={{ xs: 'column', sm: 'row' }} 
+                spacing={3} 
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Link href="/blog" style={{ textDecoration: 'none' }}>
+                  <Button 
+                    variant="contained" 
+                    size="large"
+                    endIcon={<ArrowForward />}
+                    sx={{ 
+                      py: 2,
+                      px: 4,
+                      fontSize: '1.1rem',
+                      borderRadius: 3,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      boxShadow: '0 4px 14px 0 rgb(37 99 235 / 25%)',
+                      '&:hover': {
+                        boxShadow: '0 8px 25px 0 rgb(37 99 235 / 35%)',
+                        transform: 'translateY(-2px)',
+                      },
+                      transition: 'all 0.3s ease',
+                      minWidth: 200
+                    }}
+                  >
+                    查看所有文章
+                  </Button>
+                </Link>
+                
+                <Link href="/github-blog" style={{ textDecoration: 'none' }}>
+                  <Button 
+                    variant="outlined" 
+                    size="large"
+                    startIcon={<GitHub />}
+                    endIcon={<ArrowForward />}
+                    sx={{ 
+                      py: 2,
+                      px: 4,
+                      fontSize: '1.1rem',
+                      borderRadius: 3,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      borderWidth: 2,
+                      '&:hover': {
+                        borderWidth: 2,
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 14px 0 rgb(37 99 235 / 15%)',
+                      },
+                      transition: 'all 0.3s ease',
+                      minWidth: 200
+                    }}
+                  >
+                    GitHub 博客
+                  </Button>
+                </Link>
+              </Stack>
             </Box>
           </Container>
         </Box>
