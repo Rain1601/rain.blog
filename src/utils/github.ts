@@ -46,18 +46,56 @@ class GitHubAPI {
       const response = await fetch(url, {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'PyBlog-App'
+          'User-Agent': 'Rain-Blog-App',
+          ...(process.env.GITHUB_TOKEN && {
+            'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`
+          })
         },
         next: { revalidate: 300 } // 缓存5分钟
       });
 
+      // 详细的错误处理
       if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        let errorMessage = `GitHub API错误: ${response.status} ${response.statusText}`;
+        
+        // 特殊处理常见错误
+        if (response.status === 403) {
+          const rateLimitRemaining = response.headers.get('x-ratelimit-remaining');
+          const rateLimitReset = response.headers.get('x-ratelimit-reset');
+          
+          if (rateLimitRemaining === '0') {
+            const resetTime = rateLimitReset ? new Date(parseInt(rateLimitReset) * 1000) : null;
+            errorMessage = `GitHub API速率限制已用完${resetTime ? `，将在 ${resetTime.toLocaleTimeString()} 重置` : ''}。建议添加 GITHUB_TOKEN 环境变量以获得更高的速率限制。`;
+          } else {
+            errorMessage = 'GitHub API访问被拒绝，请检查仓库权限或添加访问令牌。';
+          }
+        } else if (response.status === 404) {
+          errorMessage = 'GitHub仓库或路径不存在，请检查仓库配置。';
+        }
+        
+        console.error('GitHub API详细错误:', {
+          url,
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: errorText
+        });
+        
+        throw new Error(errorMessage);
       }
 
       return await response.json();
     } catch (error) {
-      console.error('GitHub API请求失败:', error);
+      if (error instanceof Error) {
+        console.error('GitHub API请求失败:', {
+          message: error.message,
+          url,
+          stack: error.stack
+        });
+      } else {
+        console.error('GitHub API请求失败:', error);
+      }
       throw error;
     }
   }
@@ -135,6 +173,83 @@ class GitHubAPI {
   }
 
   /**
+   * 创建演示数据（当GitHub API不可用时）
+   */
+  private createDemoData(): BlogPost[] {
+    return [
+      {
+        id: 'demo-welcome',
+        title: '欢迎来到 Rain\'s Blog',
+        content: `# 欢迎来到我的博客
+
+这是一个基于GitHub仓库动态加载的博客系统。
+
+## 特性
+
+- 🚀 实时从GitHub仓库同步内容
+- 📱 响应式设计，支持各种设备
+- 🔍 强大的搜索和筛选功能
+- 📅 时间线样式展示
+- ⚡ 现代化的用户界面
+
+## 当前状态
+
+由于GitHub API速率限制，当前显示的是演示数据。
+
+**解决方案：**
+1. 等待速率限制重置（每小时重置）
+2. 添加GitHub Personal Access Token以获得更高的速率限制
+3. 查看项目文档了解如何配置
+
+感谢您的耐心等待！`,
+        path: 'demo/welcome.md',
+        date: '2025-01',
+        year: '2025',
+        month: '01',
+        size: 500,
+        sha: 'demo-sha',
+        url: 'https://github.com/Rain1601/rain.blog.repo'
+      },
+      {
+        id: 'demo-github-api',
+        title: 'GitHub API 速率限制说明',
+        content: `# GitHub API 速率限制
+
+GitHub API对未认证的请求有严格的速率限制。
+
+## 限制详情
+
+- **未认证请求**: 每小时60次
+- **认证请求**: 每小时5000次
+
+## 如何解决
+
+1. **等待重置**: 速率限制每小时重置一次
+2. **添加Token**: 在项目根目录创建 \`.env\` 文件：
+
+\`\`\`
+GITHUB_TOKEN=your_token_here
+\`\`\`
+
+3. **获取Token**: 访问 GitHub Settings > Developer settings > Personal access tokens
+
+## 注意事项
+
+- Token只需要 \`public_repo\` 权限
+- 不要将Token提交到代码仓库
+- Token可以显著提高API访问限制`,
+        path: 'demo/github-api.md',
+        date: '2025-01',
+        year: '2025',
+        month: '01',
+        size: 400,
+        sha: 'demo-sha-2',
+        url: 'https://github.com/Rain1601/rain.blog.repo'
+      }
+    ];
+  }
+
+  /**
    * 获取所有博客文章
    */
   async getAllPosts(): Promise<BlogPost[]> {
@@ -177,7 +292,13 @@ class GitHubAPI {
 
       return posts;
     } catch (error) {
-      console.error('获取博客文章失败:', error);
+      console.error('获取博客文章失败，使用演示数据:', error);
+      
+      // 如果是速率限制错误，返回演示数据而不是空数组
+      if (error instanceof Error && error.message.includes('速率限制')) {
+        return this.createDemoData();
+      }
+      
       return [];
     }
   }
@@ -245,9 +366,12 @@ class GitHubAPI {
       };
     } catch (error) {
       console.error('获取统计信息失败:', error);
+      // 如果获取失败，提供基本统计信息
+      const demoPosts = this.createDemoData();
       return {
-        totalPosts: 0,
-        years: []
+        totalPosts: demoPosts.length,
+        years: ['2025'],
+        latestPost: demoPosts[0]
       };
     }
   }
