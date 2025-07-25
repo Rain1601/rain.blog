@@ -1,31 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Typography,
-  Box,
-  Button,
-  Paper,
-  Chip,
-  Divider,
-  Alert,
-  CircularProgress,
-  IconButton,
-  Tooltip
-} from '@mui/material';
-import {
-  ArrowBack,
-  GitHub,
-  Schedule,
-  Article,
-  ContentCopy,
-  Check
-} from '@mui/icons-material';
-import { getPostById, BlogPost } from '@/utils/github';
-import MarkdownRenderer from '@/components/MarkdownRenderer';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { getPostById } from '@/utils/api';
+import { BlogPost } from '@/utils/github';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
+import styles from './page.module.css';
 
 export default function GitHubBlogDetailPage() {
   const params = useParams();
@@ -88,142 +69,114 @@ export default function GitHubBlogDetailPage() {
     }
   };
 
-
   if (loading) {
     return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-          <CircularProgress />
-        </Box>
-      </Container>
+      <div className={styles.container}>
+        <div className={styles.loading}>
+          <div className={styles.spinner}></div>
+        </div>
+      </div>
     );
   }
 
   if (error || !post) {
     return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Alert severity="error" sx={{ mb: 4 }}>
+      <div className={styles.container}>
+        <div className={styles.error}>
           {error || '文章不存在'}
-        </Alert>
-        <Button
-          component={Link}
-          href="/github-blog"
-          startIcon={<ArrowBack />}
-          variant="contained"
-        >
-          返回博客列表
-        </Button>
-      </Container>
+        </div>
+        <Link href="/github-blog" className={styles.backButton}>
+          ← 返回博客列表
+        </Link>
+      </div>
     );
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <div className={styles.container}>
       {/* 导航栏 */}
-      <Box sx={{ mb: 4 }}>
-        <Button
-          component={Link}
-          href="/github-blog"
-          startIcon={<ArrowBack />}
-          variant="outlined"
-          sx={{ mb: 2 }}
-        >
-          返回博客列表
-        </Button>
-      </Box>
+      <nav className={styles.nav}>
+        <Link href="/github-blog" className={styles.backLink}>
+          ← 返回博客列表
+        </Link>
+      </nav>
 
       {/* 文章头部 */}
-      <Paper elevation={2} sx={{ p: 4, mb: 4, borderRadius: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 3 }}>
-          <Article color="primary" sx={{ mt: 0.5 }} />
-          <Typography variant="h4" component="h1" fontWeight="bold" sx={{ flexGrow: 1 }}>
-            {post.title}
-          </Typography>
-        </Box>
+      <header className={styles.header}>
+        <h1 className={styles.title}>{post.title}</h1>
+        
+        <div className={styles.meta}>
+          <time className={styles.date}>
+            {formatDate(post.date)}
+          </time>
+          <span className={styles.divider}>·</span>
+          <span className={styles.year}>{post.year}年</span>
+          <span className={styles.divider}>·</span>
+          <span className={styles.size}>
+            {Math.round(post.size / 1024)} KB
+          </span>
+        </div>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Schedule fontSize="small" color="action" />
-            <Typography variant="body2" color="text.secondary">
-              {formatDate(post.date)}
-            </Typography>
-          </Box>
-          <Chip
-            label={`${post.year}年`}
-            size="small"
-            color="primary"
-            variant="outlined"
-          />
-          <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
-            <Tooltip title="复制链接">
-              <IconButton onClick={handleCopyLink} size="small">
-                {copied ? <Check color="success" /> : <ContentCopy />}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="在GitHub中查看">
-              <IconButton
-                href={post.url}
-                target="_blank"
-                size="small"
-              >
-                <GitHub />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
-
-        <Divider sx={{ mb: 3 }} />
-
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            文件大小: {Math.round(post.size / 1024)} KB
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            路径: {post.path}
-          </Typography>
-        </Box>
-      </Paper>
+        <div className={styles.actions}>
+          <button 
+            className={styles.copyButton}
+            onClick={handleCopyLink}
+            title="复制链接"
+          >
+            {copied ? '✓ 已复制' : '复制链接'}
+          </button>
+          <a
+            href={post.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.githubLink}
+          >
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            在 GitHub 中查看
+          </a>
+        </div>
+      </header>
 
       {/* 文章内容 */}
-      <Paper elevation={1} sx={{ p: 4, borderRadius: 3 }}>
+      <article className={styles.content}>
         <MarkdownRenderer content={post.content} />
-      </Paper>
+      </article>
 
       {/* 底部操作 */}
-      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Button
-          component={Link}
-          href="/github-blog"
-          startIcon={<ArrowBack />}
-          variant="outlined"
-        >
-          返回博客列表
-        </Button>
+      <footer className={styles.footer}>
+        <Link href="/github-blog" className={styles.backButton}>
+          ← 返回博客列表
+        </Link>
         
-        <Button
+        <a
           href={post.url}
           target="_blank"
-          startIcon={<GitHub />}
-          variant="contained"
+          rel="noopener noreferrer"
+          className={`${styles.githubButton} ${styles.primary}`}
         >
-          在GitHub中编辑
-        </Button>
-      </Box>
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          在 GitHub 中编辑
+        </a>
+      </footer>
 
       {/* 底部信息 */}
-      <Box sx={{ mt: 6, textAlign: 'center', py: 3, borderTop: '1px solid', borderColor: 'divider' }}>
-        <Typography variant="body2" color="text.secondary">
-          本文来源于{' '}
-          <Button
+      <div className={styles.bottomInfo}>
+        <p>
+          本文来源于
+          <a
             href="https://github.com/Rain1601/rain.blog.repo"
             target="_blank"
-            size="small"
-            startIcon={<GitHub />}
+            rel="noopener noreferrer"
+            className={styles.repoLink}
           >
             GitHub 仓库
-          </Button>
-        </Typography>
-      </Box>
-    </Container>
+          </a>
+        </p>
+      </div>
+    </div>
   );
 }

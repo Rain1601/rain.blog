@@ -1,0 +1,121 @@
+.container {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+}
+
+.card {
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  padding: var(--spacing-3xl);
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Avatar */
+.avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin: 0 auto var(--spacing-xl);
+  display: block;
+  border: 3px solid var(--border-light);
+  transition: transform 0.3s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+}
+
+/* Name */
+.name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+  letter-spacing: -0.03em;
+}
+
+/* Title */
+.title {
+  font-size: 1.25rem;
+  color: var(--accent-primary);
+  font-weight: 500;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Description */
+.description {
+  font-size: 1.0625rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 480px;
+  margin: 0 auto var(--spacing-2xl);
+}
+
+/* Contact Links */
+.contactLinks {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.contactButton {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contactButton:hover {
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Email */
+.email {
+  font-size: 0.9375rem;
+  color: var(--text-tertiary);
+  margin: 0;
+  transition: color 0.2s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    padding: var(--spacing-xl);
+  }
+  
+  .avatar {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .name {
+    font-size: 2rem;
+  }
+  
+  .title {
+    font-size: 1.125rem;
+  }
+  
+  .description {
+    font-size: 1rem;
+  }
+}

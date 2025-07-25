@@ -1,0 +1,264 @@
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+  min-height: 100vh;
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-light);
+  border-top: 3px solid var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error */
+.error {
+  background-color: var(--accent-light);
+  color: var(--accent-hover);
+  padding: var(--spacing-md);
+  border-radius: 4px;
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+/* Navigation */
+.nav {
+  padding: var(--spacing-lg) 0;
+}
+
+.backLink {
+  color: var(--text-tertiary);
+  text-decoration: none;
+  font-size: 0.9375rem;
+  transition: color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.backLink:hover {
+  color: var(--text-primary);
+  transform: translateX(-2px);
+}
+
+/* Header */
+.header {
+  margin-bottom: var(--spacing-2xl);
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  color: var(--text-tertiary);
+  font-size: 0.9375rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.date {
+  color: var(--text-tertiary);
+}
+
+.year {
+  color: var(--text-tertiary);
+}
+
+.size {
+  color: var(--text-tertiary);
+}
+
+.divider {
+  color: var(--text-muted);
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.copyButton {
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+}
+
+.copyButton:hover {
+  border-color: var(--border-medium);
+  background-color: var(--bg-secondary);
+}
+
+.githubLink {
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+.githubLink:hover {
+  border-color: var(--text-primary);
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+/* Content */
+.content {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: var(--spacing-3xl) var(--spacing-2xl);
+  margin-bottom: var(--spacing-2xl);
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.backButton {
+  padding: 0.875rem 1.5rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  border: 1px solid var(--text-primary);
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.backButton:hover {
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+.githubButton {
+  padding: 0.875rem 1.5rem;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.15s ease;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
+}
+
+.githubButton.primary {
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+.githubButton.primary:hover {
+  background-color: var(--text-secondary);
+  border-color: var(--text-secondary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Bottom Info */
+.bottomInfo {
+  text-align: center;
+  padding: var(--spacing-xl) 0;
+  border-top: 1px solid var(--border-light);
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+}
+
+.bottomInfo p {
+  margin: 0;
+}
+
+.repoLink {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 0.5rem;
+  transition: color 0.15s ease;
+}
+
+.repoLink:hover {
+  color: var(--accent-primary);
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+  
+  .meta {
+    flex-wrap: wrap;
+  }
+  
+  .actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .copyButton,
+  .githubLink {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .content {
+    padding: var(--spacing-lg);
+  }
+  
+  .footer {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .backButton,
+  .githubButton {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}

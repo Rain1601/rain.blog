@@ -1,22 +1,8 @@
 'use client';
 
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Container,
-  Button,
-  IconButton,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  Box,
-} from '@mui/material';
-import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material';
 import Link from 'next/link';
 import { useState } from 'react';
+import styles from './Layout.module.css';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -31,132 +17,107 @@ export default function Layout({ children }: LayoutProps) {
 
   const navigationItems = [
     { name: '首页', href: '/' },
-    { name: '博客', href: '/blog' },
+    { name: '关于我', href: '/about' },
   ];
 
-  const drawer = (
-    <Box sx={{ width: 250 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
-        <IconButton onClick={handleDrawerToggle}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      <List>
-        {navigationItems.map((item) => (
-          <ListItem key={item.name} disablePadding>
-            <ListItemButton 
-              component={Link} 
-              href={item.href}
-              onClick={handleDrawerToggle}
-            >
-              <ListItemText primary={item.name} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
-
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppBar 
-        position="static" 
-        elevation={0}
-        sx={{ 
-          backgroundColor: 'background.paper',
-          borderBottom: '1px solid',
-          borderColor: 'divider'
-        }}
-      >
-        <Container maxWidth="lg">
-          <Toolbar sx={{ px: { xs: 0 } }}>
-            {/* Logo */}
-            <Typography 
-              variant="h6" 
-              component={Link}
-              href="/"
-              sx={{
-                flexGrow: 1,
-                fontWeight: 700,
-                color: 'text.primary',
-                textDecoration: 'none',
-                fontSize: { xs: '1.25rem', md: '1.5rem' },
-                '&:hover': {
-                  color: 'primary.main',
-                },
-                transition: 'color 0.2s ease'
-              }}
-            >
-              Rain&apos;s Blog
-            </Typography>
+    <div className={styles.layout}>
+      {/* Navigation */}
+      <nav className={styles.navbar}>
+        <div className={styles.navContainer}>
+          {/* Logo */}
+          <Link href="/" className={styles.logo}>
+            Rain&apos;s Blog
+          </Link>
 
-            {/* Desktop Navigation */}
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
-              {navigationItems.map((item) => (
-                <Button
-                  key={item.name}
-                  component={Link}
-                  href={item.href}
-                  sx={{
-                    color: 'text.primary',
-                    fontWeight: 500,
-                    px: 2,
-                    py: 1,
-                    borderRadius: 2,
-                    '&:hover': {
-                      backgroundColor: 'action.hover',
-                      color: 'primary.main',
-                    },
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  {item.name}
-                </Button>
-              ))}
-            </Box>
+          {/* Desktop Navigation */}
+          <div className={styles.navLinks}>
+            {navigationItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={styles.navLink}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
 
-            {/* Mobile menu button */}
-            <IconButton
-              color="inherit"
-              aria-label="打开导航菜单"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ 
-                display: { md: 'none' },
-                color: 'text.primary'
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-          </Toolbar>
-        </Container>
-      </AppBar>
+          {/* GitHub Button */}
+          <a 
+            href="https://github.com/Rain1601" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className={styles.githubButton}
+            aria-label="GitHub"
+          >
+            <svg viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+          </a>
+
+          {/* Mobile menu button */}
+          <button
+            className={styles.mobileMenuButton}
+            onClick={handleDrawerToggle}
+            aria-label="Toggle navigation menu"
+          >
+            <span className={styles.hamburger}></span>
+            <span className={styles.hamburger}></span>
+            <span className={styles.hamburger}></span>
+          </button>
+        </div>
+      </nav>
 
       {/* Mobile drawer */}
-      <Drawer
-        variant="temporary"
-        anchor="right"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true,
-        }}
-        sx={{
-          display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { 
-            boxSizing: 'border-box', 
-            width: 250,
-            backgroundColor: 'background.paper'
-          },
-        }}
-      >
-        {drawer}
-      </Drawer>
+      <div className={`${styles.mobileDrawer} ${mobileOpen ? styles.open : ''}`}>
+        <div className={styles.drawerContent}>
+          <button
+            className={styles.closeButton}
+            onClick={handleDrawerToggle}
+            aria-label="Close navigation menu"
+          >
+            ✕
+          </button>
+          <div className={styles.mobileNavLinks}>
+            {navigationItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={styles.mobileNavLink}
+                onClick={handleDrawerToggle}
+              >
+                {item.name}
+              </Link>
+            ))}
+            <a
+              href="https://github.com/Rain1601"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.mobileGithubLink}
+              onClick={handleDrawerToggle}
+            >
+              <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+              </svg>
+              GitHub 仓库
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Overlay */}
+      {mobileOpen && (
+        <div 
+          className={styles.overlay} 
+          onClick={handleDrawerToggle}
+        />
+      )}
 
       {/* Main content */}
-      <Box component="main" sx={{ flexGrow: 1, backgroundColor: 'background.default' }}>
+      <main className={styles.main}>
         {children}
-      </Box>
-    </Box>
+      </main>
+    </div>
   );
-} 
+}

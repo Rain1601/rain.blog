@@ -1,20 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Typography,
-  Box,
-  Paper,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  Alert,
-} from '@mui/material';
-import {
-  Code as CodeIcon,
-  FormatQuote
-} from '@mui/icons-material';
+import styles from './MarkdownRenderer.module.css';
 
 interface MarkdownRendererProps {
   content: string;
@@ -166,86 +153,29 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
 
   // 渲染代码块
   const renderCodeBlock = (content: string, language?: string) => (
-    <Paper
-      elevation={1}
-      sx={{
-        my: 2,
-        borderRadius: 2,
-        overflow: 'hidden',
-        border: '1px solid',
-        borderColor: 'divider'
-      }}
-    >
+    <div className={styles.codeBlock}>
       {language && (
-        <Box
-          sx={{
-            px: 2,
-            py: 1,
-            bgcolor: 'grey.100',
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1
-          }}
-        >
-          <CodeIcon fontSize="small" color="primary" />
-          <Typography variant="caption" color="primary" fontWeight="bold">
-            {language.toUpperCase()}
-          </Typography>
-        </Box>
+        <div className={styles.codeHeader}>
+          <span className={styles.codeLanguage}>{language.toUpperCase()}</span>
+        </div>
       )}
-      <Box
-        sx={{
-          p: 2,
-          bgcolor: 'grey.900',
-          color: 'grey.100',
-          fontFamily: 'monospace',
-          fontSize: '0.875rem',
-          lineHeight: 1.6,
-          overflow: 'auto'
-        }}
-      >
-        <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
-          {content}
-        </pre>
-      </Box>
-    </Paper>
+      <pre className={styles.codeContent}>
+        <code>{content}</code>
+      </pre>
+    </div>
   );
 
   // 渲染元素
   const renderElement = (element: ParsedElement, index: number) => {
     switch (element.type) {
       case 'heading':
-        const HeadingComponent = {
-          1: 'h1',
-          2: 'h2',
-          3: 'h3',
-          4: 'h4',
-          5: 'h5',
-          6: 'h6'
-        }[element.level || 1] as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+        const HeadingTag = `h${element.level || 1}` as keyof JSX.IntrinsicElements;
+        const headingClass = `h${element.level || 1}`;
         
-        const variant = {
-          1: 'h3',
-          2: 'h4',
-          3: 'h5',
-          4: 'h6',
-          5: 'subtitle1',
-          6: 'subtitle2'
-        }[element.level || 1] as 'h3' | 'h4' | 'h5' | 'h6' | 'subtitle1' | 'subtitle2';
-
         return (
-          <Typography
+          <HeadingTag
             key={index}
-            variant={variant}
-            component={HeadingComponent}
-            sx={{
-              mt: element.level === 1 ? 4 : 3,
-              mb: 2,
-              fontWeight: 'bold',
-              color: element.level === 1 ? 'primary.main' : 'text.primary'
-            }}
+            className={styles[headingClass]}
             dangerouslySetInnerHTML={{
               __html: processInlineStyles(element.content)
             }}
@@ -254,10 +184,9 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
 
       case 'paragraph':
         return (
-          <Typography
+          <p
             key={index}
-            variant="body1"
-            sx={{ mb: 2, lineHeight: 1.7 }}
+            className={styles.paragraph}
             dangerouslySetInnerHTML={{
               __html: processInlineStyles(element.content)
             }}
@@ -265,57 +194,42 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
         );
 
       case 'code':
-        return renderCodeBlock(element.content, element.language);
+        return (
+          <div key={index}>
+            {renderCodeBlock(element.content, element.language)}
+          </div>
+        );
 
       case 'quote':
         return (
-          <Alert
+          <blockquote
             key={index}
-            severity="info"
-            icon={<FormatQuote />}
-            sx={{
-              my: 2,
-              borderRadius: 2,
-              '& .MuiAlert-message': {
-                width: '100%'
-              }
+            className={styles.blockquote}
+            dangerouslySetInnerHTML={{
+              __html: processInlineStyles(element.content)
             }}
-          >
-            <Typography
-              variant="body1"
-              sx={{ fontStyle: 'italic' }}
-              dangerouslySetInnerHTML={{
-                __html: processInlineStyles(element.content)
-              }}
-            />
-          </Alert>
+          />
         );
 
       case 'list':
         return (
-          <List key={index} sx={{ my: 2 }}>
+          <ul key={index} className={styles.list}>
             {element.items?.map((item, itemIndex) => (
-              <ListItem key={itemIndex} sx={{ py: 0.5 }}>
-                <ListItemText
-                  primary={
-                    <Typography
-                      variant="body1"
-                      dangerouslySetInnerHTML={{
-                        __html: processInlineStyles(item)
-                      }}
-                    />
-                  }
-                />
-              </ListItem>
+              <li
+                key={itemIndex}
+                dangerouslySetInnerHTML={{
+                  __html: processInlineStyles(item)
+                }}
+              />
             ))}
-          </List>
+          </ul>
         );
 
       case 'divider':
-        return <Divider key={index} sx={{ my: 3 }} />;
+        return <hr key={index} className={styles.divider} />;
 
       case 'break':
-        return <Box key={index} sx={{ height: 16 }} />;
+        return <div key={index} className={styles.break} />;
 
       default:
         return null;
@@ -325,32 +239,9 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   const elements = parseMarkdown(content);
 
   return (
-    <Box
-      sx={{
-        '& strong': { fontWeight: 'bold' },
-        '& em': { fontStyle: 'italic' },
-        '& code': {
-          px: 1,
-          py: 0.5,
-          bgcolor: 'grey.100',
-          borderRadius: 1,
-          fontFamily: 'monospace',
-          fontSize: '0.875rem',
-          color: 'primary.main'
-        },
-        '& a': {
-          color: 'primary.main',
-          textDecoration: 'none',
-          '&:hover': {
-            textDecoration: 'underline'
-          }
-        },
-        '& > *:first-of-type': { mt: 0 },
-        '& > *:last-child': { mb: 0 }
-      }}
-    >
+    <div className={styles.markdown}>
       {elements.map((element, index) => renderElement(element, index))}
-    </Box>
+    </div>
   );
 };
 
