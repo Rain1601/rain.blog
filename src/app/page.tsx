@@ -66,10 +66,6 @@ export default function HomePage() {
     setFilteredPosts(filtered);
   }, [searchQuery, selectedYear, posts]);
 
-  // 刷新数据
-  const handleRefresh = () => {
-    loadData();
-  };
 
   if (loading) {
     return (
@@ -158,7 +154,7 @@ export default function HomePage() {
 
       {/* 时间线内容 */}
       <section className={styles.timeline}>
-        {filteredPosts.map((post, index) => (
+        {filteredPosts.map((post) => (
           <article key={post.id} className={styles.timelineItem}>
             <div className={styles.timelineMarker}></div>
             <div className={styles.timelineContent}>
@@ -170,14 +166,14 @@ export default function HomePage() {
                 })}
               </time>
               <h2 className={styles.postTitle}>
-                <Link href={`/github-blog/${post.id}`}>
+                <Link href={`/blog/${post.id}`}>
                   {post.title}
                 </Link>
               </h2>
               <p className={styles.postExcerpt}>
                 {post.content.substring(0, 200)}...
               </p>
-              <Link href={`/github-blog/${post.id}`} className={styles.readMore}>
+              <Link href={`/blog/${post.id}`} className={styles.readMore}>
                 阅读全文 →
               </Link>
             </div>

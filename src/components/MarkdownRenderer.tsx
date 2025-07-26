@@ -169,7 +169,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   const renderElement = (element: ParsedElement, index: number) => {
     switch (element.type) {
       case 'heading':
-        const HeadingTag = `h${element.level || 1}` as keyof JSX.IntrinsicElements;
+        const HeadingTag = `h${element.level || 1}` as keyof React.JSX.IntrinsicElements;
         const headingClass = `h${element.level || 1}`;
         
         return (

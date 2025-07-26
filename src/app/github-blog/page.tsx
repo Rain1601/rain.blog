@@ -66,10 +66,6 @@ export default function GitHubBlogPage() {
     setFilteredPosts(filtered);
   }, [searchQuery, selectedYear, posts]);
 
-  // 刷新数据
-  const handleRefresh = () => {
-    loadData();
-  };
 
   if (loading) {
     return (
@@ -158,7 +154,7 @@ export default function GitHubBlogPage() {
 
       {/* 时间线内容 */}
       <section className={styles.timeline}>
-        {filteredPosts.map((post, index) => (
+        {filteredPosts.map((post) => (
           <article key={post.id} className={styles.timelineItem}>
             <div className={styles.timelineMarker}></div>
             <div className={styles.timelineContent}>
