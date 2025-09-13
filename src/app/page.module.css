@@ -1,7 +1,17 @@
+/* 页面容器 - 全高度布局 */
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
 .container {
+  flex: 1;
   max-width: 720px;
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
+  width: 100%;
 }
 
 /* Header */
@@ -25,39 +35,30 @@
   letter-spacing: -0.01em;
 }
 
-/* Stats */
-.stats {
-  display: flex;
-  gap: var(--spacing-lg);
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 12px;
-  padding: var(--spacing-lg) var(--spacing-xl);
-  max-width: fit-content;
+/* Language switcher moved to Layout component */
+
+/* 固定头部区域 */
+.fixedHeader {
+  position: fixed;
+  top: 85px; /* 在导航栏下方 */
+  left: 0;
+  right: 0;
+  background-color: var(--bg-primary);
+  padding: var(--spacing-lg) 0;
+  margin-bottom: 0;
+  z-index: 40;
+}
+
+.fixedHeader .filterSection {
+  max-width: 720px;
   margin: 0 auto;
-}
-
-.statCard {
-  display: flex;
-  align-items: baseline;
-  gap: var(--spacing-xs);
-}
-
-.statNumber {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-}
-
-.statLabel {
-  font-size: 0.875rem;
-  color: var(--text-tertiary);
+  padding: 0 var(--spacing-lg);
 }
 
 /* Filter Section */
 .filterSection {
-  margin-bottom: var(--spacing-lg);
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .searchContainer {
@@ -69,17 +70,19 @@
 .searchInput {
   width: 100%;
   padding: 0.875rem 3rem 0.875rem 1rem;
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
   font-size: 1rem;
   background-color: var(--bg-white);
   transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .searchInput:focus {
   outline: none;
-  border-color: var(--border-medium);
+  border-color: var(--accent-primary);
   background-color: var(--bg-white);
+  box-shadow: 0 0 0 3px rgba(217, 113, 73, 0.1);
 }
 
 .searchIcon {
@@ -89,6 +92,7 @@
   transform: translateY(-50%);
   color: var(--text-muted);
   pointer-events: none;
+  font-size: 1.1rem;
 }
 
 .yearFilter {
@@ -97,6 +101,46 @@
   gap: var(--spacing-sm);
   flex-wrap: wrap;
   margin-bottom: var(--spacing-md);
+}
+
+.yearChipWrapper {
+  position: relative;
+}
+
+.monthDropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  min-width: 120px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.monthItem {
+  background: none;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.monthItem:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .filterChip {
@@ -127,6 +171,13 @@
   font-size: 0.875rem;
 }
 
+/* 可滚动内容区域 */
+.scrollableContent {
+  flex: 1;
+  padding-bottom: 100px; /* 给底部留出空间 */
+  padding-top: 230px; /* 再往下调整避免被遮挡 */
+}
+
 /* Timeline */
 .timeline {
   position: relative;
@@ -140,7 +191,7 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: var(--border-light);
+  background-color: transparent;
 }
 
 .timelineItem {
@@ -161,10 +212,9 @@
 
 .timelineContent {
   background-color: var(--bg-white);
-  border: 1px solid var(--border-light);
   border-radius: 4px;
-  padding: var(--spacing-lg);
-  transition: border-color 0.15s ease;
+  padding: var(--spacing-md);
+  transition: all 0.15s ease;
 }
 
 .timelineContent:hover {
@@ -174,14 +224,14 @@
 .postDate {
   font-size: 0.875rem;
   color: var(--text-muted);
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 0.125rem;
   display: block;
 }
 
 .postTitle {
   font-size: 1.375rem;
   font-weight: 600;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 0.25rem;
   line-height: 1.3;
 }
 
@@ -197,18 +247,25 @@
 
 .postExcerpt {
   color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: var(--spacing-md);
+  line-height: 1.4;
+  margin-bottom: var(--spacing-sm);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  font-size: 0.9rem;
 }
 
 .readMore {
   color: var(--accent-primary);
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
+  margin-top: 0.25rem;
 }
 
 .readMore:hover {
@@ -216,29 +273,32 @@
   transform: translateX(2px);
 }
 
-/* Footer */
-.footer {
-  margin-top: var(--spacing-3xl);
-  padding: var(--spacing-xl) 0;
-  text-align: center;
-  border-top: 1px solid var(--border-light);
+/* 固定底部 */
+.fixedFooter {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-primary);
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
   color: var(--text-tertiary);
   font-size: 0.875rem;
-}
-
-.footer p {
-  margin-bottom: var(--spacing-xs);
+  z-index: 50;
 }
 
 .githubLink {
   color: var(--text-primary);
   text-decoration: none;
   font-weight: 500;
-  padding: 0.5rem 1rem;
+  padding: 0.375rem 0.75rem;
   border: 1px solid var(--text-primary);
   border-radius: 4px;
-  display: inline-block;
   transition: all 0.15s ease;
+  font-size: 0.875rem;
 }
 
 .githubLink:hover {
