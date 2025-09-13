@@ -40,6 +40,10 @@
   color: var(--accent-primary);
 }
 
+.logo:hover {
+  color: var(--accent-primary);
+}
+
 /* Navigation Links - 居中位置 */
 .navLinks {
   display: none;
