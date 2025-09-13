@@ -18,12 +18,12 @@
     </g>
     
     <!-- 巨大的R字母 -->
-    <text x="100" y="165" font-family="Georgia, Times New Roman, serif" font-size="210" font-weight="400" text-anchor="middle" fill="#ffffff">
+    <text x="100" y="165" font-family="Georgia, Times New Roman, serif" font-size="195" font-weight="400" text-anchor="middle" fill="#ffffff">
       R
     </text>
     
     <!-- 溢出的小写a -->
-    <text x="175" y="165" font-family="Georgia, Times New Roman, serif" font-size="180" font-weight="300" text-anchor="middle" fill="#ffffff" opacity="0.7">
+    <text x="175" y="165" font-family="Georgia, Times New Roman, serif" font-size="200" font-weight="300" text-anchor="middle" fill="#ffffff" opacity="0.7">
       a
     </text>
   </g>
