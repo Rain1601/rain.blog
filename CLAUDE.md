@@ -37,6 +37,15 @@ This is an interactive Python blog platform built with Next.js 15, featuring in-
 - **Routing**: Dynamic routes via `src/app/posts/[slug]/page.tsx`
 - **MDX Components**: Custom styled components in `mdx-components.tsx`
 
+#### GitHub Blog Integration
+- **Dynamic Blog Loading**: Fetches blog posts from GitHub repository `Rain1601/rain.blog.repo`
+- **Repository Structure**: Supports `posts/year/month/filename.md` structure
+- **API Module**: `src/utils/github.ts` handles GitHub API requests with caching (5min revalidation)
+- **Routes**:
+  - `/` - Dynamic blog list from GitHub (homepage)
+  - `/blog/[id]` - Individual blog post view
+- **Error Handling**: Graceful fallback to demo data when API rate limited
+
 #### Theming System
 - **Theme Provider**: Material-UI with automatic dark/light mode detection
 - **Font**: Inter font family
@@ -45,7 +54,7 @@ This is an interactive Python blog platform built with Next.js 15, featuring in-
 ### File Structure Patterns
 - `src/app/`: Next.js App Router pages and layouts
 - `src/components/`: Reusable React components
-- `src/utils/`: Utility functions (Pyodide, MDX processing, post utilities)
+- `src/utils/`: Utility functions (Pyodide, MDX processing, post utilities, GitHub API)
 - `src/types/`: TypeScript type definitions
 - `src/content/blog/`: Blog content and configuration
 - `scripts/`: Development scripts for post creation and conversion
@@ -64,17 +73,6 @@ This is an interactive Python blog platform built with Next.js 15, featuring in-
 
 ### Error Boundaries
 All components are wrapped in error boundaries to handle Pyodide loading failures and execution errors gracefully.
-
-### GitHub Blog Integration
-- **Dynamic Blog Loading**: Added GitHub API integration to fetch blog posts from `Rain1601/rain.blog.repo`
-- **Repository Structure**: Supports `posts/year/month/filename.md` structure
-- **API Module**: `src/utils/github.ts` handles GitHub API requests with caching (5min revalidation)
-- **Routes**: 
-  - `/` - Dynamic blog list from GitHub (homepage)
-  - `/blog/[id]` - Individual blog post view
-- **Markdown Rendering**: Custom `MarkdownRenderer` component supports headings, code blocks, lists, quotes
-- **Features**: Search, statistics, year-based filtering, error handling
-- **Caching**: Next.js fetch with revalidation for performance
 
 ### Performance Considerations
 - Pyodide lazy-loads on first code execution

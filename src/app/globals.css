@@ -32,6 +32,13 @@
   --spacing-3xl: 6rem;
 }
 
+/* 中文宋体字体支持 */
+@font-face {
+  font-family: 'SongTi';
+  src: local('宋体'), local('SimSun');
+  unicode-range: U+4E00-9FFF;
+}
+
 /* 深色模式适配 - 保持浅色风格，仅微调 */
 @media (prefers-color-scheme: dark) {
   :root {
