@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { getAllPosts, getStats } from '@/utils/api';
 import { BlogPost } from '@/utils/github';
-import { useLanguage, Language } from '@/components/Layout';
+import { useLanguage } from '@/components/Layout';
 import styles from './page.module.css';
 
 // 语言文本配置

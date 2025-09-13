@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import styles from './page.module.css';
 
 export default function AboutPage() {
@@ -21,9 +22,11 @@ export default function AboutPage() {
     <div className={styles.container}>
       <div className={styles.card}>
         {/* Avatar */}
-        <img
+        <Image
           src="https://github.com/Rain1601.png"
           alt="Rain"
+          width={120}
+          height={120}
           className={styles.avatar}
         />
 
