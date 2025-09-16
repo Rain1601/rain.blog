@@ -179,12 +179,14 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         target="_blank"
         rel="noopener noreferrer"
         onMouseOver={(e) => {
-          e.target.style.backgroundColor = 'var(--accent-light)';
-          e.target.style.borderBottomColor = 'var(--accent-primary)';
+          const target = e.target as HTMLAnchorElement;
+          target.style.backgroundColor = 'var(--accent-light)';
+          target.style.borderBottomColor = 'var(--accent-primary)';
         }}
         onMouseOut={(e) => {
-          e.target.style.backgroundColor = 'transparent';
-          e.target.style.borderBottomColor = 'transparent';
+          const target = e.target as HTMLAnchorElement;
+          target.style.backgroundColor = 'transparent';
+          target.style.borderBottomColor = 'transparent';
         }}
       >
         {children}

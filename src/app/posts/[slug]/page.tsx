@@ -16,7 +16,6 @@ import { MDXProvider } from '@mdx-js/react';
 import { getBlogConfig } from '@/utils/posts';
 import { mdxComponents } from '@/utils/mdx';
 import { useState, useEffect } from 'react';
-import TableOfContents from '@/components/TableOfContents';
 import type { BlogConfig } from '@/content/blog/config';
 
 // 获取文章内容的函数

@@ -191,7 +191,7 @@ class GitHubAPI {
     const frontMatterContent = match[1];
     const contentWithoutFrontMatter = content.slice(match[0].length);
 
-    const metadata: any = {};
+    const metadata: Record<string, string | string[]> = {};
 
     // 解析YAML内容
     const lines = frontMatterContent.split('\n');
@@ -222,12 +222,12 @@ class GitHubAPI {
     }
 
     return {
-      title: metadata.title,
-      date: metadata.date,
-      author: metadata.author,
-      tags: metadata.tags || [],
-      categories: metadata.categories || [],
-      summary: metadata.summary,
+      title: typeof metadata.title === 'string' ? metadata.title : undefined,
+      date: typeof metadata.date === 'string' ? metadata.date : undefined,
+      author: typeof metadata.author === 'string' ? metadata.author : undefined,
+      tags: Array.isArray(metadata.tags) ? metadata.tags : [],
+      categories: Array.isArray(metadata.categories) ? metadata.categories : [],
+      summary: typeof metadata.summary === 'string' ? metadata.summary : undefined,
       contentWithoutFrontMatter
     };
   }
@@ -336,8 +336,7 @@ GITHUB_TOKEN=your_token_here
             author,
             tags,
             categories,
-            summary,
-            contentWithoutFrontMatter
+            summary
           } = this.parseFrontMatter(rawContent);
 
           // 决定使用的标题和日期
