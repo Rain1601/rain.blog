@@ -88,6 +88,7 @@ export default function HomePage() {
     latestPost?: BlogPost;
   }>({ totalPosts: 0, years: [] });
 
+
   const t = translations[language];
 
   // 计算每年每月的文章数量
@@ -153,6 +154,7 @@ export default function HomePage() {
     loadData();
   }, []);
 
+
   // 搜索和筛选功能
   useEffect(() => {
     let filtered = posts;
@@ -207,21 +209,20 @@ export default function HomePage() {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.container}>
-      {/* 语言切换按钮现在在导航栏中 */}
 
-      {/* 固定头部区域 - 搜索和筛选 */}
-      <div className={styles.fixedHeader}>
+        {/* 筛选区域 */}
         <section className={styles.filterSection}>
-        <div className={styles.searchContainer}>
-          <input
-            type="text"
-            className={styles.searchInput}
-            placeholder={t.searchPlaceholder}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <span className={styles.searchIcon}>🔍</span>
-        </div>
+          {/* 搜索框 */}
+          <div className={styles.searchContainer}>
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder={t.searchPlaceholder}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <span className={styles.searchIcon}>🔍</span>
+          </div>
 
         {/* 年份筛选 - 带数量显示和月份下拉 */}
         {stats.years.length > 0 && (
@@ -284,10 +285,6 @@ export default function HomePage() {
             </p>
           )}
         </section>
-      </div>
-
-      {/* 可滚动内容区域 */}
-      <div className={styles.scrollableContent}>
         {/* 错误提示 */}
         {error && (
           <div className={styles.error}>
@@ -331,8 +328,6 @@ export default function HomePage() {
           );
           })}
         </section>
-      </div>
-
       </div>
 
       {/* 底部信息 - 固定在页面底部 */}

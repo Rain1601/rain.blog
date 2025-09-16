@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import styles from './Layout.module.css';
 
 // 语言类型
@@ -13,12 +14,24 @@ interface LanguageContextType {
   setLanguage: (lang: Language) => void;
 }
 
+// 搜索上下文
+interface SearchContextType {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+}
+
 const LanguageContext = createContext<LanguageContextType>({
   language: 'zh',
   setLanguage: () => {},
 });
 
+const SearchContext = createContext<SearchContextType>({
+  searchQuery: '',
+  setSearchQuery: () => {},
+});
+
 export const useLanguage = () => useContext(LanguageContext);
+export const useSearch = () => useContext(SearchContext);
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -27,10 +40,37 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [language, setLanguage] = useState<Language>('zh');
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const pathname = usePathname();
+
+  // 判断是否在主页
+  const isHomePage = pathname === '/';
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  // 滚动监听 - 仅在主页生效
+  useEffect(() => {
+    if (!isHomePage) {
+      setIsScrolled(false);
+      return;
+    }
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const triggerHeight = 100; // 滚动100px后触发隐藏
+      setIsScrolled(scrollTop > triggerHeight);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // 初始检查
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isHomePage]);
 
   const navigationItems = language === 'zh' ? [
     { name: '首页', href: '/' },
@@ -52,15 +92,32 @@ export default function Layout({ children }: LayoutProps) {
 
           {/* Desktop Navigation - 中间 */}
           <div className={styles.navLinks}>
-            {navigationItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={styles.navLink}
-              >
-                {item.name}
-              </Link>
-            ))}
+            {!isScrolled ? (
+              // 显示导航链接
+              <>
+                {navigationItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={styles.navLink}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </>
+            ) : (
+              // 显示搜索框
+              <div className={styles.searchContainer}>
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder={language === 'zh' ? '搜索博客文章...' : 'Search blog posts...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <span className={styles.searchIcon}>🔍</span>
+              </div>
+            )}
           </div>
 
           {/* 右侧区域 - 语言切换 + GitHub */}

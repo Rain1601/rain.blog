@@ -1,0 +1,120 @@
+.toc {
+  position: fixed;
+  top: 120px;
+  right: 2rem;
+  width: 250px;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  z-index: 30;
+}
+
+.tocHeader {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  font-family: "Times New Roman", "SimSun", "宋体", serif;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-medium);
+}
+
+.tocList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tocItem {
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+.tocItem a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-family: "Times New Roman", "SimSun", "宋体", serif;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tocItem a:hover {
+  color: var(--accent-primary);
+  background: var(--accent-lighter);
+  border-left-color: var(--accent-primary);
+  transform: translateX(4px);
+}
+
+.tocItem.active a {
+  color: var(--accent-primary);
+  background: var(--accent-lighter);
+  border-left-color: var(--accent-primary);
+  font-weight: 600;
+  transform: translateX(4px);
+  box-shadow: 0 2px 4px rgba(217, 113, 73, 0.2);
+}
+
+/* 不同级别标题的缩进 */
+.tocItem.level1 {
+  font-size: 0.95rem;
+}
+
+.tocItem.level1 a {
+  padding-left: 0.75rem;
+  font-weight: 500;
+}
+
+.tocItem.level2 a {
+  padding-left: 1.75rem;
+  font-size: 0.9rem;
+}
+
+.tocItem.level3 a {
+  padding-left: 2.75rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* 滚动条样式 */
+.toc::-webkit-scrollbar {
+  width: 6px;
+}
+
+.toc::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 3px;
+}
+
+.toc::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 3px;
+}
+
+.toc::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* 响应式设计 */
+@media (max-width: 1400px) {
+  .toc {
+    width: 220px;
+    right: 1rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .toc {
+    display: none;
+  }
+}

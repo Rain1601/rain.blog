@@ -23,6 +23,10 @@ export interface BlogPost {
   size: number;
   sha: string;
   url: string;
+  author?: string;
+  tags?: string[];
+  categories?: string[];
+  summary?: string;
 }
 
 class GitHubAPI {
@@ -158,11 +162,74 @@ class GitHubAPI {
   }
 
   /**
-   * 从文件名提取标题
+   * 从文件名提取标题（作为备用）
    */
-  private extractTitle(filename: string): string {
+  private extractTitleFromFilename(filename: string): string {
     // 移除文件扩展名
     return filename.replace(/\.(md|mdx)$/, '');
+  }
+
+  /**
+   * 解析YAML front matter
+   */
+  private parseFrontMatter(content: string): {
+    title?: string;
+    date?: string;
+    author?: string;
+    tags?: string[];
+    categories?: string[];
+    summary?: string;
+    contentWithoutFrontMatter: string;
+  } {
+    const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n/;
+    const match = content.match(frontMatterRegex);
+
+    if (!match) {
+      return { contentWithoutFrontMatter: content };
+    }
+
+    const frontMatterContent = match[1];
+    const contentWithoutFrontMatter = content.slice(match[0].length);
+
+    const metadata: any = {};
+
+    // 解析YAML内容
+    const lines = frontMatterContent.split('\n');
+    for (const line of lines) {
+      const colonIndex = line.indexOf(':');
+      if (colonIndex === -1) continue;
+
+      const key = line.slice(0, colonIndex).trim();
+      let value = line.slice(colonIndex + 1).trim();
+
+      // 移除引号
+      if ((value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1);
+      }
+
+      // 处理数组（tags和categories）
+      if (key === 'tags' || key === 'categories') {
+        if (value.startsWith('[') && value.endsWith(']')) {
+          value = value.slice(1, -1);
+          metadata[key] = value ? value.split(',').map(s => s.trim()) : [];
+        } else {
+          metadata[key] = [];
+        }
+      } else {
+        metadata[key] = value;
+      }
+    }
+
+    return {
+      title: metadata.title,
+      date: metadata.date,
+      author: metadata.author,
+      tags: metadata.tags || [],
+      categories: metadata.categories || [],
+      summary: metadata.summary,
+      contentWithoutFrontMatter
+    };
   }
 
   /**
@@ -259,21 +326,64 @@ GITHUB_TOKEN=your_token_here
 
       for (const file of files) {
         try {
-          const content = await this.getFileContent(file);
+          const rawContent = await this.getFileContent(file);
           const pathInfo = this.parsePathInfo(file.path);
-          const title = this.extractTitle(file.name);
-          
+
+          // 解析front matter
+          const {
+            title: frontMatterTitle,
+            date: frontMatterDate,
+            author,
+            tags,
+            categories,
+            summary,
+            contentWithoutFrontMatter
+          } = this.parseFrontMatter(rawContent);
+
+          // 决定使用的标题和日期
+          let title: string;
+          let year = pathInfo.year;
+          let month = pathInfo.month;
+          let date: string;
+
+          // 如果有front matter，优先使用其中的信息
+          if (frontMatterTitle) {
+            title = frontMatterTitle;
+
+            // 如果有front matter日期，使用它
+            if (frontMatterDate) {
+              date = frontMatterDate;
+              // 尝试从front matter日期中提取年月
+              const dateParts = frontMatterDate.split('-');
+              if (dateParts.length >= 2) {
+                year = dateParts[0];
+                month = dateParts[1].padStart(2, '0');
+              }
+            } else {
+              // 有标题但没有日期，使用路径日期
+              date = `${year}-${month}`;
+            }
+          } else {
+            // 没有front matter，使用原来的逻辑
+            title = this.extractTitleFromFilename(file.name);
+            date = `${year}-${month}`;
+          }
+
           const post: BlogPost = {
             id: this.generateId(file.path),
             title,
-            content,
+            content: rawContent, // 保留完整内容，包括front matter
             path: file.path,
-            date: `${pathInfo.year}-${pathInfo.month}`,
-            year: pathInfo.year,
-            month: pathInfo.month,
+            date,
+            year,
+            month,
             size: file.size,
             sha: file.sha,
-            url: file.html_url
+            url: file.html_url,
+            author,
+            tags,
+            categories,
+            summary
           };
 
           posts.push(post);
@@ -348,21 +458,113 @@ GITHUB_TOKEN=your_token_here
   }
 
   /**
+   * 根据标签获取文章
+   */
+  async getPostsByTag(tag: string): Promise<BlogPost[]> {
+    try {
+      const posts = await this.getAllPosts();
+      return posts.filter(post =>
+        post.tags && post.tags.includes(tag)
+      );
+    } catch (error) {
+      console.error('获取标签文章失败:', error);
+      return [];
+    }
+  }
+
+  /**
+   * 根据分类获取文章
+   */
+  async getPostsByCategory(category: string): Promise<BlogPost[]> {
+    try {
+      const posts = await this.getAllPosts();
+      return posts.filter(post =>
+        post.categories && post.categories.includes(category)
+      );
+    } catch (error) {
+      console.error('获取分类文章失败:', error);
+      return [];
+    }
+  }
+
+  /**
+   * 根据作者获取文章
+   */
+  async getPostsByAuthor(author: string): Promise<BlogPost[]> {
+    try {
+      const posts = await this.getAllPosts();
+      return posts.filter(post =>
+        post.author === author
+      );
+    } catch (error) {
+      console.error('获取作者文章失败:', error);
+      return [];
+    }
+  }
+
+  /**
+   * 获取所有标签
+   */
+  async getAllTags(): Promise<string[]> {
+    try {
+      const posts = await this.getAllPosts();
+      const tags = new Set<string>();
+      posts.forEach(post => {
+        if (post.tags) {
+          post.tags.forEach(tag => tags.add(tag));
+        }
+      });
+      return Array.from(tags).sort();
+    } catch (error) {
+      console.error('获取标签失败:', error);
+      return [];
+    }
+  }
+
+  /**
+   * 获取所有分类
+   */
+  async getAllCategories(): Promise<string[]> {
+    try {
+      const posts = await this.getAllPosts();
+      const categories = new Set<string>();
+      posts.forEach(post => {
+        if (post.categories) {
+          post.categories.forEach(category => categories.add(category));
+        }
+      });
+      return Array.from(categories).sort();
+    } catch (error) {
+      console.error('获取分类失败:', error);
+      return [];
+    }
+  }
+
+  /**
    * 获取统计信息
    */
   async getStats(): Promise<{
     totalPosts: number;
     years: string[];
     latestPost?: BlogPost;
+    tags: string[];
+    categories: string[];
+    authors: string[];
   }> {
     try {
       const posts = await this.getAllPosts();
       const years = [...new Set(posts.map(post => post.year))].sort().reverse();
-      
+      const tags = await this.getAllTags();
+      const categories = await this.getAllCategories();
+      const authors = [...new Set(posts.map(post => post.author).filter(Boolean) as string[])];
+
       return {
         totalPosts: posts.length,
         years,
-        latestPost: posts[0] || undefined
+        latestPost: posts[0] || undefined,
+        tags,
+        categories,
+        authors
       };
     } catch (error) {
       console.error('获取统计信息失败:', error);
@@ -371,7 +573,10 @@ GITHUB_TOKEN=your_token_here
       return {
         totalPosts: demoPosts.length,
         years: ['2025'],
-        latestPost: demoPosts[0]
+        latestPost: demoPosts[0],
+        tags: [],
+        categories: [],
+        authors: []
       };
     }
   }
@@ -384,5 +589,10 @@ export const githubAPI = new GitHubAPI();
 export const getAllPosts = () => githubAPI.getAllPosts();
 export const getPostById = (id: string) => githubAPI.getPostById(id);
 export const getPostsByYear = (year: string) => githubAPI.getPostsByYear(year);
+export const getPostsByTag = (tag: string) => githubAPI.getPostsByTag(tag);
+export const getPostsByCategory = (category: string) => githubAPI.getPostsByCategory(category);
+export const getPostsByAuthor = (author: string) => githubAPI.getPostsByAuthor(author);
+export const getAllTags = () => githubAPI.getAllTags();
+export const getAllCategories = () => githubAPI.getAllCategories();
 export const searchPosts = (query: string) => githubAPI.searchPosts(query);
 export const getStats = () => githubAPI.getStats();

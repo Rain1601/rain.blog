@@ -16,10 +16,18 @@ interface ParsedElement {
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
-  
+
+  // 移除YAML front matter
+  const removeFrontMatter = (markdown: string): string => {
+    const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n/;
+    return markdown.replace(frontMatterRegex, '');
+  };
+
   // 解析Markdown内容
   const parseMarkdown = (markdown: string): ParsedElement[] => {
-    const lines = markdown.split('\n');
+    // 先移除front matter
+    const cleanMarkdown = removeFrontMatter(markdown);
+    const lines = cleanMarkdown.split('\n');
     const elements: ParsedElement[] = [];
     let currentCodeBlock: string[] = [];
     let inCodeBlock = false;

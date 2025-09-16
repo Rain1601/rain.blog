@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { getPostById } from '@/utils/api';
 import { BlogPost } from '@/utils/github';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
+import TableOfContents from '@/components/TableOfContents';
 import styles from './page.module.css';
 
 export default function GitHubBlogDetailPage() {
@@ -143,6 +144,9 @@ export default function GitHubBlogDetailPage() {
       <article className={styles.content}>
         <MarkdownRenderer content={post.content} />
       </article>
+
+      {/* 右侧目录 */}
+      <TableOfContents />
 
       {/* 底部操作 */}
       <footer className={styles.footer}>

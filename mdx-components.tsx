@@ -1,54 +1,81 @@
 import type { MDXComponents } from 'mdx/types';
+import React from 'react';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    // 自定义标题组件 - 添加渐变色和更好的间距
-    h1: ({ children }) => (
-      <h1 style={{
-        fontSize: '2.25rem',
-        fontWeight: '700',
-        marginBottom: '2rem',
-        marginTop: '2rem',
-        color: '#e2e8f0',
-        lineHeight: '1.2'
-      }}>
-        {children}
-      </h1>
-    ),
-    h2: ({ children }) => (
-      <h2 style={{
-        fontSize: '1.875rem',
-        fontWeight: '600',
-        marginBottom: '1.5rem',
-        marginTop: '3rem',
-        color: '#cbd5e1',
-        borderLeft: '3px solid #3b82f6',
-        paddingLeft: '1rem',
-        lineHeight: '1.3'
-      }}>
-        {children}
-      </h2>
-    ),
-    h3: ({ children }) => (
-      <h3 style={{
-        fontSize: '1.5rem',
-        fontWeight: '600',
-        marginBottom: '1rem',
-        marginTop: '2rem',
-        color: '#9ca3af',
-        lineHeight: '1.4'
-      }}>
-        {children}
-      </h3>
-    ),
-    // 自定义段落组件 - 更好的行高和间距
+    // 中文技术文档标题样式
+    h1: ({ children }) => {
+      const id = typeof children === 'string'
+        ? children.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-\u4e00-\u9fa5]/g, '')
+        : '';
+      return (
+        <h1 id={id} style={{
+          fontSize: '2.25rem',
+          fontWeight: '700',
+          marginBottom: '2rem',
+          marginTop: '2.5rem',
+          color: 'var(--text-primary)',
+          lineHeight: '1.3',
+          fontFamily: '"Times New Roman", "SimSun", "宋体", serif',
+          letterSpacing: '-0.02em',
+          scrollMarginTop: '120px'
+        }}>
+          {children}
+        </h1>
+      );
+    },
+    h2: ({ children }) => {
+      const id = typeof children === 'string'
+        ? children.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-\u4e00-\u9fa5]/g, '')
+        : '';
+      return (
+        <h2 id={id} style={{
+          fontSize: '1.875rem',
+          fontWeight: '600',
+          marginBottom: '1.5rem',
+          marginTop: '3rem',
+          color: 'var(--text-primary)',
+          borderLeft: '4px solid var(--accent-primary)',
+          paddingLeft: '1rem',
+          lineHeight: '1.4',
+          fontFamily: '"Times New Roman", "SimSun", "宋体", serif',
+          letterSpacing: '-0.01em',
+          scrollMarginTop: '120px'
+        }}>
+          {children}
+        </h2>
+      );
+    },
+    h3: ({ children }) => {
+      const id = typeof children === 'string'
+        ? children.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-\u4e00-\u9fa5]/g, '')
+        : '';
+      return (
+        <h3 id={id} style={{
+          fontSize: '1.5rem',
+          fontWeight: '600',
+          marginBottom: '1rem',
+          marginTop: '2.5rem',
+          color: 'var(--text-primary)',
+          lineHeight: '1.4',
+          fontFamily: '"Times New Roman", "SimSun", "宋体", serif',
+          letterSpacing: '0em',
+          scrollMarginTop: '120px'
+        }}>
+          {children}
+        </h3>
+      );
+    },
+    // 中文段落优化 - 更好的行高和字体
     p: ({ children }) => (
       <p style={{
         marginBottom: '1.5rem',
-        color: '#94a3b8',
-        lineHeight: '1.7',
+        color: 'var(--text-secondary)',
+        lineHeight: '1.8',
         fontSize: '1rem',
-        fontWeight: '400'
+        fontWeight: '400',
+        fontFamily: '"Times New Roman", "SimSun", "宋体", serif',
+        letterSpacing: '0.02em'
       }}>
         {children}
       </p>
@@ -119,8 +146,10 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         marginBottom: '0.75rem',
         position: 'relative',
         paddingLeft: '1.5rem',
-        color: '#4b5563',
-        lineHeight: '1.7'
+        color: 'var(--text-secondary)',
+        lineHeight: '1.8',
+        fontFamily: '"Times New Roman", "SimSun", "宋体", serif',
+        fontSize: '1rem'
       }}>
         <span style={{
           position: 'absolute',
@@ -129,103 +158,168 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
           width: '6px',
           height: '6px',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          background: 'var(--accent-primary)'
         }}></span>
         {children}
       </li>
     ),
-    // 自定义链接组件
+    // 技术文档链接样式
     a: ({ href, children }) => (
-      <a 
-        href={href} 
+      <a
+        href={href}
         style={{
-          color: '#667eea',
+          color: 'var(--accent-primary)',
           textDecoration: 'none',
           fontWeight: '500',
-          borderBottom: '2px solid transparent',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text'
+          borderBottom: '1px solid transparent',
+          transition: 'all 0.2s ease',
+          padding: '0.1em 0.2em',
+          borderRadius: '3px'
         }}
         target="_blank"
         rel="noopener noreferrer"
+        onMouseOver={(e) => {
+          e.target.style.backgroundColor = 'var(--accent-light)';
+          e.target.style.borderBottomColor = 'var(--accent-primary)';
+        }}
+        onMouseOut={(e) => {
+          e.target.style.backgroundColor = 'transparent';
+          e.target.style.borderBottomColor = 'transparent';
+        }}
       >
         {children}
       </a>
     ),
-    // 自定义引用组件 - 卡片式设计
+    // 图片样式优化
+    img: ({ src, alt, ...props }) => (
+      <div style={{
+        marginBottom: '2rem',
+        marginTop: '1.5rem',
+        textAlign: 'center'
+      }}>
+        <img
+          src={src}
+          alt={alt}
+          style={{
+            maxWidth: '100%',
+            height: 'auto',
+            borderRadius: '8px',
+            border: '1px solid var(--border-light)',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+          }}
+          {...props}
+        />
+        {alt && (
+          <div style={{
+            marginTop: '0.5rem',
+            fontSize: '0.85rem',
+            color: 'var(--text-muted)',
+            fontStyle: 'italic'
+          }}>
+            {alt}
+          </div>
+        )}
+      </div>
+    ),
+    // 技术文档引用块样式
     blockquote: ({ children }) => (
       <blockquote style={{
         marginBottom: '2rem',
         marginTop: '1.5rem',
-        padding: '1.5rem',
-        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-        borderLeft: '4px solid #667eea',
-        borderRadius: '0 12px 12px 0',
-        fontStyle: 'italic',
-        color: '#475569',
-        fontSize: '1.1rem',
+        padding: '1.25rem 1.5rem',
+        background: 'var(--accent-lighter)',
+        borderLeft: '4px solid var(--accent-primary)',
+        borderRadius: '0 6px 6px 0',
+        fontStyle: 'normal',
+        color: 'var(--text-secondary)',
+        fontSize: '1rem',
         lineHeight: '1.7',
-        boxShadow: '0 4px 15px rgba(102, 126, 234, 0.1)',
+        border: '1px solid var(--accent-light)',
         position: 'relative'
       }}>
         <div style={{
           position: 'absolute',
-          top: '-10px',
-          left: '20px',
-          width: '20px',
-          height: '20px',
-          background: '#667eea',
+          top: '-8px',
+          left: '16px',
+          width: '16px',
+          height: '16px',
+          background: 'var(--accent-primary)',
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: 'white',
-          fontSize: '12px',
+          fontSize: '10px',
           fontWeight: 'bold'
         }}>
-          "
+          i
         </div>
         {children}
       </blockquote>
     ),
-    // 添加表格样式
+    // 技术文档专用表格样式
     table: ({ children }) => (
       <div style={{
-        marginBottom: '2rem',
-        marginTop: '1.5rem',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
+        marginBottom: '2.5rem',
+        marginTop: '2rem',
+        overflow: 'auto',
+        maxWidth: '100%'
       }}>
         <table style={{
           width: '100%',
           borderCollapse: 'collapse',
-          background: 'white'
+          background: '#ffffff',
+          fontSize: '0.95rem',
+          lineHeight: '1.6',
+          border: '2px solid #000000',
+          fontFamily: '"Times New Roman", "SimSun", "宋体", serif'
         }}>
           {children}
         </table>
       </div>
     ),
+    thead: ({ children }) => (
+      <thead style={{
+        backgroundColor: 'var(--accent-lighter)'
+      }}>
+        {children}
+      </thead>
+    ),
+    tbody: ({ children }) => (
+      <tbody>
+        {children}
+      </tbody>
+    ),
+    tr: ({ children }) => (
+      <tr>
+        {children}
+      </tr>
+    ),
     th: ({ children }) => (
       <th style={{
-        padding: '1rem',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white',
+        padding: '1rem 1.5rem',
+        background: '#f5f5f5',
+        color: '#000000',
         fontWeight: '600',
         textAlign: 'left',
-        fontSize: '0.95rem'
+        fontSize: '0.95rem',
+        border: '1px solid #000000',
+        fontFamily: '"Times New Roman", "SimSun", "宋体", serif',
+        letterSpacing: '0.02em'
       }}>
         {children}
       </th>
     ),
     td: ({ children }) => (
       <td style={{
-        padding: '0.75rem 1rem',
-        borderBottom: '1px solid #e5e7eb',
-        color: '#4b5563',
-        fontSize: '0.95rem'
+        padding: '1rem 1.5rem',
+        border: '1px solid #000000',
+        color: '#000000',
+        fontSize: '0.95rem',
+        lineHeight: '1.7',
+        verticalAlign: 'top',
+        fontFamily: '"Times New Roman", "SimSun", "宋体", serif',
+        backgroundColor: '#ffffff'
       }}>
         {children}
       </td>

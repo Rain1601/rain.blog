@@ -14,11 +14,6 @@
   width: 100%;
 }
 
-/* Header */
-.header {
-  text-align: center;
-  padding: var(--spacing-xl) 0;
-}
 
 .title {
   font-size: 2.5rem;
@@ -26,6 +21,7 @@
   color: var(--text-primary);
   margin-bottom: var(--spacing-sm);
   letter-spacing: -0.03em;
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
 }
 
 .subtitle {
@@ -35,24 +31,10 @@
   letter-spacing: -0.01em;
 }
 
-/* Language switcher moved to Layout component */
-
-/* 固定头部区域 */
-.fixedHeader {
-  position: fixed;
-  top: 85px; /* 在导航栏下方 */
-  left: 0;
-  right: 0;
-  background-color: var(--bg-primary);
-  padding: var(--spacing-lg) 0;
-  margin-bottom: 0;
-  z-index: 40;
-}
-
-.fixedHeader .filterSection {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 0 var(--spacing-lg);
+/* 标题区域 */
+.header {
+  text-align: center;
+  padding: var(--spacing-xl) 0;
 }
 
 /* Filter Section */
@@ -94,6 +76,7 @@
   pointer-events: none;
   font-size: 1.1rem;
 }
+
 
 .yearFilter {
   display: flex;
@@ -171,17 +154,13 @@
   font-size: 0.875rem;
 }
 
-/* 可滚动内容区域 */
-.scrollableContent {
-  flex: 1;
-  padding-bottom: 100px; /* 给底部留出空间 */
-  padding-top: 230px; /* 再往下调整避免被遮挡 */
-}
 
 /* Timeline */
 .timeline {
   position: relative;
   padding-left: var(--spacing-lg);
+  max-width: 720px;
+  margin: 0 auto;
 }
 
 .timeline::before {
