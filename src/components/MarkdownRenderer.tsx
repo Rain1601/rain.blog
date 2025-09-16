@@ -34,6 +34,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
     let codeLanguage = '';
     let currentList: string[] = [];
     let inList = false;
+    let currentTable: string[] = [];
+    let inTable = false;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -62,6 +64,35 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       // 在代码块内
       if (inCodeBlock) {
         currentCodeBlock.push(line);
+        continue;
+      }
+
+      // 表格处理
+      if (line.includes('|')) {
+        // 检查是否是表格分隔行
+        if (line.match(/^\|?\s*[-:]+\s*\|/)) {
+          // 这是表格分隔行，继续收集表格
+          if (!inTable) {
+            inTable = true;
+          }
+          currentTable.push(line);
+          continue;
+        } else if (line.match(/^\|/)) {
+          // 这是表格行
+          if (!inTable) {
+            inTable = true;
+          }
+          currentTable.push(line);
+          continue;
+        }
+      } else if (inTable && line.trim() === '') {
+        // 表格结束
+        inTable = false;
+        elements.push({
+          type: 'table',
+          content: currentTable.join('\n')
+        });
+        currentTable = [];
         continue;
       }
 
@@ -143,12 +174,29 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       });
     }
 
+    // 处理未结束的表格
+    if (inTable && currentTable.length > 0) {
+      elements.push({
+        type: 'table',
+        content: currentTable.join('\n')
+      });
+    }
+
     return elements;
   };
 
   // 处理内联样式
   const processInlineStyles = (text: string) => {
     return text
+      // 图片 - 必须在链接之前处理，检查是否需要代理
+      .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, src) => {
+        // 检查是否是需要代理的图片
+        if (src.includes('wostatic.cn') || src.includes('camo.githubusercontent.com')) {
+          const proxiedSrc = `/api/proxy-image?url=${encodeURIComponent(src)}`;
+          return `<img src="${proxiedSrc}" alt="${alt}" style="max-width: 100%; height: auto;" />`;
+        }
+        return `<img src="${src}" alt="${alt}" style="max-width: 100%; height: auto;" />`;
+      })
       // 粗体
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       // 斜体
@@ -172,6 +220,62 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       </pre>
     </div>
   );
+
+  // 渲染表格
+  const renderTable = (content: string, index: number) => {
+    const lines = content.split('\n').filter(line => line.trim());
+    if (lines.length < 2) return null;
+
+    const headers = lines[0].split('|').map(cell => cell.trim()).filter(cell => cell);
+    // Skip separator line (lines[1])
+    const rows = lines.slice(2).map(line =>
+      line.split('|').map(cell => cell.trim()).filter(cell => cell)
+    );
+
+    return (
+      <div key={index} style={{ marginBottom: '2rem', overflow: 'auto' }}>
+        <table style={{
+          width: '100%',
+          borderCollapse: 'collapse',
+          border: '2px solid #000000',
+          fontFamily: '"Times New Roman", "SimSun", "宋体", serif'
+        }}>
+          <thead>
+            <tr>
+              {headers.map((header, i) => (
+                <th key={i} style={{
+                  padding: '1rem 1.5rem',
+                  background: '#f5f5f5',
+                  color: '#000000',
+                  fontWeight: '600',
+                  textAlign: 'left',
+                  border: '1px solid #000000'
+                }}>
+                  <span dangerouslySetInnerHTML={{ __html: processInlineStyles(header) }} />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={i}>
+                {row.map((cell, j) => (
+                  <td key={j} style={{
+                    padding: '1rem 1.5rem',
+                    border: '1px solid #000000',
+                    color: '#000000',
+                    backgroundColor: '#ffffff'
+                  }}>
+                    <span dangerouslySetInnerHTML={{ __html: processInlineStyles(cell) }} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
   // 渲染元素
   const renderElement = (element: ParsedElement, index: number) => {
@@ -238,6 +342,9 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
 
       case 'break':
         return <div key={index} className={styles.break} />;
+
+      case 'table':
+        return renderTable(element.content, index);
 
       default:
         return null;
