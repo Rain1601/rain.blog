@@ -188,12 +188,49 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   // 处理内联样式
   const processInlineStyles = (text: string) => {
     return text
-      // 图片 - 必须在链接之前处理，检查是否需要代理
+      // 图片 - 必须在链接之前处理，检查是否需要特殊处理
       .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, src) => {
-        // 检查是否是需要代理的图片
+        // 检查是否是无法访问的图片
         if (src.includes('wostatic.cn') || src.includes('camo.githubusercontent.com')) {
-          const proxiedSrc = `/api/proxy-image?url=${encodeURIComponent(src)}`;
-          return `<img src="${proxiedSrc}" alt="${alt}" style="max-width: 100%; height: auto;" />`;
+          // 尝试从 GitHub CAMO URL 解码原始链接
+          let originalUrl = src;
+          if (src.includes('camo.githubusercontent.com')) {
+            try {
+              const hexPart = src.split('/').pop();
+              if (hexPart) {
+                originalUrl = Buffer.from(hexPart, 'hex').toString('utf8');
+              }
+            } catch {
+              // 解码失败，使用原URL
+            }
+          }
+
+          return `<div style="
+            border: 2px dashed #ccc;
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+            background: #f9f9f9;
+            border-radius: 8px;
+          ">
+            <div style="margin-bottom: 1rem; color: #666;">
+              🖼️ 图片暂时无法显示
+            </div>
+            <div style="font-size: 0.9rem; margin-bottom: 1rem; color: #888;">
+              ${alt || '图片'}
+            </div>
+            <a href="${originalUrl}" target="_blank" style="
+              color: var(--accent-primary);
+              text-decoration: none;
+              padding: 0.5rem 1rem;
+              border: 1px solid var(--accent-primary);
+              border-radius: 4px;
+              display: inline-block;
+              font-size: 0.9rem;
+            ">
+              点击查看原图
+            </a>
+          </div>`;
         }
         return `<img src="${src}" alt="${alt}" style="max-width: 100%; height: auto;" />`;
       })
