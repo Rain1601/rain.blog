@@ -142,6 +142,22 @@ img {
   height: auto;
 }
 
+/* MDX 链接样式 */
+.mdx-link {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+  padding: 0.1em 0.2em;
+  border-radius: 3px;
+}
+
+.mdx-link:hover {
+  background-color: var(--accent-light);
+  border-bottom-color: var(--accent-primary);
+}
+
 /* 滚动条样式 */
 ::-webkit-scrollbar {
   width: 8px;

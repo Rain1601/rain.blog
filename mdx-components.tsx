@@ -167,27 +167,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     a: ({ href, children }) => (
       <a
         href={href}
-        style={{
-          color: 'var(--accent-primary)',
-          textDecoration: 'none',
-          fontWeight: '500',
-          borderBottom: '1px solid transparent',
-          transition: 'all 0.2s ease',
-          padding: '0.1em 0.2em',
-          borderRadius: '3px'
-        }}
+        className="mdx-link"
         target="_blank"
         rel="noopener noreferrer"
-        onMouseOver={(e) => {
-          const target = e.target as HTMLAnchorElement;
-          target.style.backgroundColor = 'var(--accent-light)';
-          target.style.borderBottomColor = 'var(--accent-primary)';
-        }}
-        onMouseOut={(e) => {
-          const target = e.target as HTMLAnchorElement;
-          target.style.backgroundColor = 'transparent';
-          target.style.borderBottomColor = 'transparent';
-        }}
       >
         {children}
       </a>
