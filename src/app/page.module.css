@@ -10,7 +10,7 @@
   flex: 1;
   max-width: 720px;
   margin: 0 auto;
-  padding: 0 var(--spacing-lg);
+  padding: 0 var(--spacing-lg) 120px var(--spacing-lg); /* 添加底部间距避免被footer遮挡 */
   width: 100%;
 }
 

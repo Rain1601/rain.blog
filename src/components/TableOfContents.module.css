@@ -106,14 +106,15 @@
 }
 
 /* 响应式设计 */
-@media (max-width: 1400px) {
+@media (max-width: 1600px) {
   .toc {
     width: 220px;
     right: 1rem;
   }
 }
 
-@media (max-width: 1200px) {
+/* 14寸MacBook等中等屏幕隐藏目录 */
+@media (max-width: 1536px) {
   .toc {
     display: none;
   }
