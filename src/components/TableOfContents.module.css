@@ -105,17 +105,99 @@
   background: var(--accent-primary);
 }
 
-/* 响应式设计 */
-@media (max-width: 1600px) {
+/* 响应式设计 - 根据屏幕宽度调整目录宽度和位置 */
+
+/* 超大屏幕 */
+@media (min-width: 1920px) {
   .toc {
-    width: 220px;
-    right: 1rem;
+    width: 300px;
+    right: calc((100vw - 1080px) / 2 - 320px); /* 保持与正文的固定距离 */
   }
 }
 
-/* 14寸MacBook等中等屏幕隐藏目录 */
-@media (max-width: 1536px) {
+/* 大屏幕 */
+@media (min-width: 1600px) and (max-width: 1919px) {
   .toc {
+    width: 280px;
+    right: calc((100vw - 1080px) / 2 - 300px);
+  }
+}
+
+/* 中大屏幕 */
+@media (min-width: 1400px) and (max-width: 1599px) {
+  .toc {
+    width: 250px;
+    right: calc((100vw - 1080px) / 2 - 270px);
+  }
+}
+
+/* 中等屏幕 - 14寸MacBook等，显示悬浮按钮 */
+@media (max-width: 1399px) {
+  .toc {
+    /* 隐藏原目录，显示悬浮按钮 */
+    display: none;
+  }
+
+  /* 悬浮目录按钮容器 */
+  .tocButton {
+    display: block;
+    position: fixed;
+    bottom: 100px;
+    right: 2rem;
+    z-index: 100;
+  }
+
+  /* 圆形按钮 */
+  .tocToggle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 16px rgba(217, 113, 73, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .tocToggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 24px rgba(217, 113, 73, 0.4);
+  }
+
+  /* 悬浮目录展开面板 */
+  .tocPanel {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    width: 280px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+  }
+
+  .tocButton:hover .tocPanel {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+/* 大屏幕时隐藏悬浮按钮 */
+@media (min-width: 1400px) {
+  .tocButton {
     display: none;
   }
 }

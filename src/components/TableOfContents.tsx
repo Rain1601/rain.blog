@@ -73,8 +73,9 @@ export default function TableOfContents() {
     return null;
   }
 
-  return (
-    <nav className={styles.toc}>
+  // 目录内容组件
+  const tocContent = (
+    <>
       <div className={styles.tocHeader}>目录</div>
       <ul className={styles.tocList}>
         {headings.map((heading) => (
@@ -94,6 +95,25 @@ export default function TableOfContents() {
           </li>
         ))}
       </ul>
-    </nav>
+    </>
+  );
+
+  return (
+    <>
+      {/* 大屏幕固定目录 */}
+      <nav className={styles.toc}>
+        {tocContent}
+      </nav>
+
+      {/* 小屏幕悬浮按钮 */}
+      <div className={styles.tocButton}>
+        <button className={styles.tocToggle} aria-label="目录">
+          📋
+        </button>
+        <div className={styles.tocPanel}>
+          {tocContent}
+        </div>
+      </div>
+    </>
   );
 }
