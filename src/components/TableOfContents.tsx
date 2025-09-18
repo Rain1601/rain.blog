@@ -17,18 +17,35 @@ export default function TableOfContents() {
     // 获取所有标题元素
     const elements = document.querySelectorAll('h1, h2, h3');
     const tocItems: TOCItem[] = [];
+    const idCounts: Record<string, number> = {}; // 记录ID出现次数
 
-    elements.forEach((elem) => {
-      const id = elem.id || elem.textContent?.toLowerCase().replace(/\s+/g, '-') || '';
-      if (!elem.id) {
-        elem.id = id;
+    elements.forEach((elem, index) => {
+      // 生成基础ID
+      const baseId = elem.id || elem.textContent?.toLowerCase().replace(/\s+/g, '-') || `heading-${index}`;
+
+      // 如果ID已存在，添加数字后缀
+      if (idCounts[baseId]) {
+        idCounts[baseId]++;
+        const uniqueId = `${baseId}-${idCounts[baseId]}`;
+        if (!elem.id) {
+          elem.id = uniqueId;
+        }
+        tocItems.push({
+          id: uniqueId,
+          text: elem.textContent || '',
+          level: parseInt(elem.tagName.substring(1))
+        });
+      } else {
+        idCounts[baseId] = 1;
+        if (!elem.id) {
+          elem.id = baseId;
+        }
+        tocItems.push({
+          id: baseId,
+          text: elem.textContent || '',
+          level: parseInt(elem.tagName.substring(1))
+        });
       }
-
-      tocItems.push({
-        id,
-        text: elem.textContent || '',
-        level: parseInt(elem.tagName.substring(1))
-      });
     });
 
     setHeadings(tocItems);
@@ -107,8 +124,7 @@ export default function TableOfContents() {
 
       {/* 小屏幕悬浮按钮 */}
       <div className={styles.tocButton}>
-        <button className={styles.tocToggle} aria-label="目录">
-          📋
+        <button className={styles.tocToggle} aria-label="目录" title="查看目录">
         </button>
         <div className={styles.tocPanel}>
           {tocContent}

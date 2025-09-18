@@ -149,49 +149,146 @@
 
   /* 圆形按钮 */
   .tocToggle {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: var(--accent-primary);
-    color: white;
-    border: none;
+    background: rgba(60, 60, 60, 0.85);
+    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    box-shadow: 0 4px 16px rgba(217, 113, 73, 0.3);
-    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 400;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(12px);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+  }
+
+  .tocToggle::before {
+    content: "";
+    width: 16px;
+    height: 12px;
+    background-image:
+      linear-gradient(to right, currentColor 0%, currentColor 100%),
+      linear-gradient(to right, currentColor 0%, currentColor 100%),
+      linear-gradient(to right, currentColor 0%, currentColor 100%);
+    background-size: 100% 2px;
+    background-position: 0 0, 0 5px, 0 10px;
+    background-repeat: no-repeat;
+    color: rgba(255, 255, 255, 0.8);
+    opacity: 1;
   }
 
   .tocToggle:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 24px rgba(217, 113, 73, 0.4);
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    background: rgba(80, 80, 80, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .tocToggle:hover::before {
+    color: rgba(255, 255, 255, 1);
+    opacity: 1;
   }
 
   /* 悬浮目录展开面板 */
   .tocPanel {
     position: absolute;
-    bottom: 70px;
+    bottom: 60px;
     right: 0;
     width: 280px;
-    max-height: 400px;
+    max-height: 380px;
     overflow-y: auto;
     background: var(--bg-white);
     border: 1px solid var(--border-light);
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 1rem 1.25rem;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(16px);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(10px);
-    transition: all 0.3s ease;
+    transform: translateY(4px) scale(0.98);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .tocButton:hover .tocPanel {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+  }
+
+  /* 面板内的目录头部样式优化 */
+  .tocPanel .tocHeader {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 0.5rem;
+    font-family: "Times New Roman", "SimSun", "宋体", serif;
+  }
+
+  /* 保持面板内目录项样式与大屏幕一致 */
+  .tocPanel .tocList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .tocPanel .tocItem {
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  .tocPanel .tocItem a {
+    display: block;
+    padding: 0.4rem 0.6rem;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-family: "Times New Roman", "SimSun", "宋体", serif;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tocPanel .tocItem a:hover {
+    color: var(--accent-primary);
+    background: var(--accent-lighter);
+    border-left-color: var(--accent-primary);
+    transform: translateX(4px);
+  }
+
+  .tocPanel .tocItem.active a {
+    color: var(--accent-primary);
+    background: var(--accent-lighter);
+    border-left-color: var(--accent-primary);
+    font-weight: 600;
+    transform: translateX(4px);
+    box-shadow: 0 2px 4px rgba(217, 113, 73, 0.2);
+  }
+
+  .tocPanel .tocItem.level1 a {
+    padding-left: 0.6rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .tocPanel .tocItem.level2 a {
+    padding-left: 1.4rem;
+    font-size: 0.85rem;
+  }
+
+  .tocPanel .tocItem.level3 a {
+    padding-left: 2.2rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
   }
 }
 

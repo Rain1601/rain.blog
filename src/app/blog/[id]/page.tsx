@@ -111,8 +111,6 @@ export default function GitHubBlogDetailPage() {
             {formatDate(post.date)}
           </time>
           <span className={styles.divider}>·</span>
-          <span className={styles.year}>{post.year}年</span>
-          <span className={styles.divider}>·</span>
           <span className={styles.size}>
             {Math.round(post.size / 1024)} KB
           </span>

@@ -61,16 +61,44 @@
   color: var(--text-secondary);
 }
 
-/* Links */
+/* Links - 精致设计 */
 .markdown a {
   color: var(--accent-primary);
   text-decoration: none;
-  transition: color 0.15s ease;
+  font-weight: 500;
+  padding: 0.1rem 0.25rem;
+  border-radius: 3px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  border-bottom: 1px solid transparent;
 }
 
 .markdown a:hover {
   color: var(--accent-hover);
-  text-decoration: underline;
+  background-color: var(--accent-lighter);
+  border-bottom-color: var(--accent-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(217, 113, 73, 0.15);
+}
+
+.markdown a:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(217, 113, 73, 0.1);
+}
+
+/* 外部链接特殊样式 */
+.markdown a[href^="http"]::after,
+.markdown a[href^="https"]::after {
+  content: "↗";
+  font-size: 0.8em;
+  margin-left: 0.25rem;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.markdown a[href^="http"]:hover::after,
+.markdown a[href^="https"]:hover::after {
+  opacity: 1;
 }
 
 /* Inline code */
@@ -190,21 +218,227 @@
   margin-bottom: 0;
 }
 
+/* 表格样式 - 现代简洁设计 */
+.table {
+  width: 100% !important;
+  margin: var(--spacing-xl) 0 !important;
+  overflow: hidden !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+  font-family: "Times New Roman", "SimSun", "宋体", serif !important;
+  background: var(--bg-white) !important;
+  border: 1px solid rgba(217, 113, 73, 0.3) !important;
+  position: relative !important;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+.table table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border-spacing: 0 !important;
+}
+
+.table thead {
+  background: #D97149 !important;
+  border-bottom: 2px solid var(--accent-primary) !important;
+}
+
+.table thead th {
+  padding: 1rem 1.25rem !important;
+  color: white !important;
+  font-weight: 600 !important;
+  text-align: left !important;
+  border-right: 1px solid rgba(255,255,255,0.3) !important;
+  font-size: 0.9rem !important;
+  position: relative !important;
+  background: #D97149 !important;
+}
+
+.table thead th:last-child {
+  border-right: none;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--border-light);
+  transition: all 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background: var(--accent-lighter);
+}
+
+/* Removed zebra striping for cleaner look */
+
+.table tbody td {
+  padding: 0.875rem 1.25rem !important;
+  color: var(--text-secondary) !important;
+  border-right: 1px solid var(--border-light) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.5 !important;
+  vertical-align: top !important;
+  border-bottom: 1px solid var(--border-light) !important;
+}
+
+.table tbody td:last-child {
+  border-right: none;
+}
+
+/* 表格数据特殊样式 */
+.table tbody td strong {
+  color: var(--accent-primary);
+  font-weight: 600;
+  background: linear-gradient(120deg, var(--accent-lighter) 0%, transparent 100%);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+}
+
+.table tbody td code {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  font-size: 0.85em;
+  border: 1px solid var(--border-light);
+}
+
+/* 表格行的微妙动画 */
+.table tbody tr {
+  animation: fadeInRow 0.3s ease-out;
+}
+
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 为表格添加焦点状态 */
+.table:focus-within {
+  box-shadow: 0 4px 24px rgba(217, 113, 73, 0.15);
+  border-color: var(--accent-primary);
+}
+
+/* 表格内容对齐优化 */
+.table tbody td:first-child {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.table tbody td[data-type="number"] {
+  text-align: right;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  font-weight: 600;
+}
+
+/* 表格内的链接特殊处理 */
+.table a {
+  padding: 0.05rem 0.15rem !important;
+  font-size: 0.9rem;
+}
+
+/* 表格内的链接容器适配 */
+.table .linkContainer {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.table .linkTag {
+  font-size: 0.65rem;
+  padding: 0.05rem 0.3rem;
+  margin-left: 0.25rem;
+}
+
+/* 表格内的代码样式 */
+.table code {
+  font-size: 0.8rem;
+  padding: 0.1rem 0.25rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .h1 {
     font-size: 1.875rem;
   }
-  
+
   .h2 {
     font-size: 1.5rem;
   }
-  
+
   .h3 {
     font-size: 1.25rem;
   }
-  
+
   .h4 {
     font-size: 1.125rem;
+  }
+
+  .table {
+    margin: var(--spacing-lg) -1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: none;
+    border-right: none;
+  }
+
+  .table::before {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .table thead th {
+    padding: 1rem 0.875rem;
+    font-size: 0.75rem;
+  }
+
+  .table tbody td {
+    padding: 0.875rem 0.875rem;
+    font-size: 0.85rem;
+  }
+
+  .tableWrapper {
+    border-radius: 8px;
+  }
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .table {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    border-color: var(--border-medium);
+  }
+
+  .table thead {
+    background: var(--bg-secondary);
+    border-bottom-color: var(--accent-primary);
+  }
+
+  .table thead th {
+    color: var(--text-primary);
+    border-right-color: var(--border-medium);
+  }
+
+  .table tbody tr {
+    border-bottom-color: var(--border-medium);
+  }
+
+  .table tbody tr:hover {
+    background: rgba(217, 113, 73, 0.1);
+  }
+
+  .table tbody td {
+    border-right-color: var(--border-medium);
   }
 }

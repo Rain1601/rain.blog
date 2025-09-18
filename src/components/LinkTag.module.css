@@ -1,0 +1,116 @@
+/* 链接容器 */
+.linkContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* 增强的链接样式 */
+.enhancedLink {
+  /* 继承原有链接样式 */
+}
+
+/* 链接标签 */
+.linkTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: help;
+  opacity: 0.8;
+  transform: scale(0.95);
+}
+
+.linkContainer:hover .linkTag {
+  opacity: 1;
+  transform: scale(1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 链接图标 */
+.linkIcon {
+  font-size: 0.75rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 链接标签文本 */
+.linkLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  line-height: 1;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .linkContainer {
+    gap: 0.375rem;
+  }
+
+  .linkTag {
+    padding: 0.1rem 0.375rem;
+    font-size: 0.7rem;
+  }
+
+  .linkIcon {
+    font-size: 0.7rem;
+  }
+
+  .linkLabel {
+    font-size: 0.65rem;
+  }
+}
+
+/* 表格内的链接标签特殊处理 */
+.linkContainer {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .linkContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .linkTag {
+    opacity: 0.85;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  .linkContainer:hover .linkTag {
+    opacity: 1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* 动画效果 */
+.linkTag {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.9);
+  }
+  to {
+    opacity: 0.8;
+    transform: translateY(0) scale(0.95);
+  }
+}

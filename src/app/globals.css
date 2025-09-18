@@ -78,7 +78,6 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   letter-spacing: -0.011em;
-  overscroll-behavior-x: auto;
 }
 
 /* 链接样式 */
