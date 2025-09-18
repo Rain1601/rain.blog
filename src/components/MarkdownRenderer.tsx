@@ -326,7 +326,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
     console.log('Table lines:', lines);
 
     // 智能检测是否有分隔行
-    let headerRowIndex = 0;
+    const headerRowIndex = 0;
     let separatorRowIndex = -1;
     let dataStartIndex = 1;
 
@@ -617,10 +617,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
         // 处理每一行，确保背景透明
         let processedTable = tableMatch;
 
-        // 计数器用于检测偶数行
-        let rowCount = 0;
-        processedTable = processedTable.replace(/<tr[^>]*>/g, (trMatch) => {
-          rowCount++;
+        // 替换所有tr标签，确保背景透明
+        processedTable = processedTable.replace(/<tr[^>]*>/g, () => {
           // 无论是奇数行还是偶数行，都设置为透明
           return `<tr style="background: transparent !important; background-color: transparent !important;">`;
         });
@@ -687,7 +685,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           // 如果包含增强链接，使用特殊处理
           if (processedContent.includes('enhanced-link')) {
             const TagName = element.type === 'heading' ?
-              `h${element.level || 1}` as keyof JSX.IntrinsicElements : 'p';
+              `h${element.level || 1}` as keyof React.JSX.IntrinsicElements : 'p';
             const className = element.type === 'heading' ?
               styles[`h${element.level || 1}`] : styles.paragraph;
 
