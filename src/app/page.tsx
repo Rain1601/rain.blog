@@ -318,7 +318,7 @@ export default function HomePage() {
                   </Link>
                 </h2>
                 <p className={styles.postExcerpt}>
-                  {post.content.substring(0, 100)}...
+                  {post.summary || ''}
                 </p>
                 <Link href={`/blog/${post.id}`} className={styles.readMore}>
                   {t.readMore} →

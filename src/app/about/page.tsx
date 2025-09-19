@@ -23,7 +23,7 @@ export default function AboutPage() {
       <div className={styles.card}>
         {/* Avatar */}
         <Image
-          src="https://github.com/Rain1601.png"
+          src="/images/head.jpg"
           alt="Rain"
           width={120}
           height={120}
