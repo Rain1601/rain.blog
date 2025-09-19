@@ -1,0 +1,108 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+.toolbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1001;
+  backdrop-filter: blur(10px);
+}
+
+.toolbar button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.toolbar button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.toolbar span {
+  color: white;
+  font-size: 14px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.closeButton {
+  margin-left: 8px;
+  background: rgba(255, 100, 100, 0.8) !important;
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+}
+
+.closeButton:hover {
+  background: rgba(255, 100, 100, 1) !important;
+}
+
+.imageContainer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.1s ease-out;
+  transform-origin: center center;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .toolbar {
+    top: 10px;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .toolbar button {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .toolbar span {
+    font-size: 12px;
+    min-width: 40px;
+  }
+
+  .closeButton {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+}

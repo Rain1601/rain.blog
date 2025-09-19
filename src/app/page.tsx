@@ -138,8 +138,11 @@ export default function HomePage() {
         getStats()
       ]);
 
-      setPosts(postsData);
-      setFilteredPosts(postsData);
+      // 按日期降序排序
+      const sortedPosts = postsData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      setPosts(sortedPosts);
+      setFilteredPosts(sortedPosts);
       setStats(statsData);
     } catch (err) {
       console.error('加载数据失败:', err);
@@ -176,6 +179,9 @@ export default function HomePage() {
         post.content.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
+
+    // 按日期降序排序（最新的在前）
+    filtered = filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     setFilteredPosts(filtered);
   }, [searchQuery, selectedYear, selectedMonth, posts]);

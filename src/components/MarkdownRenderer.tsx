@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './MarkdownRenderer.module.css';
 import LinkTag from './LinkTag';
+import ImageViewer from './ImageViewer';
 
 interface MarkdownRendererProps {
   content: string;
@@ -17,6 +18,21 @@ interface ParsedElement {
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
+  const [imageViewer, setImageViewer] = useState<{ src: string; alt: string; isOpen: boolean }>({
+    src: '',
+    alt: '',
+    isOpen: false
+  });
+
+  // 处理图片点击
+  const handleImageClick = (src: string, alt: string) => {
+    setImageViewer({ src, alt, isOpen: true });
+  };
+
+  // 关闭图片查看器
+  const closeImageViewer = () => {
+    setImageViewer(prev => ({ ...prev, isOpen: false }));
+  };
 
 
   // 移除YAML front matter
@@ -664,45 +680,79 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
 
     // 如果是HTML，直接渲染并应用表格样式
     return (
-      <div
-        className={styles.markdown}
-        dangerouslySetInnerHTML={{
-          __html: styleOverride + processedHTML
-        }}
-      />
+      <>
+        <div
+          className={styles.markdown}
+          dangerouslySetInnerHTML={{
+            __html: styleOverride + processedHTML
+          }}
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'IMG') {
+              const img = target as HTMLImageElement;
+              e.preventDefault();
+              handleImageClick(img.src, img.alt || '');
+            }
+          }}
+        />
+        <ImageViewer
+          src={imageViewer.src}
+          alt={imageViewer.alt}
+          isOpen={imageViewer.isOpen}
+          onClose={closeImageViewer}
+        />
+      </>
     );
   }
 
   const elements = parseMarkdown(content);
 
   return (
-    <div className={styles.markdown}>
-      {elements.map((element, index) => {
-        // 对于包含HTML内容的元素，使用增强处理
-        if (element.type === 'paragraph' || element.type === 'heading') {
-          const processedContent = processInlineStyles(element.content);
-
-          // 如果包含增强链接，使用特殊处理
-          if (processedContent.includes('enhanced-link')) {
-            const TagName = element.type === 'heading' ?
-              `h${element.level || 1}` as keyof React.JSX.IntrinsicElements : 'p';
-            const className = element.type === 'heading' ?
-              styles[`h${element.level || 1}`] : styles.paragraph;
-
-            return (
-              <TagName key={index} className={className}>
-                {renderHTMLWithEnhancedLinks(processedContent)}
-              </TagName>
-            );
+    <>
+      <div
+        className={styles.markdown}
+        onClick={(e) => {
+          const target = e.target as HTMLElement;
+          if (target.tagName === 'IMG') {
+            const img = target as HTMLImageElement;
+            e.preventDefault();
+            handleImageClick(img.src, img.alt || '');
           }
-        }
+        }}
+      >
+        {elements.map((element, index) => {
+          // 对于包含HTML内容的元素，使用增强处理
+          if (element.type === 'paragraph' || element.type === 'heading') {
+            const processedContent = processInlineStyles(element.content);
 
-        // 对于表格单元格内容的特殊处理 - 已在renderElement中处理
+            // 如果包含增强链接，使用特殊处理
+            if (processedContent.includes('enhanced-link')) {
+              const TagName = element.type === 'heading' ?
+                `h${element.level || 1}` as keyof React.JSX.IntrinsicElements : 'p';
+              const className = element.type === 'heading' ?
+                styles[`h${element.level || 1}`] : styles.paragraph;
 
-        // 使用原有的渲染逻辑
-        return renderElement(element, index);
-      })}
-    </div>
+              return (
+                <TagName key={index} className={className}>
+                  {renderHTMLWithEnhancedLinks(processedContent)}
+                </TagName>
+              );
+            }
+          }
+
+          // 对于表格单元格内容的特殊处理 - 已在renderElement中处理
+
+          // 使用原有的渲染逻辑
+          return renderElement(element, index);
+        })}
+      </div>
+      <ImageViewer
+        src={imageViewer.src}
+        alt={imageViewer.alt}
+        isOpen={imageViewer.isOpen}
+        onClose={closeImageViewer}
+      />
+    </>
   );
 };
 
