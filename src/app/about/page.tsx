@@ -2,11 +2,32 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useLanguage } from '@/components/Layout';
 import styles from './page.module.css';
+
+// 语言文本配置
+const translations = {
+  zh: {
+    title: '软件工程师',
+    description: '写代码，做交易，以及睡觉。',
+    copyEmail: '复制邮箱',
+    emailCopied: '已复制!',
+    emailCopiedText: 'Rain的邮箱已复制'
+  },
+  en: {
+    title: 'Software Engineer',
+    description: 'Code, Trade And Sleep.',
+    copyEmail: 'Copy Email',
+    emailCopied: 'Copied!',
+    emailCopiedText: 'Rain\'s email copied'
+  }
+};
 
 export default function AboutPage() {
   const [copied, setCopied] = useState(false);
+  const { language } = useLanguage();
   const email = 'rain1104@foxmail.com';
+  const t = translations[language];
 
   const handleCopyEmail = async () => {
     try {
@@ -34,12 +55,11 @@ export default function AboutPage() {
         <h1 className={styles.name}>Rain</h1>
 
         {/* Title */}
-        <p className={styles.title}>全栈开发工程师 · 技术探索者</p>
+        <p className={styles.title}>{t.title}</p>
 
         {/* Description */}
         <p className={styles.description}>
-          热爱编程与创新，专注于现代 Web 技术和人工智能领域的探索。
-          通过代码创造价值，用技术连接世界。
+          {t.description}
         </p>
 
         {/* Contact Links */}
@@ -59,7 +79,7 @@ export default function AboutPage() {
           <button
             onClick={handleCopyEmail}
             className={styles.contactButton}
-            title={copied ? '已复制!' : '复制邮箱'}
+            title={copied ? t.emailCopied : t.copyEmail}
           >
             {copied ? (
               <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
@@ -75,7 +95,7 @@ export default function AboutPage() {
 
         {/* Email Text */}
         <p className={styles.email}>
-          {copied ? 'Rain的邮箱已复制' : email}
+          {copied ? t.emailCopiedText : email}
         </p>
       </div>
     </div>
