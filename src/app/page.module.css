@@ -56,6 +56,7 @@
   border-radius: 8px;
   font-size: 1rem;
   background-color: var(--bg-white);
+  color: var(--text-primary);
   transition: all 0.15s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -64,6 +65,7 @@
   outline: none;
   border-color: var(--accent-primary);
   background-color: var(--bg-white);
+  color: var(--text-primary);
   box-shadow: 0 0 0 3px rgba(217, 113, 73, 0.1);
 }
 

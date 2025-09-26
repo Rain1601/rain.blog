@@ -80,7 +80,7 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedYear, setSelectedYear] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
-  const [hoveredYear, setHoveredYear] = useState<string | null>(null);
+  const [openYear, setOpenYear] = useState<string | null>(null);
   const { language } = useLanguage();
   const [stats, setStats] = useState<{
     totalPosts: number;
@@ -190,8 +190,26 @@ export default function HomePage() {
   const handleMonthSelect = (year: string, month: string) => {
     setSelectedYear(year);
     setSelectedMonth(month);
-    setHoveredYear(null);
+    setOpenYear(null);
   };
+
+  // 处理点击外部关闭下拉菜单
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(`.${styles.yearChipWrapper}`)) {
+        setOpenYear(null);
+      }
+    };
+
+    if (openYear) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [openYear]);
 
   if (loading) {
     return (
@@ -246,12 +264,16 @@ export default function HomePage() {
               <div
                 key={year}
                 className={styles.yearChipWrapper}
-                onMouseEnter={() => setHoveredYear(year)}
-                onMouseLeave={() => setHoveredYear(null)}
               >
                 <button
                   className={`${styles.filterChip} ${selectedYear === year ? styles.active : ''}`}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (openYear === year) {
+                      setOpenYear(null);
+                    } else {
+                      setOpenYear(year);
+                    }
                     setSelectedYear(year);
                     setSelectedMonth('all');
                   }}
@@ -260,7 +282,7 @@ export default function HomePage() {
                 </button>
 
                 {/* 月份下拉菜单 */}
-                {hoveredYear === year && yearMonthStats[year] && (
+                {openYear === year && yearMonthStats[year] && (
                   <div className={styles.monthDropdown}>
                     {Object.entries(yearMonthStats[year])
                       .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
