@@ -12,11 +12,89 @@
   border-radius: 4px;
   max-width: 100%;
   height: auto;
+  display: block;
+  margin: var(--spacing-lg) auto;
 }
 
+/* 默认图片尺寸限制 - 避免图片过大 */
+.markdown img:not([width]) {
+  max-width: 680px; /* 默认最大宽度 */
+  width: 100%; /* 在容器内自适应 */
+}
+
+/* 小图片 - 通过 width 属性控制 */
+.markdown img[width~="200"],
+.markdown img[width~="300"],
+.markdown img[width~="400"] {
+  width: auto;
+  max-width: 100%;
+}
+
+/* 悬停效果 */
 .markdown img:hover {
   transform: scale(1.02);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 内联图片（行内小图） */
+.markdown p img[width~="50"],
+.markdown p img[width~="100"],
+.markdown p img[width~="150"] {
+  display: inline-block;
+  margin: 0 var(--spacing-xs);
+  vertical-align: middle;
+}
+
+/* 居中的图片 */
+.markdown p img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 视频播放器样式 */
+/* B站视频容器 - 已有样式的保持 */
+.markdown .video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 比例 */
+  height: 0;
+  overflow: hidden;
+  margin: 1.5rem auto;
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.markdown .video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 8px;
+}
+
+/* YouTube视频容器 - 统一样式 */
+.markdown [data-youtube-video] {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 比例 */
+  height: 0;
+  overflow: hidden;
+  margin: 1.5rem auto;
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.markdown [data-youtube-video] iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
+  border-radius: 8px;
 }
 
 /* Headings - Anthropic 风格 */
@@ -429,6 +507,12 @@
 
 /* 深色模式适配 */
 @media (prefers-color-scheme: dark) {
+  /* 视频播放器深色模式 */
+  .markdown .video-wrapper,
+  .markdown [data-youtube-video] {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
   .table {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
     border-color: var(--border-medium);

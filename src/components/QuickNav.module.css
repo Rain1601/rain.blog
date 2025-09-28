@@ -45,8 +45,8 @@
 
 .trigger:hover {
   padding-right: 12px;
-  background: var(--accent-lighter);
-  border-color: var(--accent-primary);
+  background: rgba(217, 113, 73, 0.08);
+  border-color: rgba(217, 113, 73, 0.3);
 }
 
 .triggerText {
@@ -237,6 +237,11 @@
   .trigger {
     background: var(--bg-secondary);
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .trigger:hover {
+    background: rgba(217, 113, 73, 0.15);
+    border-color: rgba(217, 113, 73, 0.4);
   }
 
   .sidebar {

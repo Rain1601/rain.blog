@@ -247,7 +247,31 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
     let processed = text;
     const linkPlaceholders: { [key: string]: string } = {};
 
-    // 1. 先处理图片 - 必须在链接之前处理
+    // 0. 先处理HTML格式的图片标签，保留原始style属性
+    processed = processed.replace(/<img\s+([^>]*?)>/gi, (match, attrs) => {
+      // 提取src, alt, style等属性
+      const srcMatch = attrs.match(/src=["']([^"']+)["']/i);
+      const altMatch = attrs.match(/alt=["']([^"']*)["']/i);
+      const styleMatch = attrs.match(/style=["']([^"']+)["']/i);
+
+      if (!srcMatch) return match; // 如果没有src，保持原样
+
+      const src = srcMatch[1];
+      const alt = altMatch ? altMatch[1] : '';
+      const style = styleMatch ? styleMatch[1] : '';
+
+      // 合并样式：保留原始style，补充必要的默认样式
+      let finalStyle = style;
+      if (!style.includes('max-width') && !style.includes('width')) {
+        finalStyle += '; max-width: 100%; height: auto;';
+      } else if (!style.includes('height')) {
+        finalStyle += '; height: auto;';
+      }
+
+      return `<img src="${src}" alt="${alt}" style="${finalStyle.trim()}" />`;
+    });
+
+    // 1. 处理Markdown格式的图片 - 必须在链接之前处理
     processed = processed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, src) => {
       // 检查是否是无法访问的图片
       if (src.includes('wostatic.cn') || src.includes('camo.githubusercontent.com')) {
