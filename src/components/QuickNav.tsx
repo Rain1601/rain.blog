@@ -94,26 +94,28 @@ export default function QuickNav() {
 
   return (
     <>
-      {/* 触发按钮 */}
-      <div
-        className={styles.trigger}
-        onMouseEnter={handleMouseEnter}
-      >
-        <span className={styles.triggerText}>
-          {language === 'zh' ? '快速导航' : 'Quick Nav'}
-        </span>
-        <svg
-          className={styles.triggerIcon}
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
+      {/* 触发按钮 - 侧边栏打开时隐藏 */}
+      {!isOpen && (
+        <div
+          className={styles.trigger}
+          onMouseEnter={handleMouseEnter}
         >
-          <path d="M9 18l6-6-6-6" />
-        </svg>
-      </div>
+          <span className={styles.triggerText}>
+            {language === 'zh' ? '快速导航' : 'Quick Nav'}
+          </span>
+          <svg
+            className={styles.triggerIcon}
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </div>
+      )}
 
       {/* 毛玻璃遮罩 */}
       <div

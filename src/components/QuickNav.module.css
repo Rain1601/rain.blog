@@ -33,7 +33,7 @@
   border-radius: 0 8px 8px 0;
   padding: 12px 8px;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 997; /* 低于侧边栏，避免遮挡 */
   display: flex;
   align-items: center;
   gap: 4px;
@@ -41,6 +41,18 @@
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
   writing-mode: vertical-rl;
   text-orientation: mixed;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
 }
 
 .trigger:hover {
