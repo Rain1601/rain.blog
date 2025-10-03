@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import styles from './MarkdownRenderer.module.css';
 import LinkTag from './LinkTag';
 import ImageViewer from './ImageViewer';
+import CodeBlock from './CodeBlock';
 
 interface MarkdownRendererProps {
   content: string;
@@ -343,17 +344,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   };
 
   // 渲染代码块
-  const renderCodeBlock = (content: string, language?: string) => (
-    <div className={styles.codeBlock}>
-      {language && (
-        <div className={styles.codeHeader}>
-          <span className={styles.codeLanguage}>{language.toUpperCase()}</span>
-        </div>
-      )}
-      <pre className={styles.codeContent}>
-        <code>{content}</code>
-      </pre>
-    </div>
+  const renderCodeBlock = (content: string, language?: string, key?: number) => (
+    <CodeBlock key={key} content={content} language={language} />
   );
 
   // 渲染表格
@@ -451,11 +443,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
         );
 
       case 'code':
-        return (
-          <div key={index}>
-            {renderCodeBlock(element.content, element.language)}
-          </div>
-        );
+        return renderCodeBlock(element.content, element.language, index);
 
       case 'quote':
         return (
@@ -498,32 +486,90 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
 
   // 后处理HTML，将增强链接转换为LinkTag组件
   const postProcessHTML = (htmlString: string) => {
-    // 使用正则表达式找到所有增强链接并替换
-    return htmlString.replace(
+    let processed = htmlString;
+
+    console.log('===== POST PROCESS HTML START =====');
+    console.log('HTML length:', htmlString.length);
+    console.log('HTML preview (first 500 chars):', htmlString.substring(0, 500));
+    console.log('Contains <code class=:', htmlString.includes('<code class='));
+    console.log('Contains <pre>:', htmlString.includes('<pre>'));
+
+    // 1. 处理增强链接
+    processed = processed.replace(
       /<span class="enhanced-link" data-href="([^"]+)">([^<]+)<\/span>/g,
       (match, href, text) => {
-        // 这里我们返回一个特殊标记，稍后会被处理
         return `<enhanced-link href="${href}">${text}</enhanced-link>`;
       }
     );
+
+    // 2. 处理HTML代码块 <pre><code class="language-xxx">...</code></pre>
+    const preCodeMatches = processed.match(/<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g);
+    if (preCodeMatches) {
+      console.log('Found <pre><code> blocks:', preCodeMatches.length);
+    }
+
+    processed = processed.replace(
+      /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g,
+      (match, lang, code) => {
+        console.log('Converting <pre><code> block with language:', lang);
+        return `<code-block language="${lang}">${code}</code-block>`;
+      }
+    );
+
+    // 3. 处理单独的<code class="language-xxx">...</code>（不在<pre>中）
+    const codeMatches = processed.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g);
+    if (codeMatches) {
+      console.log('Found standalone <code> blocks:', codeMatches.length);
+    }
+
+    processed = processed.replace(
+      /<code class="language-(\w+)">([\s\S]*?)<\/code>/g,
+      (match, lang, code) => {
+        console.log('Converting standalone <code> block with language:', lang);
+        return `<code-block language="${lang}">${code}</code-block>`;
+      }
+    );
+
+    return processed;
   };
 
-  // 将HTML字符串转换为React元素，处理增强链接
+  // 将HTML字符串转换为React元素，处理增强链接和代码块
   const renderHTMLWithEnhancedLinks = (html: string) => {
     const processedHTML = postProcessHTML(html);
 
-    // 分割HTML并处理增强链接
-    const parts = processedHTML.split(/(<enhanced-link href="[^"]+">.*?<\/enhanced-link>)/g);
+    // 分割HTML并处理增强链接和代码块
+    const parts = processedHTML.split(/(<enhanced-link href="[^"]+">.*?<\/enhanced-link>|<code-block language="[^"]+">[\s\S]*?<\/code-block>)/g);
 
     return parts.map((part, index) => {
+      // 处理增强链接
       const linkMatch = part.match(/<enhanced-link href="([^"]+)">([^<]+)<\/enhanced-link>/);
-
       if (linkMatch) {
         const [, href, text] = linkMatch;
         return (
           <LinkTag key={`enhanced-link-${index}`} href={href}>
             {text}
           </LinkTag>
+        );
+      }
+
+      // 处理代码块
+      const codeMatch = part.match(/<code-block language="([^"]+)">([\s\S]*?)<\/code-block>/);
+      if (codeMatch) {
+        const [, language, code] = codeMatch;
+        // 解码HTML实体
+        const decodedCode = code
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&amp;/g, '&')
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'");
+
+        return (
+          <CodeBlock
+            key={`code-${index}`}
+            content={decodedCode.trim()}
+            language={language}
+          />
         );
       }
 
@@ -702,14 +748,13 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       </style>
     `;
 
-    // 如果是HTML，直接渲染并应用表格样式
+    // 如果是HTML，使用增强渲染处理链接和代码块
+    const finalHTML = styleOverride + processedHTML;
+
     return (
       <>
         <div
           className={styles.markdown}
-          dangerouslySetInnerHTML={{
-            __html: styleOverride + processedHTML
-          }}
           onClick={(e) => {
             const target = e.target as HTMLElement;
             if (target.tagName === 'IMG') {
@@ -718,7 +763,9 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               handleImageClick(img.src, img.alt || '');
             }
           }}
-        />
+        >
+          {renderHTMLWithEnhancedLinks(finalHTML)}
+        </div>
         <ImageViewer
           src={imageViewer.src}
           alt={imageViewer.alt}
