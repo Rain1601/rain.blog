@@ -18,6 +18,7 @@ export interface BlogPost {
   content: string;
   path: string;
   date: string;
+  updated?: string;
   year: string;
   month: string;
   size: number;
@@ -175,6 +176,7 @@ class GitHubAPI {
   private parseFrontMatter(content: string): {
     title?: string;
     date?: string;
+    updated?: string;
     author?: string;
     tags?: string[];
     categories?: string[];
@@ -224,6 +226,7 @@ class GitHubAPI {
     return {
       title: typeof metadata.title === 'string' ? metadata.title : undefined,
       date: typeof metadata.date === 'string' ? metadata.date : undefined,
+      updated: typeof metadata.updated === 'string' ? metadata.updated : undefined,
       author: typeof metadata.author === 'string' ? metadata.author : undefined,
       tags: Array.isArray(metadata.tags) ? metadata.tags : [],
       categories: Array.isArray(metadata.categories) ? metadata.categories : [],
@@ -333,6 +336,7 @@ GITHUB_TOKEN=your_token_here
           const {
             title: frontMatterTitle,
             date: frontMatterDate,
+            updated: frontMatterUpdated,
             author,
             tags,
             categories,
@@ -374,6 +378,7 @@ GITHUB_TOKEN=your_token_here
             content: rawContent, // 保留完整内容，包括front matter
             path: file.path,
             date,
+            updated: frontMatterUpdated,
             year,
             month,
             size: file.size,

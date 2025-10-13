@@ -79,6 +79,18 @@
   color: var(--text-tertiary);
   font-size: 0.9375rem;
   margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.dateInfo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.label {
+  color: var(--text-muted);
+  font-size: 0.875rem;
 }
 
 .date {
@@ -86,10 +98,6 @@
 }
 
 .year {
-  color: var(--text-tertiary);
-}
-
-.size {
   color: var(--text-tertiary);
 }
 

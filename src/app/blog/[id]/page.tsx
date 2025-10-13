@@ -79,15 +79,14 @@ export default function GitHubBlogDetailPage() {
     }
   };
 
-  // 格式化日期
-  const formatDate = (dateString: string) => {
+  // 格式化日期为完整格式
+  const formatFullDate = (dateString: string) => {
     try {
-      const [year, month] = dateString.split('-');
-      const monthNames = [
-        '1月', '2月', '3月', '4月', '5月', '6月',
-        '7月', '8月', '9月', '10月', '11月', '12月'
-      ];
-      return `${year}年${monthNames[parseInt(month) - 1]}`;
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}年${month}月${day}日`;
     } catch {
       return dateString;
     }
@@ -130,13 +129,23 @@ export default function GitHubBlogDetailPage() {
         <h1 className={styles.title}>{post.title}</h1>
         
         <div className={styles.meta}>
-          <time className={styles.date}>
-            {formatDate(post.date)}
-          </time>
-          <span className={styles.divider}>·</span>
-          <span className={styles.size}>
-            {Math.round(post.size / 1024)} KB
-          </span>
+          <div className={styles.dateInfo}>
+            <span className={styles.label}>发布时间：</span>
+            <time className={styles.date}>
+              {formatFullDate(post.date)}
+            </time>
+          </div>
+          {post.updated && (
+            <>
+              <span className={styles.divider}>·</span>
+              <div className={styles.dateInfo}>
+                <span className={styles.label}>更新时间：</span>
+                <time className={styles.date}>
+                  {formatFullDate(post.updated)}
+                </time>
+              </div>
+            </>
+          )}
         </div>
 
         <div className={styles.actions}>
