@@ -19,6 +19,17 @@ export default function GitHubBlogDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  // 设置页面标题
+  useEffect(() => {
+    if (post) {
+      const originalTitle = document.title;
+      document.title = `${post.title} - Rain's Blog`;
+      return () => {
+        document.title = originalTitle;
+      };
+    }
+  }, [post]);
+
   // 加载文章数据和下一篇文章
   useEffect(() => {
     const loadPost = async () => {
