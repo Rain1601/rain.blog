@@ -1,26 +1,25 @@
 .toc {
   position: fixed;
-  top: 120px;
-  right: 2rem;
-  width: 250px;
-  max-height: calc(100vh - 150px);
+  top: 100px;
+  left: calc((100vw + 720px) / 2 + 24px);
+  width: 180px;
+  max-height: calc(100vh - 140px);
   overflow-y: auto;
-  background: var(--bg-white);
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 0;
   z-index: 30;
+  scrollbar-width: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .tocHeader {
-  font-size: 1.1rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  margin-bottom: 1rem;
-  color: var(--text-primary);
-  font-family: "Times New Roman", "SimSun", "宋体", serif;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--border-medium);
+  margin-bottom: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .tocList {
@@ -37,102 +36,46 @@
 
 .tocItem a {
   display: block;
-  padding: 0.5rem 0.75rem;
-  color: var(--text-tertiary);
+  padding: 0.1875rem 0;
+  color: var(--text-muted);
   text-decoration: none;
-  font-size: 0.9rem;
-  font-family: "Times New Roman", "SimSun", "宋体", serif;
-  border-left: 3px solid transparent;
-  transition: all 0.2s ease;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  transition: color 0.15s ease;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .tocItem a:hover {
-  color: var(--accent-primary);
-  background: var(--accent-lighter);
-  border-left-color: var(--accent-primary);
-  transform: translateX(4px);
+  color: var(--text-primary);
 }
 
 .tocItem.active a {
-  color: var(--accent-primary);
-  background: var(--accent-lighter);
-  border-left-color: var(--accent-primary);
+  color: var(--text-primary);
   font-weight: 600;
-  transform: translateX(4px);
-  box-shadow: 0 2px 4px rgba(217, 113, 73, 0.2);
 }
 
 /* 不同级别标题的缩进 */
-.tocItem.level1 {
-  font-size: 0.95rem;
-}
-
 .tocItem.level1 a {
-  padding-left: 0.75rem;
   font-weight: 500;
 }
 
 .tocItem.level2 a {
-  padding-left: 1.75rem;
-  font-size: 0.9rem;
+  padding-left: 0.75rem;
 }
 
 .tocItem.level3 a {
-  padding-left: 2.75rem;
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  padding-left: 1.5rem;
+  font-size: 0.6875rem;
 }
 
-/* 滚动条样式 */
 .toc::-webkit-scrollbar {
-  width: 6px;
+  display: none;
 }
 
-.toc::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-  border-radius: 3px;
-}
-
-.toc::-webkit-scrollbar-thumb {
-  background: var(--border-medium);
-  border-radius: 3px;
-}
-
-.toc::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-primary);
-}
-
-/* 响应式设计 - 根据屏幕宽度调整目录宽度和位置 */
-
-/* 超大屏幕 */
-@media (min-width: 1920px) {
-  .toc {
-    width: 300px;
-    right: calc((100vw - 1080px) / 2 - 320px); /* 保持与正文的固定距离 */
-  }
-}
-
-/* 大屏幕 */
-@media (min-width: 1600px) and (max-width: 1919px) {
-  .toc {
-    width: 280px;
-    right: calc((100vw - 1080px) / 2 - 300px);
-  }
-}
-
-/* 中大屏幕 */
-@media (min-width: 1400px) and (max-width: 1599px) {
-  .toc {
-    width: 250px;
-    right: calc((100vw - 1080px) / 2 - 270px);
-  }
-}
-
-/* 中等屏幕 - 14寸MacBook等，显示悬浮按钮 */
-@media (max-width: 1399px) {
+/* 小于 1200px 隐藏固定目录，显示悬浮按钮 */
+@media (max-width: 1199px) {
   .toc {
     /* 隐藏原目录，显示悬浮按钮 */
     display: none;
@@ -293,7 +236,7 @@
 }
 
 /* 大屏幕时隐藏悬浮按钮 */
-@media (min-width: 1400px) {
+@media (min-width: 1200px) {
   .tocButton {
     display: none;
   }
