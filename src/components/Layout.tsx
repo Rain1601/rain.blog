@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useState, createContext, useContext, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import QuickNav from './QuickNav';
 import styles from './Layout.module.css';
 
 // 语言类型
@@ -244,8 +243,6 @@ export default function Layout({ children }: LayoutProps) {
           {children}
         </main>
 
-        {/* Quick Navigation - 仅在文章相关页面显示 */}
-        {(pathname === '/' || pathname.startsWith('/blog')) && <QuickNav />}
       </LanguageContext.Provider>
     </div>
   );

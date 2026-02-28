@@ -127,6 +127,21 @@ export default function HomePage() {
     return counts;
   }, [posts]);
 
+  // 按年份分组文章（用于侧边栏目录）
+  const postsByYear = useMemo(() => {
+    const grouped: Record<string, BlogPost[]> = {};
+    filteredPosts.forEach(post => {
+      if (!grouped[post.year]) {
+        grouped[post.year] = [];
+      }
+      grouped[post.year].push(post);
+    });
+    // 按年份降序排列
+    const sortedYears = Object.keys(grouped).sort((a, b) => parseInt(b) - parseInt(a));
+    return sortedYears.map(year => ({ year, posts: grouped[year] }));
+  }, [filteredPosts]);
+
+
   // 加载数据
   const loadData = async () => {
     try {
@@ -233,6 +248,32 @@ export default function HomePage() {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.container}>
+
+        {/* 左侧文章目录 */}
+        <aside className={styles.sidebar}>
+          <div className={styles.sidebarTitle}>
+            {language === 'zh' ? '目录' : 'Index'}
+          </div>
+          <nav className={styles.sidebarNav}>
+            {postsByYear.map(({ year, posts: yearPosts }) => (
+              <div key={year} className={styles.sidebarGroup}>
+                <div className={styles.sidebarYearLabel}>
+                  <span>{year}</span>
+                  <span className={styles.sidebarCount}>{yearPosts.length}</span>
+                </div>
+                <ul className={styles.sidebarList}>
+                  {yearPosts.map((post) => (
+                    <li key={post.id} className={styles.sidebarItem}>
+                      <Link href={`/blog/${post.id}`} className={styles.sidebarLink} title={post.title}>
+                        {post.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        </aside>
 
         {/* 筛选区域 */}
         <section className={styles.filterSection}>
