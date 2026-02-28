@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { getPostById, getAllPosts } from '@/utils/api';
@@ -46,10 +46,22 @@ export default function GitHubBlogDetailPage() {
   const t = translations[language];
 
   const [post, setPost] = useState<BlogPost | null>(null);
+  const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
   const [nextPost, setNextPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // 按年份分组文章（用于左侧目录）
+  const postsByYear = useMemo(() => {
+    const grouped: Record<string, BlogPost[]> = {};
+    allPosts.forEach(p => {
+      if (!grouped[p.year]) grouped[p.year] = [];
+      grouped[p.year].push(p);
+    });
+    const sortedYears = Object.keys(grouped).sort((a, b) => parseInt(b) - parseInt(a));
+    return sortedYears.map(year => ({ year, posts: grouped[year] }));
+  }, [allPosts]);
 
   useEffect(() => {
     if (post) {
@@ -71,10 +83,11 @@ export default function GitHubBlogDetailPage() {
         } else {
           setPost(postData);
           try {
-            const allPosts = await getAllPosts();
-            const sorted = allPosts.sort((a, b) =>
+            const postsData = await getAllPosts();
+            const sorted = postsData.sort((a, b) =>
               new Date(b.date).getTime() - new Date(a.date).getTime()
             );
+            setAllPosts(sorted);
             const idx = sorted.findIndex(p => p.id === id);
             setNextPost(idx >= 0 && idx < sorted.length - 1 ? sorted[idx + 1] : null);
           } catch {
@@ -131,6 +144,38 @@ export default function GitHubBlogDetailPage() {
       <nav className={styles.nav}>
         <Link href="/" className={styles.backLink}>{t.back}</Link>
       </nav>
+
+      {/* 左侧全部文章目录 */}
+      {allPosts.length > 0 && (
+        <aside className={styles.sidebar}>
+          <div className={styles.sidebarTitle}>
+            {language === 'zh' ? '目录' : 'Index'}
+          </div>
+          <nav className={styles.sidebarNav}>
+            {postsByYear.map(({ year, posts: yearPosts }) => (
+              <div key={year} className={styles.sidebarGroup}>
+                <div className={styles.sidebarYearLabel}>
+                  <span>{year}</span>
+                  <span className={styles.sidebarCount}>{yearPosts.length}</span>
+                </div>
+                <ul className={styles.sidebarList}>
+                  {yearPosts.map((p) => (
+                    <li key={p.id} className={styles.sidebarItem}>
+                      <Link
+                        href={`/blog/${p.id}`}
+                        className={`${styles.sidebarLink} ${p.id === id ? styles.sidebarLinkActive : ''}`}
+                        title={p.title}
+                      >
+                        {p.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        </aside>
+      )}
 
       <header className={styles.header}>
         <h1 className={styles.title}>{post.title}</h1>
