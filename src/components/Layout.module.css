@@ -73,6 +73,11 @@
   color: var(--text-tertiary);
 }
 
+.navLinkActive {
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
 /* 右侧区域 - 语言切换和GitHub按钮 */
 .rightSection {
   display: none;
@@ -222,6 +227,11 @@
 
 .mobileNavLink:hover {
   background-color: var(--bg-secondary);
+}
+
+.mobileNavLinkActive {
+  color: var(--accent-primary);
+  background-color: var(--accent-light);
 }
 
 .mobileGithubLink {

@@ -49,6 +49,8 @@
     --text-secondary: #E7E5E4;
     --text-tertiary: #D6D3D1;
     --text-muted: #A8A29E;
+    --accent-light: #3D2A22;
+    --accent-lighter: #2C2018;
     --border-light: #3F3A36;
     --border-medium: #57534E;
     --border-dark: #78716C;
@@ -92,14 +94,23 @@ a:hover {
   text-decoration: underline;
 }
 
-/* 代码样式 */
+/* 代码样式 — 行内 code */
 code {
   background-color: var(--accent-lighter);
-  color: var(--text-primary);
+  color: var(--accent-hover);
   padding: 0.2em 0.4em;
   border-radius: 3px;
   font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
   font-size: 0.875em;
+}
+
+/* 代码块内的 code 不需要行内样式 */
+pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
 }
 
 pre {

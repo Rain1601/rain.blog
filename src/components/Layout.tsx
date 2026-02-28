@@ -74,12 +74,19 @@ export default function Layout({ children }: LayoutProps) {
   }, [isHomePage]);
 
   const navigationItems = language === 'zh' ? [
-    { name: '首页', href: '/' },
-    { name: '关于我', href: '/about' },
+    { name: '文章', href: '/' },
+    { name: '产品', href: '/product' },
+    { name: '关于', href: '/about' },
   ] : [
-    { name: 'Home', href: '/' },
+    { name: 'Article', href: '/' },
+    { name: 'Product', href: '/product' },
     { name: 'About', href: '/about' },
   ];
+
+  const isNavActive = (href: string) => {
+    if (href === '/') return pathname === '/' || pathname.startsWith('/blog');
+    return pathname.startsWith(href);
+  };
 
   return (
     <div className={styles.layout}>
@@ -88,7 +95,7 @@ export default function Layout({ children }: LayoutProps) {
         <div className={styles.navContainer}>
           {/* Logo - 左侧 */}
           <Link href="/" className={styles.logo}>
-            Rain&apos;s Blog
+            Rain
           </Link>
 
           {/* Desktop Navigation - 中间 */}
@@ -100,7 +107,7 @@ export default function Layout({ children }: LayoutProps) {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={styles.navLink}
+                    className={`${styles.navLink} ${isNavActive(item.href) ? styles.navLinkActive : ''}`}
                   >
                     {item.name}
                   </Link>
@@ -182,7 +189,7 @@ export default function Layout({ children }: LayoutProps) {
               <Link
                 key={item.name}
                 href={item.href}
-                className={styles.mobileNavLink}
+                className={`${styles.mobileNavLink} ${isNavActive(item.href) ? styles.mobileNavLinkActive : ''}`}
                 onClick={handleDrawerToggle}
               >
                 {item.name}
@@ -237,8 +244,8 @@ export default function Layout({ children }: LayoutProps) {
           {children}
         </main>
 
-        {/* Quick Navigation */}
-        <QuickNav />
+        {/* Quick Navigation - 仅在文章相关页面显示 */}
+        {(pathname === '/' || pathname.startsWith('/blog')) && <QuickNav />}
       </LanguageContext.Provider>
     </div>
   );

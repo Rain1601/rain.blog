@@ -1,5 +1,5 @@
 .container {
-  max-width: 920px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
   min-height: 100vh;
@@ -14,10 +14,10 @@
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border-light);
-  border-top: 3px solid var(--accent-primary);
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--border-light);
+  border-top: 2px solid var(--accent-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -32,53 +32,51 @@
   background-color: var(--accent-light);
   color: var(--accent-hover);
   padding: var(--spacing-md);
-  border-radius: 4px;
+  border-radius: 6px;
   margin-bottom: var(--spacing-lg);
   text-align: center;
+  font-size: 0.875rem;
 }
 
-/* Navigation */
+/* Top navigation */
 .nav {
-  padding: var(--spacing-lg) 0;
+  padding: var(--spacing-md) 0;
 }
 
 .backLink {
-  color: var(--text-tertiary);
+  color: var(--text-muted);
   text-decoration: none;
-  font-size: 0.9375rem;
+  font-size: 0.8125rem;
   transition: color 0.15s ease;
-  display: inline-flex;
-  align-items: center;
 }
 
 .backLink:hover {
   color: var(--text-primary);
-  transform: translateX(-2px);
 }
 
-/* Header */
+/* Header — left aligned, clean */
 .header {
   margin-bottom: var(--spacing-2xl);
-  text-align: center;
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-md);
-  letter-spacing: -0.03em;
-  line-height: 1.2;
+  margin-bottom: var(--spacing-sm);
+  letter-spacing: -0.025em;
+  line-height: 1.25;
 }
 
 .meta {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  color: var(--text-tertiary);
-  font-size: 0.9375rem;
-  margin-bottom: var(--spacing-md);
+  gap: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  margin-bottom: var(--spacing-sm);
   flex-wrap: wrap;
 }
 
@@ -90,128 +88,107 @@
 
 .label {
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 .date {
-  color: var(--text-tertiary);
-}
-
-.year {
-  color: var(--text-tertiary);
-}
-
-.divider {
   color: var(--text-muted);
 }
 
-/* Actions */
+.divider {
+  color: var(--border-dark);
+}
+
+/* Actions — understated inline links */
 .actions {
   display: flex;
-  gap: var(--spacing-sm);
-  justify-content: center;
+  gap: 1rem;
+  align-items: center;
 }
 
 .copyButton {
-  padding: 0.5rem 1rem;
-  background-color: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
+  padding: 0;
+  background: none;
+  color: var(--text-muted);
+  border: none;
   cursor: pointer;
-  font-size: 0.875rem;
-  transition: all 0.15s ease;
+  font-size: 0.8125rem;
+  transition: color 0.15s ease;
 }
 
 .copyButton:hover {
-  border-color: var(--border-medium);
-  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .githubLink {
-  padding: 0.5rem 1rem;
-  background-color: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
+  color: var(--text-muted);
   text-decoration: none;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: all 0.15s ease;
+  gap: 0.375rem;
+  transition: color 0.15s ease;
 }
 
 .githubLink:hover {
-  border-color: var(--text-primary);
-  background-color: var(--text-primary);
-  color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
-/* Content */
+/* Content — no card, just content */
 .content {
-  background-color: var(--bg-white);
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
-  padding: var(--spacing-3xl) var(--spacing-2xl);
+  background: transparent;
+  border: none;
+  padding: 0;
   margin-bottom: var(--spacing-2xl);
 }
 
-/* Footer */
+/* Footer — clean navigation */
 .footer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-2xl);
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) 0;
+  border-top: 1px solid var(--border-light);
+  margin-bottom: var(--spacing-lg);
 }
 
 .backButton {
-  padding: 0.875rem 1.5rem;
-  color: var(--text-primary);
+  color: var(--text-muted);
   text-decoration: none;
-  border: 1px solid var(--text-primary);
-  border-radius: 4px;
-  font-weight: 500;
-  transition: all 0.15s ease;
+  font-size: 0.875rem;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
 }
 
 .backButton:hover {
-  background-color: var(--text-primary);
-  color: var(--bg-primary);
-}
-
-.githubButton {
-  padding: 0.875rem 1.5rem;
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.15s ease;
-  border: 1px solid var(--text-primary);
   color: var(--text-primary);
 }
 
-.githubButton.primary {
-  background-color: var(--text-primary);
-  color: var(--bg-primary);
+.githubButton {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  text-align: right;
+  line-height: 1.4;
+  transition: color 0.15s ease;
 }
 
-.githubButton.primary:hover {
-  background-color: var(--text-secondary);
-  border-color: var(--text-secondary);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+.githubButton.primary {
+  background: none;
+  border: none;
+}
+
+.githubButton:hover {
+  color: var(--accent-primary);
 }
 
 /* Bottom Info */
 .bottomInfo {
   text-align: center;
-  padding: var(--spacing-xl) 0;
-  border-top: 1px solid var(--border-light);
-  color: var(--text-tertiary);
-  font-size: 0.875rem;
+  padding: var(--spacing-md) 0 var(--spacing-xl);
+  color: var(--text-muted);
+  font-size: 0.75rem;
 }
 
 .bottomInfo p {
@@ -219,54 +196,31 @@
 }
 
 .repoLink {
-  color: var(--text-primary);
+  color: var(--text-tertiary);
   text-decoration: none;
-  font-weight: 500;
-  margin-left: 0.5rem;
+  margin-left: 0.25rem;
   transition: color 0.15s ease;
 }
 
 .repoLink:hover {
   color: var(--accent-primary);
-  text-decoration: underline;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+
   .title {
-    font-size: 2rem;
+    font-size: 1.625rem;
   }
-  
-  .meta {
-    flex-wrap: wrap;
-  }
-  
-  .actions {
-    flex-direction: column;
-    width: 100%;
-    max-width: 300px;
-    margin: 0 auto;
-  }
-  
-  .copyButton,
-  .githubLink {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .content {
-    padding: var(--spacing-lg);
-  }
-  
+
   .footer {
     flex-direction: column;
-    gap: var(--spacing-md);
   }
-  
-  .backButton,
+
   .githubButton {
-    width: 100%;
-    text-align: center;
-    justify-content: center;
+    text-align: left;
   }
 }

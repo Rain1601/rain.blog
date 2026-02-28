@@ -7,30 +7,58 @@ import { getPostById, getAllPosts } from '@/utils/api';
 import { BlogPost } from '@/utils/github';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import TableOfContents from '@/components/TableOfContents';
+import { useLanguage } from '@/components/Layout';
 import styles from './page.module.css';
+
+const translations = {
+  zh: {
+    back: '← 返回',
+    published: '发布于',
+    updated: '更新于',
+    copyLink: '复制链接',
+    copied: '已复制',
+    viewOnGithub: 'GitHub',
+    nextPost: '下一篇',
+    source: '本文来源于',
+    githubRepo: 'GitHub 仓库',
+    notFound: '文章不存在',
+    loadError: '无法加载文章内容，请稍后重试',
+  },
+  en: {
+    back: '← Back',
+    published: 'Published',
+    updated: 'Updated',
+    copyLink: 'Copy link',
+    copied: 'Copied',
+    viewOnGithub: 'GitHub',
+    nextPost: 'Next',
+    source: 'Source:',
+    githubRepo: 'GitHub Repository',
+    notFound: 'Post not found',
+    loadError: 'Failed to load post. Please try again later.',
+  },
+};
 
 export default function GitHubBlogDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  
+  const { language } = useLanguage();
+  const t = translations[language];
+
   const [post, setPost] = useState<BlogPost | null>(null);
   const [nextPost, setNextPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  // 设置页面标题
   useEffect(() => {
     if (post) {
       const originalTitle = document.title;
-      document.title = `${post.title} - Rain's Blog`;
-      return () => {
-        document.title = originalTitle;
-      };
+      document.title = `${post.title} - Rain`;
+      return () => { document.title = originalTitle; };
     }
   }, [post]);
 
-  // 加载文章数据和下一篇文章
   useEffect(() => {
     const loadPost = async () => {
       try {
@@ -38,66 +66,44 @@ export default function GitHubBlogDetailPage() {
         setError(null);
 
         const postData = await getPostById(id);
-
         if (!postData) {
-          setError('文章不存在');
+          setError(t.notFound);
         } else {
           setPost(postData);
-
-          // 获取所有文章以找到下一篇
           try {
             const allPosts = await getAllPosts();
-            // 按日期排序（从新到旧）
-            const sortedPosts = allPosts.sort((a, b) =>
+            const sorted = allPosts.sort((a, b) =>
               new Date(b.date).getTime() - new Date(a.date).getTime()
             );
-
-            // 找到当前文章的索引
-            const currentIndex = sortedPosts.findIndex(p => p.id === id);
-
-            // 获取下一篇文章（时间上更早的文章）
-            if (currentIndex >= 0 && currentIndex < sortedPosts.length - 1) {
-              setNextPost(sortedPosts[currentIndex + 1]);
-            } else {
-              setNextPost(null);
-            }
-          } catch (err) {
-            console.error('获取下一篇文章失败:', err);
-            // 不影响当前文章的显示
+            const idx = sorted.findIndex(p => p.id === id);
+            setNextPost(idx >= 0 && idx < sorted.length - 1 ? sorted[idx + 1] : null);
+          } catch {
+            // don't block current post
           }
         }
-      } catch (err) {
-        console.error('加载文章失败:', err);
-        setError('无法加载文章内容，请稍后重试');
+      } catch {
+        setError(t.loadError);
       } finally {
         setLoading(false);
       }
     };
+    if (id) loadPost();
+  }, [id, t.notFound, t.loadError]);
 
-    if (id) {
-      loadPost();
-    }
-  }, [id]);
-
-  // 复制链接
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('复制失败:', err);
-    }
+    } catch { /* ignore */ }
   };
 
-  // 格式化日期为完整格式
-  const formatFullDate = (dateString: string) => {
+  const formatDate = (dateString: string) => {
     try {
-      const date = new Date(dateString);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}年${month}月${day}日`;
+      return new Date(dateString).toLocaleDateString(
+        language === 'zh' ? 'zh-CN' : 'en-US',
+        { year: 'numeric', month: 'long', day: 'numeric' }
+      );
     } catch {
       return dateString;
     }
@@ -106,9 +112,7 @@ export default function GitHubBlogDetailPage() {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>
-          <div className={styles.spinner}></div>
-        </div>
+        <div className={styles.loading}><div className={styles.spinner} /></div>
       </div>
     );
   }
@@ -116,56 +120,34 @@ export default function GitHubBlogDetailPage() {
   if (error || !post) {
     return (
       <div className={styles.container}>
-        <div className={styles.error}>
-          {error || '文章不存在'}
-        </div>
-        <Link href="/" className={styles.backButton}>
-          ← 返回博客列表
-        </Link>
+        <div className={styles.error}>{error || t.notFound}</div>
+        <Link href="/" className={styles.backLink}>{t.back}</Link>
       </div>
     );
   }
 
   return (
     <div className={styles.container}>
-      {/* 导航栏 */}
       <nav className={styles.nav}>
-        <Link href="/" className={styles.backLink}>
-          ← 返回博客列表
-        </Link>
+        <Link href="/" className={styles.backLink}>{t.back}</Link>
       </nav>
 
-      {/* 文章头部 */}
       <header className={styles.header}>
         <h1 className={styles.title}>{post.title}</h1>
-        
+
         <div className={styles.meta}>
-          <div className={styles.dateInfo}>
-            <span className={styles.label}>发布时间：</span>
-            <time className={styles.date}>
-              {formatFullDate(post.date)}
-            </time>
-          </div>
+          <span>{t.published} {formatDate(post.date)}</span>
           {post.updated && (
             <>
-              <span className={styles.divider}>·</span>
-              <div className={styles.dateInfo}>
-                <span className={styles.label}>更新时间：</span>
-                <time className={styles.date}>
-                  {formatFullDate(post.updated)}
-                </time>
-              </div>
+              <span className={styles.divider}>/</span>
+              <span>{t.updated} {formatDate(post.updated)}</span>
             </>
           )}
         </div>
 
         <div className={styles.actions}>
-          <button
-            className={styles.copyButton}
-            onClick={handleCopyLink}
-            title="复制链接"
-          >
-            {copied ? '✓ 已复制' : '复制链接'}
+          <button className={styles.copyButton} onClick={handleCopyLink}>
+            {copied ? `✓ ${t.copied}` : t.copyLink}
           </button>
           <a
             href={post.url}
@@ -173,49 +155,39 @@ export default function GitHubBlogDetailPage() {
             rel="noopener noreferrer"
             className={styles.githubLink}
           >
-            <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
               <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
             </svg>
-            在 GitHub 中查看
+            {t.viewOnGithub}
           </a>
         </div>
       </header>
 
-      {/* 文章内容 */}
       <article className={styles.content}>
         <MarkdownRenderer content={post.content} />
       </article>
 
-      {/* 右侧目录 */}
       <TableOfContents />
 
-      {/* 底部操作 */}
       <footer className={styles.footer}>
-        <Link href="/" className={styles.backButton}>
-          ← 返回博客列表
-        </Link>
-
+        <Link href="/" className={styles.backButton}>{t.back}</Link>
         {nextPost && (
-          <Link
-            href={`/blog/${nextPost.id}`}
-            className={`${styles.githubButton} ${styles.primary}`}
-          >
-            下一篇: {nextPost.title} →
+          <Link href={`/blog/${nextPost.id}`} className={styles.githubButton}>
+            {t.nextPost}: {nextPost.title} →
           </Link>
         )}
       </footer>
 
-      {/* 底部信息 */}
       <div className={styles.bottomInfo}>
         <p>
-          本文来源于
+          {t.source}
           <a
             href="https://github.com/Rain1601/rain.blog.repo"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.repoLink}
           >
-            GitHub 仓库
+            {t.githubRepo}
           </a>
         </p>
       </div>
