@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '@/components/Layout';
 import styles from './TableOfContents.module.css';
 
 interface TOCItem {
@@ -10,6 +11,7 @@ interface TOCItem {
 }
 
 export default function TableOfContents() {
+  const { language } = useLanguage();
   const [headings, setHeadings] = useState<TOCItem[]>([]);
   const [activeId, setActiveId] = useState<string>('');
 
@@ -93,7 +95,7 @@ export default function TableOfContents() {
   // 目录内容组件
   const tocContent = (
     <>
-      <div className={styles.tocHeader}>目录</div>
+      <div className={styles.tocHeader}>{language === 'zh' ? '文章目录' : 'Contents'}</div>
       <ul className={styles.tocList}>
         {headings.map((heading) => (
           <li
