@@ -124,26 +124,26 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
+.searchInput::placeholder {
+  color: var(--text-muted);
+}
+
 @media (prefers-color-scheme: dark) {
   .searchInput {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
     color: #FAFAF9;
   }
 
   .searchInput:focus {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.18);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
   }
 
   .searchInput::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.35);
   }
-}
-
-.searchInput::placeholder {
-  color: var(--text-muted);
 }
 
 .searchIcon {
