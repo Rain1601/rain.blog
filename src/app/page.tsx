@@ -310,13 +310,15 @@ export default function HomePage() {
                   className={`${styles.filterChip} ${selectedYear === year ? styles.active : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (openYear === year) {
-                      setOpenYear(null);
+                    if (selectedYear === year) {
+                      // 已选中该年份，切换月份下拉
+                      setOpenYear(openYear === year ? null : year);
                     } else {
-                      setOpenYear(year);
+                      // 首次点击，仅选中年份，不展开月份
+                      setSelectedYear(year);
+                      setSelectedMonth('all');
+                      setOpenYear(null);
                     }
-                    setSelectedYear(year);
-                    setSelectedMonth('all');
                   }}
                 >
                   {year}{language === 'zh' ? t.year : ''}({yearCounts[year] || 0})
