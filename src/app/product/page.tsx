@@ -41,6 +41,7 @@ export default function ProductPage() {
               key={product.id}
               className={`${styles.thumbCard} ${product.id === selectedId ? styles.thumbCardActive : ''}`}
               onClick={() => handleSelect(product.id)}
+              style={{ animationDelay: `${0.1 + index * 0.08}s` }}
             >
               <div className={styles.thumbInner}>
                 <div
