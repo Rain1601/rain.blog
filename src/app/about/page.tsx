@@ -9,7 +9,7 @@ import styles from './page.module.css';
 const translations = {
   zh: {
     role: '后端应用开发 | Agent 开发',
-    description: '写代码，做交易，以及睡觉。',
+    description: '开发，思考，投资，睡觉。',
     intro: '目前在阿里云智能从事后端应用开发与 Agent 系统建设，专注于实时语音 Agent、Multi-Agent 架构与 Context Engineering 等方向。工作之余，我在构建一个面向个人投资者的智能投研平台 Uteki，探索 AI Agent 在交易决策中的应用。',
     copyEmail: '复制邮箱',
     emailCopied: '已复制!',
@@ -26,7 +26,7 @@ const translations = {
   },
   en: {
     role: 'Backend Dev | Agent Dev',
-    description: 'Code, Trade And Sleep.',
+    description: 'Dev, Think, Invest, Sleep.',
     intro: 'Currently at Alibaba Cloud Intelligence, working on backend development and Agent systems — focused on real-time voice Agents, Multi-Agent architecture, and Context Engineering. Outside of work, I\'m building Uteki, an intelligent investment platform for individual investors, exploring AI Agent applications in trading decisions.',
     copyEmail: 'Copy Email',
     emailCopied: 'Copied!',
