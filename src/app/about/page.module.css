@@ -1,146 +1,207 @@
 .container {
-  max-width: 720px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-3xl);
+  padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-3xl);
 }
 
-/* ======== Profile ======== */
-.profile {
+/* ======== Two-column Profile Layout ======== */
+.profileLayout {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-2xl) 0 var(--spacing-sm);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 3rem;
+  align-items: flex-start;
+  padding-bottom: var(--spacing-lg);
+  transition: gap 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              padding 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.profileMain {
+/* Expanded: collapse to compact centered row */
+.profileExpanded {
+  gap: 1rem;
+  padding-bottom: var(--spacing-sm);
+  flex-direction: row;
+  align-items: center;
+}
+
+/* ======== Left Sidebar ======== */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.profileExpanded .sidebar {
+  width: auto;
+  flex-direction: row;
   align-items: center;
-  gap: 0.75rem;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 1rem;
 }
 
 .avatar {
-  width: 96px;
-  height: 96px;
+  width: 240px;
+  height: 240px;
   border-radius: 50%;
   border: 2px solid var(--border-light);
   object-fit: cover;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 1rem;
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              height 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              margin 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: width, height;
 }
 
-.profileText {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+.profileExpanded .avatar {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0;
 }
 
 .name {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
   letter-spacing: -0.02em;
-  line-height: 1.2;
-  transition: font-size 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  line-height: 1.3;
+  transition: font-size 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.profileExpanded .name {
+  font-size: 1.125rem;
 }
 
 .role {
   font-size: 0.875rem;
   color: var(--text-tertiary);
   margin: 0.25rem 0 0;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.description {
-  font-size: 1rem;
-  color: var(--text-secondary);
-  margin: 0.75rem 0 0;
-  line-height: 1.6;
-  max-height: 100px;
-  opacity: 1;
-  overflow: hidden;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.profileLinks {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.linkBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  border: 1px solid var(--border-light);
-  border-radius: 6px;
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  background: none;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.linkBtn:hover {
-  border-color: var(--border-dark);
-  color: var(--text-primary);
-}
-
-/* ======== Compact state ======== */
-.profileCompact {
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  text-align: left;
-  padding: var(--spacing-sm) 0;
-  gap: 0;
-}
-
-.profileCompact .profileMain {
-  flex-direction: row;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.profileCompact .avatar {
-  width: 48px;
-  height: 48px;
-}
-
-.profileCompact .profileText {
-  align-items: flex-start;
-}
-
-.profileCompact .name {
-  font-size: 1.125rem;
-}
-
-.profileCompact .role {
+.profileExpanded .role {
   font-size: 0.75rem;
   margin-top: 0.125rem;
 }
 
-.profileCompact .description {
+/* Elements that hide when expanded */
+.description {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0.75rem 0 0;
+  line-height: 1.5;
+  max-height: 100px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.3s ease,
+              margin 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.profileExpanded .description {
   max-height: 0;
   opacity: 0;
   margin: 0;
 }
 
-/* ======== Toggle Button ======== */
+.sidebarLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+  max-height: 200px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.3s ease,
+              margin 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              padding 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.profileExpanded .sidebarLinks {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  border-top: none;
+}
+
+.sidebarLinkItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: none;
+  text-align: left;
+  transition: color 0.15s ease;
+}
+
+.sidebarLinkItem:hover {
+  color: var(--text-primary);
+}
+
+.sidebarLinkItem svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+/* ======== Right Content ======== */
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-self: stretch;
+}
+
+.introText {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin: 0;
+  max-height: 300px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.3s ease,
+              margin 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.profileExpanded .introText {
+  max-height: 0;
+  opacity: 0;
+}
+
+.profileExpanded .content {
+  justify-content: center;
+  align-self: center;
+}
+
+/* ======== Toggle / Nav Buttons ======== */
 .toggleWrap {
   display: flex;
-  justify-content: center;
-  padding: var(--spacing-sm) 0;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  justify-content: flex-end;
+  transition: padding 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.profileExpanded .toggleWrap {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.toggleWrap a {
+  text-decoration: none;
 }
 
 .toggleBtn {
@@ -163,6 +224,41 @@
   color: var(--text-primary);
 }
 
+.toggleBtnActive {
+  border-color: var(--border-dark);
+  color: var(--text-primary);
+}
+
+.navBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.navBtn:hover {
+  border-color: var(--border-dark);
+  color: var(--text-primary);
+}
+
+.navBtn:hover .navArrow {
+  transform: translateX(3px);
+}
+
+.navArrow {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
 .toggleArrow {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -175,9 +271,10 @@
 .resumeWrapper {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.4s ease 0.1s;
+  transition: grid-template-rows 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.5s ease 0.1s;
   opacity: 0;
+  will-change: grid-template-rows, opacity;
 }
 
 .resumeOpen {
@@ -335,25 +432,42 @@
   margin: 0;
 }
 
-/* Responsive */
-@media (max-width: 640px) {
-  .profileCompact {
+/* ======== Responsive ======== */
+@media (max-width: 768px) {
+  .profileLayout {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
+    gap: 1.5rem;
+    align-items: center;
   }
 
-  .name {
-    font-size: 1.5rem;
+  .profileExpanded {
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
   }
 
-  .profileCompact .name {
-    font-size: 1rem;
+  .sidebar {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profileExpanded .sidebar {
+    width: auto;
+    text-align: left;
   }
 
   .avatar {
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
+  }
+
+  .sidebarLinks {
+    align-items: center;
+  }
+
+  .content {
+    padding-top: 0;
   }
 
   .entryHeader {
@@ -364,5 +478,9 @@
   .subEntryHeader {
     flex-direction: column;
     gap: 0.125rem;
+  }
+
+  .toggleWrap {
+    justify-content: center;
   }
 }

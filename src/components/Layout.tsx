@@ -44,8 +44,8 @@ export default function Layout({ children }: LayoutProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const pathname = usePathname();
 
-  // 判断是否在主页
-  const isHomePage = pathname === '/';
+  // 判断是否在文章页
+  const isHomePage = pathname === '/articles';
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -73,17 +73,18 @@ export default function Layout({ children }: LayoutProps) {
   }, [isHomePage]);
 
   const navigationItems = language === 'zh' ? [
-    { name: '文章', href: '/' },
-    { name: '产品', href: '/product' },
     { name: '关于', href: '/about' },
+    { name: '文章', href: '/articles' },
+    { name: '作品', href: '/product' },
   ] : [
-    { name: 'Article', href: '/' },
-    { name: 'Product', href: '/product' },
     { name: 'About', href: '/about' },
+    { name: 'Article', href: '/articles' },
+    { name: 'Portfolio', href: '/product' },
   ];
 
   const isNavActive = (href: string) => {
-    if (href === '/') return pathname === '/' || pathname.startsWith('/blog');
+    if (href === '/articles') return pathname === '/articles' || pathname.startsWith('/blog');
+    if (href === '/about') return pathname === '/about' || pathname === '/';
     return pathname.startsWith(href);
   };
 
