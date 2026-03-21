@@ -69,8 +69,8 @@ export default function AboutPage() {
           <Image
             src="/images/head.jpg"
             alt="Rain"
-            width={260}
-            height={260}
+            width={180}
+            height={180}
             className={styles.avatar}
           />
           <h1 className={styles.name}>陈小宇 / Rain</h1>
