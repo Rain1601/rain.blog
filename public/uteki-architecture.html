@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uteki — 7-Gate Agentic Pipeline Architecture</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f0ebe3;
+    font-family: 'Times New Roman', Georgia, serif;
+    color: #1a1816;
+    padding: 3rem 2rem;
+    min-height: 100vh;
+  }
+
+  .diagram {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .diagram-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 2.5rem;
+    color: #1a1816;
+  }
+
+  .diagram-title span {
+    font-weight: 400;
+    color: #8a8580;
+    font-size: 1rem;
+    display: block;
+    margin-top: 0.25rem;
+  }
+
+  /* ---- Layout ---- */
+  .main-flow {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+
+  /* ---- Boxes ---- */
+  .box {
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    position: relative;
+  }
+
+  .box-outline {
+    border: 1.5px solid #c4b8a8;
+    background: transparent;
+  }
+
+  .box-filled-light {
+    background: #ddd5c8;
+    border: none;
+  }
+
+  .box-filled-medium {
+    background: #c9a882;
+    border: none;
+    color: #1a1816;
+  }
+
+  .box-filled-warm {
+    background: #d97757;
+    border: none;
+    color: #fff;
+  }
+
+  .box-filled-dark {
+    background: #b85a3a;
+    border: none;
+    color: #fff;
+  }
+
+  .box-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8a8580;
+    margin-bottom: 0.5rem;
+  }
+
+  .box-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .box-desc {
+    font-size: 0.8125rem;
+    color: #6b6560;
+    line-height: 1.5;
+    margin-top: 0.375rem;
+  }
+
+  .box-filled-warm .box-desc,
+  .box-filled-dark .box-desc {
+    color: rgba(255,255,255,0.75);
+  }
+
+  /* ---- Input section ---- */
+  .input-section {
+    width: 200px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 6rem;
+  }
+
+  .input-box {
+    width: 100%;
+    text-align: center;
+  }
+
+  .input-box .box-title {
+    font-size: 1rem;
+  }
+
+  /* ---- Arrow ---- */
+  .arrow-right {
+    display: flex;
+    align-items: center;
+    padding-top: 6rem;
+    color: #8a8580;
+  }
+
+  .arrow-right svg {
+    width: 40px;
+    height: 24px;
+  }
+
+  .arrow-down {
+    display: flex;
+    justify-content: center;
+    color: #8a8580;
+    padding: 0.5rem 0;
+  }
+
+  .arrow-down svg {
+    width: 24px;
+    height: 30px;
+  }
+
+  .arrow-down-small {
+    padding: 0.25rem 0;
+  }
+
+  .arrow-down-small svg {
+    height: 20px;
+  }
+
+  /* ---- Pipeline container ---- */
+  .pipeline-container {
+    border: 1.5px solid #c4b8a8;
+    border-radius: 16px;
+    padding: 1.5rem 2rem 2rem;
+    flex: 1;
+    position: relative;
+  }
+
+  .pipeline-label {
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: #6b6560;
+    margin-bottom: 1.5rem;
+  }
+
+  .pipeline-inner {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+
+  /* ---- Left column: LLM + Tools ---- */
+  .left-col {
+    width: 200px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .llm-box {
+    width: 100%;
+    text-align: center;
+    border: 2px solid #d97757;
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .llm-box .box-title {
+    color: #d97757;
+    font-size: 1.125rem;
+  }
+
+  .llm-providers {
+    font-size: 0.6875rem;
+    color: #8a8580;
+    margin-top: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .tools-box {
+    width: 100%;
+    text-align: center;
+    border: 1.5px solid #c9a882;
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  .tools-box .box-title {
+    font-size: 1rem;
+  }
+
+  .tools-list {
+    font-size: 0.75rem;
+    color: #8a8580;
+    margin-top: 0.375rem;
+    line-height: 1.6;
+  }
+
+  /* ---- Right column: Gates ---- */
+  .right-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .gates-row {
+    display: flex;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+  }
+
+  .gate-item {
+    flex: 1;
+    min-width: 140px;
+    border-radius: 10px;
+    padding: 0.875rem 1rem;
+    text-align: center;
+  }
+
+  .gate-number {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+    opacity: 0.6;
+  }
+
+  .gate-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .gate-sub {
+    font-size: 0.6875rem;
+    opacity: 0.65;
+    margin-top: 0.125rem;
+  }
+
+  /* Reflection badge */
+  .reflection-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0;
+  }
+
+  .reflection-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: #8a8580;
+    font-style: italic;
+    white-space: nowrap;
+  }
+
+  .reflection-badge::before {
+    content: '↻';
+    font-size: 0.875rem;
+    font-style: normal;
+  }
+
+  .reflection-line {
+    flex: 1;
+    height: 1px;
+    background: #c4b8a8;
+  }
+
+  /* Gate 7 — synthesis */
+  .gate7-box {
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    text-align: center;
+  }
+
+  /* ---- React loop detail ---- */
+  .react-container {
+    border: 1.5px solid #c4b8a8;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+  }
+
+  .react-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #8a8580;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .react-steps {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .react-step {
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  .react-arrow {
+    color: #8a8580;
+    font-size: 0.75rem;
+  }
+
+  .react-iterate {
+    font-size: 0.75rem;
+    color: #8a8580;
+    font-style: italic;
+    margin-left: 0.5rem;
+  }
+
+  .react-budget {
+    font-size: 0.6875rem;
+    color: #a09890;
+    margin-top: 0.625rem;
+    line-height: 1.5;
+  }
+
+  /* ---- Output ---- */
+  .output-section {
+    width: 200px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 6rem;
+  }
+
+  .output-box {
+    width: 100%;
+    text-align: center;
+  }
+
+  .output-box .box-title {
+    font-size: 1rem;
+  }
+
+  .output-options {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .output-tag {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .tag-buy { background: #34d399; color: #064e3b; }
+  .tag-watch { background: #fbbf24; color: #78350f; }
+  .tag-avoid { background: #f87171; color: #7f1d1d; }
+
+  /* ---- Footer notes ---- */
+  .notes {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #d5cdc0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .notes-list {
+    list-style: disc;
+    padding-left: 1.25rem;
+    font-size: 0.8125rem;
+    color: #6b6560;
+    line-height: 1.7;
+    max-width: 600px;
+  }
+
+  .notes-brand {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #1a1816;
+    letter-spacing: 0.08em;
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 1000px) {
+    .main-flow { flex-direction: column; align-items: stretch; }
+    .input-section, .output-section { padding-top: 0; width: 100%; flex-direction: row; justify-content: center; }
+    .arrow-right { padding-top: 0; justify-content: center; }
+    .arrow-right svg { transform: rotate(90deg); }
+    .pipeline-inner { flex-direction: column; }
+    .left-col { width: 100%; flex-direction: row; }
+    .llm-box, .tools-box { flex: 1; }
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem; }
+    .gates-row { flex-direction: column; }
+    .gate-item { min-width: auto; }
+    .left-col { flex-direction: column; }
+    .react-steps { flex-direction: column; align-items: flex-start; }
+    .notes { flex-direction: column; gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="diagram">
+  <h1 class="diagram-title">
+    Uteki — 7-Gate Agentic Pipeline
+    <span>AI-Driven Company Analysis Architecture</span>
+  </h1>
+
+  <div class="main-flow">
+    <!-- Input -->
+    <div class="input-section">
+      <div class="box-label">Input</div>
+      <div class="box box-outline input-box">
+        <div class="box-title">Ticker + Financial Data</div>
+        <div class="box-desc">NVDA, TSLA, AAPL...</div>
+      </div>
+      <div class="box box-outline input-box" style="border-style: dashed;">
+        <div class="box-title" style="font-size: 0.875rem;">Company Data</div>
+        <div class="box-desc">Revenue, margins, FCF, balance sheet</div>
+      </div>
+    </div>
+
+    <!-- Arrow -->
+    <div class="arrow-right">
+      <svg viewBox="0 0 40 24" fill="none">
+        <path d="M0 12 L32 12" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M28 6 L36 12 L28 18" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- Pipeline -->
+    <div class="pipeline-container">
+      <div class="pipeline-label">7-Gate Agentic Pipeline</div>
+
+      <div class="pipeline-inner">
+        <!-- Left: LLM + Tools -->
+        <div class="left-col">
+          <div class="llm-box">
+            <div class="box-title">LLM Adapter</div>
+            <div class="llm-providers">Claude · OpenAI · DeepSeek<br>Qwen · Gemini · Doubao · MiniMax</div>
+          </div>
+
+          <div class="arrow-down arrow-down-small">
+            <svg viewBox="0 0 24 20" fill="none">
+              <path d="M12 0 L12 14" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M6 10 L12 18 L18 10" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+
+          <div class="tools-box">
+            <div class="box-title">Tool System</div>
+            <div class="tools-list">
+              web_search<br>
+              compare_peers
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Gates flow -->
+        <div class="right-col">
+          <!-- Row 1: Gates 1-3 -->
+          <div class="gates-row">
+            <div class="gate-item box-filled-light">
+              <div class="gate-number">Gate 1</div>
+              <div class="gate-name">业务解析</div>
+              <div class="gate-sub">Business Model</div>
+            </div>
+            <div class="gate-item box-filled-light">
+              <div class="gate-number">Gate 2</div>
+              <div class="gate-name">成长质量</div>
+              <div class="gate-sub">Fisher 15-Question</div>
+            </div>
+            <div class="gate-item box-filled-medium">
+              <div class="gate-number">Gate 3</div>
+              <div class="gate-name">护城河评估</div>
+              <div class="gate-sub">Buffett Moat</div>
+            </div>
+          </div>
+
+          <!-- Reflection 1 -->
+          <div class="reflection-row">
+            <div class="reflection-line"></div>
+            <div class="reflection-badge">Reflection — 矛盾检测</div>
+            <div class="reflection-line"></div>
+          </div>
+
+          <!-- Row 2: Gates 4-5 -->
+          <div class="gates-row">
+            <div class="gate-item box-filled-medium">
+              <div class="gate-number">Gate 4</div>
+              <div class="gate-name">管理层评估</div>
+              <div class="gate-sub">Management</div>
+            </div>
+            <div class="gate-item box-filled-warm">
+              <div class="gate-number" style="color: rgba(255,255,255,0.6);">Gate 5</div>
+              <div class="gate-name">逆向检验</div>
+              <div class="gate-sub">Munger Reverse</div>
+            </div>
+          </div>
+
+          <!-- Reflection 2 -->
+          <div class="reflection-row">
+            <div class="reflection-line"></div>
+            <div class="reflection-badge">Reflection — 风险校验</div>
+            <div class="reflection-line"></div>
+          </div>
+
+          <!-- Row 3: Gate 6 -->
+          <div class="gates-row">
+            <div class="gate-item box-filled-warm">
+              <div class="gate-number" style="color: rgba(255,255,255,0.6);">Gate 6</div>
+              <div class="gate-name">估值与时机</div>
+              <div class="gate-sub">Valuation</div>
+            </div>
+          </div>
+
+          <div class="arrow-down">
+            <svg viewBox="0 0 24 30" fill="none">
+              <path d="M12 0 L12 22" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M6 18 L12 26 L18 18" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+
+          <!-- Gate 7 -->
+          <div class="gate7-box box-filled-dark">
+            <div class="gate-number" style="color: rgba(255,255,255,0.5);">Gate 7</div>
+            <div class="gate-name">综合裁决</div>
+            <div class="gate-sub">Final Synthesis — No tools, reads all 6 reports</div>
+          </div>
+
+          <!-- ReAct loop detail -->
+          <div class="react-container">
+            <div class="react-label">ReAct Loop (Gates 1–6)</div>
+            <div class="react-steps">
+              <span class="react-step box-filled-light">Think</span>
+              <span class="react-arrow">→</span>
+              <span class="react-step box-filled-medium">Act</span>
+              <span class="react-arrow">→</span>
+              <span class="react-step box-filled-warm" style="color:#fff;">Observe</span>
+              <span class="react-arrow">→</span>
+              <span class="react-step box-filled-dark" style="color:#fff;">Conclude</span>
+              <span class="react-iterate">← Iterate</span>
+            </div>
+            <div class="react-budget">
+              Budget: 6 searches · 5 rounds · 10 tool calls · 180s timeout per gate
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arrow -->
+    <div class="arrow-right">
+      <svg viewBox="0 0 40 24" fill="none">
+        <path d="M0 12 L32 12" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M28 6 L36 12 L28 18" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- Output -->
+    <div class="output-section">
+      <div class="box-label">Output</div>
+      <div class="box box-outline output-box">
+        <div class="box-title">Company Report</div>
+        <div class="box-desc">7-section structured analysis</div>
+        <div class="output-options">
+          <span class="output-tag tag-buy">BUY</span>
+          <span class="output-tag tag-watch">WATCH</span>
+          <span class="output-tag tag-avoid">AVOID</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="notes">
+    <ul class="notes-list">
+      <li>结构化编排保证质量可预测，ReAct 在每个节点保留灵活性</li>
+      <li>Gate 3/5 的 Reflection 检查点检测前序分析矛盾，注入下游修正提示</li>
+      <li>统一 LLM Adapter 支持 7 家模型供应商，新增模型无需重构 Pipeline</li>
+      <li>Gate 7 读取全部 6 份原始报告进行综合，不使用工具，确保裁决独立性</li>
+    </ul>
+    <div class="notes-brand">UTEKI</div>
+  </div>
+</div>
+
+</body>
+</html>

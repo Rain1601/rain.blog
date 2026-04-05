@@ -69,17 +69,47 @@ export const productData: ProductItem[] = [
   {
     id: 'sumi',
     title: {
-      zh: 'Sumi — 音频数字人',
-      en: 'Sumi — Audio Digital Human',
+      zh: 'Sumi — 实时语音 AI Agent',
+      en: 'Sumi — Real-time Voice AI Agent',
     },
     description: {
-      zh: '基于 AI 的实时语音交互数字人，支持自然对话、情感识别与多语言语音合成，打造拟人化的声音交互体验。',
-      en: 'AI-powered real-time voice interaction digital human with natural conversation, emotion recognition, and multilingual speech synthesis for human-like voice experiences.',
+      zh: '实时语音 AI Agent 平台，基于 LiveKit WebRTC 实现端到端低延迟语音交互。可插拔 ASR/TTS/NLP 供应商架构，声纹验证实现零注册说话人识别，混合记忆系统（结构化事实 + 向量语义检索）让 Agent 具备长期记忆能力。',
+      en: 'Real-time voice AI agent platform built on LiveKit WebRTC for end-to-end low-latency voice interaction. Pluggable ASR/TTS/NLP provider architecture, voiceprint verification for zero-registration speaker identification, and hybrid memory (structured facts + vector semantic search) for long-term agent memory.',
     },
     coverGradient: 'linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #4a1942 100%)',
     blobColors: ['#c084fc', '#f472b6', '#a78bfa', '#fb923c'],
     blobBg: '#120a1e',
-    techStack: ['Coming Soon'],
+    techStack: ['FastAPI', 'Next.js', 'LiveKit', 'WebRTC', 'ChromaDB', 'Supabase'],
+    highlights: [
+      {
+        title: { zh: '实时语音管线', en: 'Real-time Voice Pipeline' },
+        desc: {
+          zh: 'Browser → WebRTC → LiveKit → Silero VAD（本地语音检测）→ ASR → NLP → TTS → 回传。自适应打断检测（ML 模型区分真正打断与"嗯""哦"等回应词），通话级音频录制。',
+          en: 'Browser → WebRTC → LiveKit → Silero VAD → ASR → NLP → TTS → playback. ML-based adaptive interruption detection (distinguishes real interruptions from backchannels like "uh-huh"), session audio recording.',
+        },
+      },
+      {
+        title: { zh: '声纹说话人验证', en: 'Voiceprint Speaker Verification' },
+        desc: {
+          zh: '零注册声纹识别，支持 CAM++/ERes2NetV2/ECAPA-TDNN/Resemblyzer 四种嵌入模型。实时验证说话人身份，无需预录音注册，ONNX 推理优化。',
+          en: 'Zero-registration speaker verification with 4 embedding models: CAM++, ERes2NetV2, ECAPA-TDNN, Resemblyzer. Real-time identity verification without pre-enrollment, ONNX-optimized inference.',
+        },
+      },
+      {
+        title: { zh: '混合记忆系统', en: 'Hybrid Memory System' },
+        desc: {
+          zh: '结构化事实存储（SQLite 键值对，LLM 自动提取）+ ChromaDB 向量语义检索。对话上下文注入 Top-3 相关历史片段，让 Agent 具备跨会话长期记忆。',
+          en: 'Structured fact store (SQLite key-value, LLM auto-extraction) + ChromaDB vector semantic search. Injects top-3 relevant past segments into conversation context for cross-session long-term memory.',
+        },
+      },
+      {
+        title: { zh: '可插拔供应商架构', en: 'Pluggable Provider Architecture' },
+        desc: {
+          zh: 'ASR：Paraformer / Whisper。NLP：Qwen / Claude / GPT / Gemini / DeepSeek。TTS：CosyVoice / OpenAI TTS。统一工厂模式，Agent 从数据库动态选择模型组合。',
+          en: 'ASR: Paraformer / Whisper. NLP: Qwen / Claude / GPT / Gemini / DeepSeek. TTS: CosyVoice / OpenAI TTS. Unified factory pattern, agents dynamically select model combinations from database.',
+        },
+      },
+    ],
   },
   {
     id: 'coming-soon',
