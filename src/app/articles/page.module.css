@@ -418,4 +418,44 @@
     font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
   }
+
+  .fixedFooter {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: var(--spacing-md) 0.75rem 90px;
+  }
+
+  .searchInput {
+    font-size: 0.8125rem;
+    padding: 0.5rem 2.25rem 0.5rem 0.625rem;
+  }
+
+  .postDate {
+    font-size: 0.75rem;
+  }
+
+  .postTitle {
+    font-size: 1rem;
+  }
+
+  .postExcerpt {
+    font-size: 0.8125rem;
+  }
+
+  .readMore {
+    font-size: 0.75rem;
+  }
+
+  .timelineItem {
+    padding: var(--spacing-sm) 0;
+  }
+
+  .monthDropdown {
+    left: 0;
+    transform: none;
+  }
 }

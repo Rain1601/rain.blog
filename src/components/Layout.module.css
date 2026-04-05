@@ -15,22 +15,29 @@
   z-index: 100;
 }
 
-/* Glass navbar for immersive pages (e.g., portfolio) */
-.navbarGlass {
-  background-color: rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
 
 .navContainer {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 1.25rem 2rem;
+  padding: 1rem 1rem;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
+}
+
+@media (min-width: 480px) {
+  .navContainer {
+    padding: 1.25rem 1.5rem;
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .navContainer {
+    padding: 1.25rem 2rem;
+    gap: 2rem;
+  }
 }
 
 /* Logo */
@@ -176,8 +183,9 @@
 .mobileDrawer {
   position: fixed;
   top: 0;
-  right: -300px;
-  width: 300px;
+  right: -80vw;
+  width: 80vw;
+  max-width: 300px;
   height: 100vh;
   background-color: var(--bg-white);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
@@ -358,7 +366,19 @@
   background-color: var(--bg-primary);
   position: relative;
   overflow-x: hidden;
-  padding-top: 85px; /* 给固定导航栏留出空间 */
+  padding-top: 60px; /* 给固定导航栏留出空间 */
+}
+
+@media (min-width: 480px) {
+  .main {
+    padding-top: 70px;
+  }
+}
+
+@media (min-width: 768px) {
+  .main {
+    padding-top: 85px;
+  }
 }
 
 /* Page Transition */

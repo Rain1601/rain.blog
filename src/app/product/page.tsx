@@ -56,6 +56,8 @@ export default function ProductPage() {
     setDetailOpen(false);
   }, []);
 
+  const hasDetail = product.highlights && product.highlights.length > 0;
+
   // Scroll-to-close: when detail view is scrolled to top and user keeps scrolling up, close it
   useEffect(() => {
     const el = detailRef.current;
@@ -82,16 +84,17 @@ export default function ProductPage() {
       }
       if (e.key === 'ArrowLeft') goPrev();
       if (e.key === 'ArrowRight') goNext();
+      if (e.key === 'Enter' || e.key === 'ArrowDown') {
+        if (hasDetail) openDetail();
+      }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [goPrev, goNext, detailOpen, closeDetail]);
+  }, [goPrev, goNext, detailOpen, closeDetail, hasDetail, openDetail]);
 
   const contentClass = isAnimating
     ? (direction === 'right' ? styles.contentExit : styles.contentExitReverse)
     : styles.contentEnter;
-
-  const hasDetail = product.highlights && product.highlights.length > 0;
 
   return (
     <div className={`${styles.page} ${mounted ? styles.pageMounted : ''}`}>
@@ -185,20 +188,23 @@ export default function ProductPage() {
 
       {/* ===== Detail view (slides in from bottom) ===== */}
       <div ref={detailRef} className={`${styles.detailView} ${detailOpen ? styles.detailSlideIn : ''}`}>
-        {/* Back button */}
-        <button className={styles.backBtn} onClick={closeDetail}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="18 15 12 9 6 15"/>
-          </svg>
-          <span>{language === 'zh' ? '返回' : 'Back'}</span>
-        </button>
-
         <div className={styles.detailContent}>
           <div className={styles.detailHeader}>
-            <span className={styles.detailIndex}>
-              {String(currentIndex + 1).padStart(2, '0')}
-            </span>
-            <h2 className={styles.detailTitle}>{product.title[language]}</h2>
+            <div className={styles.detailHeaderTop}>
+              <div>
+                <span className={styles.detailIndex}>
+                  {String(currentIndex + 1).padStart(2, '0')}
+                </span>
+                <h2 className={styles.detailTitle}>{product.title[language]}</h2>
+              </div>
+              {/* Back button — next to title */}
+              <button className={styles.backBtn} onClick={closeDetail} title="Esc">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                <span>{language === 'zh' ? '返回' : 'Back'}</span>
+              </button>
+            </div>
             <p className={styles.detailDesc}>{product.description[language]}</p>
             <div className={styles.detailLinks}>
               {product.github && (
