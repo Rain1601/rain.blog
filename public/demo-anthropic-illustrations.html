@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anthropic 手绘风格 SVG 动画 Demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #1a1816;
+    --terracotta: #d97757;
+    --cream: #faf8f4;
+    --text-secondary: #8a8580;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Times New Roman', Georgia, serif;
+    overflow-x: hidden;
+  }
+
+  .section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    position: relative;
+  }
+
+  .section-label {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .hero-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    max-width: 1100px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .hero-text h1 {
+    font-size: 3.5rem;
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-text p {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 420px;
+  }
+
+  .illustration-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ========== SVG Drawing Animation ========== */
+
+  .draw-stroke {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawIn 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  .draw-stroke.delay-1 { animation-delay: 0.3s; }
+  .draw-stroke.delay-2 { animation-delay: 0.6s; }
+  .draw-stroke.delay-3 { animation-delay: 0.9s; }
+  .draw-stroke.delay-4 { animation-delay: 1.2s; }
+  .draw-stroke.delay-5 { animation-delay: 1.5s; }
+
+  @keyframes drawIn {
+    to { stroke-dashoffset: 0; }
+  }
+
+  .fade-fill {
+    opacity: 0;
+    animation: fillIn 0.8s ease forwards;
+  }
+
+  .fade-fill.delay-1 { animation-delay: 1.0s; }
+  .fade-fill.delay-2 { animation-delay: 1.3s; }
+  .fade-fill.delay-3 { animation-delay: 1.6s; }
+  .fade-fill.delay-4 { animation-delay: 1.9s; }
+  .fade-fill.delay-5 { animation-delay: 2.2s; }
+
+  @keyframes fillIn {
+    to { opacity: 1; }
+  }
+
+  .float-gentle {
+    animation: floatGentle 6s ease-in-out infinite;
+  }
+
+  .float-gentle-reverse {
+    animation: floatGentleReverse 7s ease-in-out infinite;
+  }
+
+  @keyframes floatGentle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  @keyframes floatGentleReverse {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  /* ========== Scroll-triggered visibility ========== */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .animate-on-scroll.visible .draw-stroke {
+    animation-play-state: running;
+  }
+
+  .animate-on-scroll:not(.visible) .draw-stroke {
+    animation-play-state: paused;
+  }
+
+  .tech-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid rgba(217, 119, 87, 0.3);
+    border-radius: 100px;
+    font-size: 0.75rem;
+    color: var(--terracotta);
+    margin-bottom: 1.5rem;
+    font-family: -apple-system, sans-serif;
+  }
+
+  .code-hint {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    opacity: 0.5;
+    max-width: 300px;
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .hero-layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .hero-text h1 { font-size: 2.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ Demo 1: Network Graph (Agents page style) ============ -->
+<div class="section" id="demo1">
+  <span class="section-label">Demo 01 / Network Graph</span>
+  <div class="hero-layout">
+    <div class="hero-text">
+      <span class="tech-badge">feTurbulence + sketchy paths + double stroke</span>
+      <h1>Connected<br>thinking</h1>
+      <p>SVG feTurbulence 滤镜为笔触添加微抖动，双线描边模拟铅笔反复勾画，路径使用不规则 Bezier 曲线。</p>
+    </div>
+    <div class="illustration-container animate-on-scroll">
+      <svg viewBox="0 0 400 420" width="380" height="400" fill="none">
+        <!-- Hand-drawn wobble filter -->
+        <defs>
+          <filter id="sketch1" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="turbulence" baseFrequency="0.03" numOctaves="4" seed="2" result="turbulence"/>
+            <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+          <filter id="sketch1-heavy" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="3" seed="5" result="turbulence"/>
+            <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="3.5" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+        </defs>
+
+        <g filter="url(#sketch1)">
+          <g class="float-gentle">
+            <!-- Triangle edges - sketchy curves instead of straight lines -->
+            <!-- Edge 1: top to right - drawn twice for pencil feel -->
+            <path d="M198 82 C220 110, 270 155, 318 218" stroke="var(--terracotta)" stroke-width="3.5" stroke-linecap="round" class="draw-stroke" opacity="0.5"/>
+            <path d="M202 78 C225 108, 275 158, 322 222" stroke="var(--terracotta)" stroke-width="3" stroke-linecap="round" class="draw-stroke"/>
+
+            <!-- Edge 2: right to left -->
+            <path d="M322 222 C280 238, 210 250, 138 258" stroke="var(--terracotta)" stroke-width="3.5" stroke-linecap="round" class="draw-stroke delay-1" opacity="0.5"/>
+            <path d="M318 218 C275 235, 205 248, 142 262" stroke="var(--terracotta)" stroke-width="3" stroke-linecap="round" class="draw-stroke delay-1"/>
+
+            <!-- Edge 3: left back to top -->
+            <path d="M142 262 C155 200, 175 140, 198 82" stroke="var(--terracotta)" stroke-width="3.5" stroke-linecap="round" class="draw-stroke delay-2" opacity="0.5"/>
+            <path d="M138 258 C150 195, 172 138, 202 78" stroke="var(--terracotta)" stroke-width="3" stroke-linecap="round" class="draw-stroke delay-2"/>
+
+            <!-- Inner connections - wobbly -->
+            <path d="M200 80 C215 110, 240 150, 258 178" stroke="var(--terracotta)" stroke-width="2.5" stroke-linecap="round" class="draw-stroke delay-1"/>
+            <path d="M260 182 C280 195, 300 208, 320 220" stroke="var(--terracotta)" stroke-width="2.5" stroke-linecap="round" class="draw-stroke delay-2"/>
+            <path d="M140 260 C170 248, 220 225, 258 182" stroke="var(--terracotta)" stroke-width="2.5" stroke-linecap="round" class="draw-stroke delay-2"/>
+
+            <!-- Dangling connections -->
+            <path d="M140 262 C125 285, 100 310, 82 332" stroke="var(--terracotta)" stroke-width="2.5" stroke-linecap="round" class="draw-stroke delay-3"/>
+            <path d="M320 220 C335 248, 348 275, 358 298" stroke="var(--terracotta)" stroke-width="2.5" stroke-linecap="round" class="draw-stroke delay-3"/>
+
+            <!-- Nodes - slightly imperfect circles via paths -->
+            <path d="M200 66 C210 65, 216 72, 215 82 C214 92, 207 98, 198 98 C189 97, 184 91, 185 81 C186 71, 192 66, 200 66Z" fill="var(--terracotta)" class="fade-fill delay-1"/>
+            <path d="M320 206 C330 207, 336 214, 335 222 C334 230, 327 236, 318 235 C309 234, 305 228, 306 220 C307 212, 312 206, 320 206Z" fill="var(--terracotta)" class="fade-fill delay-2"/>
+            <path d="M140 246 C150 245, 156 252, 155 262 C154 272, 147 277, 138 276 C129 275, 125 268, 126 260 C127 252, 132 246, 140 246Z" fill="var(--terracotta)" class="fade-fill delay-3"/>
+            <path d="M260 170 C268 169, 272 175, 271 182 C270 189, 265 193, 258 192 C251 191, 248 186, 249 179 C250 172, 254 169, 260 170Z" fill="var(--terracotta)" class="fade-fill delay-2"/>
+            <path d="M80 322 C87 321, 92 326, 91 333 C90 340, 84 344, 78 343 C72 342, 69 337, 70 330 C71 323, 75 321, 80 322Z" fill="var(--terracotta)" class="fade-fill delay-4"/>
+            <path d="M358 290 C364 289, 368 294, 367 300 C366 306, 361 310, 356 309 C351 308, 348 303, 349 297 C350 291, 353 289, 358 290Z" fill="var(--terracotta)" class="fade-fill delay-4"/>
+          </g>
+        </g>
+
+        <!-- Hand squiggle below - heavier filter for more sketch feel -->
+        <g filter="url(#sketch1-heavy)">
+          <g class="float-gentle-reverse">
+            <!-- Wavy hand/signature lines - thicker, more expressive -->
+            <path d="M95 328 C102 312, 108 340, 118 325 C128 310, 122 342, 135 325 C148 308, 142 338, 155 328 C162 322, 168 335, 172 325"
+                  stroke="var(--cream)" stroke-width="5.5" stroke-linecap="round" fill="none" class="draw-stroke delay-3"/>
+            <path d="M98 332 C105 316, 112 345, 120 328 C130 313, 125 346, 138 330 C150 314, 145 342, 158 332"
+                  stroke="var(--cream)" stroke-width="4" stroke-linecap="round" fill="none" class="draw-stroke delay-4" opacity="0.4"/>
+
+            <!-- Looping squiggle (like a hand gesture) -->
+            <path d="M112 348 C118 365, 135 370, 145 355 C155 340, 140 330, 128 338 C116 346, 125 362, 140 365 C155 368, 165 355, 160 340"
+                  stroke="var(--cream)" stroke-width="4.5" stroke-linecap="round" fill="none" class="draw-stroke delay-4"/>
+
+            <!-- Tail curl -->
+            <path d="M160 340 C155 355, 165 370, 175 375 C185 380, 180 390, 170 395"
+                  stroke="var(--cream)" stroke-width="4" stroke-linecap="round" fill="none" class="draw-stroke delay-5"/>
+
+            <!-- Small dot at end -->
+            <circle cx="168" cy="398" r="6" fill="var(--terracotta)" class="fade-fill delay-5"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="code-hint">feTurbulence scale=2.5 for wobble<br>double-stroke for pencil weight</div>
+</div>
+
+<!-- ============ Demo 2: Abstract Squiggle (Product page style) ============ -->
+<div class="section" id="demo2">
+  <span class="section-label">Demo 02 / Abstract Squiggle</span>
+  <div class="hero-layout">
+    <div class="hero-text">
+      <span class="tech-badge">organic loops + pressure variation</span>
+      <h1>Creative<br>exploration</h1>
+      <p>模拟真实画笔的压力变化（stroke-width 渐变），螺旋和环形线条增加手绘涂鸦的随意感。</p>
+    </div>
+    <div class="illustration-container animate-on-scroll">
+      <svg viewBox="0 0 400 480" width="380" height="460" fill="none">
+        <defs>
+          <filter id="sketch2" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="turbulence" baseFrequency="0.025" numOctaves="4" seed="8" result="turbulence"/>
+            <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+        </defs>
+
+        <g filter="url(#sketch2)">
+          <g class="float-gentle">
+            <!-- Terracotta blob (imperfect circle) -->
+            <path d="M235 55 C265 50, 290 68, 292 95 C294 122, 275 148, 248 150 C221 152, 195 135, 192 108 C189 81, 210 58, 235 55Z"
+                  fill="var(--terracotta)" class="fade-fill delay-1"/>
+
+            <!-- Main flowing white line - thick, expressive, with pressure variation -->
+            <!-- Segment 1: starts from circle, thick -->
+            <path d="M225 145 C215 165, 235 178, 245 195 C255 212, 240 225, 222 232"
+                  stroke="var(--cream)" stroke-width="8" stroke-linecap="round"
+                  class="draw-stroke" style="stroke-dasharray: 300; stroke-dashoffset: 300;"/>
+
+            <!-- Segment 2: loop/spiral - the signature hand-drawn element -->
+            <path d="M222 232 C200 238, 178 225, 175 245 C172 265, 195 278, 215 270 C235 262, 240 242, 225 235 C210 228, 195 240, 200 255"
+                  stroke="var(--cream)" stroke-width="7" stroke-linecap="round"
+                  class="draw-stroke delay-1" style="stroke-dasharray: 500; stroke-dashoffset: 500;"/>
+            <!-- Ghost/echo of the loop for pencil feel -->
+            <path d="M220 234 C198 240, 180 228, 178 248 C176 268, 198 280, 217 272"
+                  stroke="var(--cream)" stroke-width="4" stroke-linecap="round" opacity="0.25"
+                  class="draw-stroke delay-1" style="stroke-dasharray: 400; stroke-dashoffset: 400;"/>
+
+            <!-- Segment 3: continues flowing down -->
+            <path d="M200 255 C208 278, 230 290, 238 310 C246 330, 225 348, 210 355"
+                  stroke="var(--cream)" stroke-width="6.5" stroke-linecap="round"
+                  class="draw-stroke delay-2" style="stroke-dasharray: 300; stroke-dashoffset: 300;"/>
+
+            <!-- Segment 4: second loop -->
+            <path d="M210 355 C195 362, 175 352, 178 370 C181 388, 205 395, 218 385 C231 375, 225 358, 212 358"
+                  stroke="var(--cream)" stroke-width="6" stroke-linecap="round"
+                  class="draw-stroke delay-3" style="stroke-dasharray: 400; stroke-dashoffset: 400;"/>
+
+            <!-- Segment 5: tail - thins out like lifting pen -->
+            <path d="M212 358 C220 375, 240 388, 250 405 C260 422, 245 435, 228 440"
+                  stroke="var(--cream)" stroke-width="5" stroke-linecap="round"
+                  class="draw-stroke delay-4" style="stroke-dasharray: 300; stroke-dashoffset: 300;"/>
+
+            <path d="M228 440 C215 445, 200 438, 195 448"
+                  stroke="var(--cream)" stroke-width="3.5" stroke-linecap="round"
+                  class="draw-stroke delay-5" style="stroke-dasharray: 100; stroke-dashoffset: 100;"/>
+          </g>
+        </g>
+
+        <!-- Accent dots - outside filter for crisp contrast -->
+        <circle cx="192" cy="452" r="8" fill="var(--terracotta)" class="fade-fill delay-5"/>
+        <circle cx="252" cy="408" r="5" fill="var(--terracotta)" class="fade-fill delay-5"/>
+      </svg>
+    </div>
+  </div>
+  <div class="code-hint">stroke-width 8→3.5 simulates<br>pen pressure lifting off paper</div>
+</div>
+
+<!-- ============ Demo 3: Browser Window (Chrome page style) ============ -->
+<div class="section" id="demo3">
+  <span class="section-label">Demo 03 / Browser Window</span>
+  <div class="hero-layout">
+    <div class="hero-text">
+      <span class="tech-badge">wobbly geometry + sketch overlay</span>
+      <h1>A helping hand<br>across all tabs</h1>
+      <p>矩形用手绘 path 替代，每条边有微小弯曲和抖动。描边画两遍模拟反复勾画，滤镜添加纸面纹理感。</p>
+    </div>
+    <div class="illustration-container animate-on-scroll">
+      <svg viewBox="0 0 420 380" width="400" height="360" fill="none">
+        <defs>
+          <filter id="sketch3" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="4" seed="12" result="turbulence"/>
+            <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="2.8" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+        </defs>
+
+        <g filter="url(#sketch3)">
+          <g class="float-gentle">
+            <!-- Terracotta fill - wobbly rectangle -->
+            <path d="M108 68 C180 62, 250 58, 305 63 C312 130, 316 195, 310 252 C245 258, 175 260, 102 255 C98 190, 96 130, 108 68Z"
+                  fill="var(--terracotta)" class="fade-fill delay-1"/>
+
+            <!-- White border - first pass (heavier, slightly offset) -->
+            <path d="M95 52 C165 44, 255 42, 322 48 C328 52, 332 58, 330 65 L335 260 C332 268, 328 272, 322 272 L92 278 C86 276, 82 270, 82 264 L88 58 C89 54, 92 52, 95 52Z"
+                  stroke="var(--cream)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"
+                  fill="none" class="draw-stroke" opacity="0.45" style="stroke-dasharray: 1200; stroke-dashoffset: 1200;"/>
+
+            <!-- White border - second pass (main, cleaner) -->
+            <path d="M98 55 C168 47, 258 45, 318 50 C324 54, 327 60, 326 67 L332 258 C330 264, 326 268, 320 268 L95 275 C89 273, 86 268, 86 262 L90 60 C91 56, 94 54, 98 55Z"
+                  stroke="var(--cream)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"
+                  fill="none" class="draw-stroke" style="stroke-dasharray: 1200; stroke-dashoffset: 1200;"/>
+
+            <!-- Title bar line - wobbly -->
+            <path d="M88 92 C140 88, 220 86, 330 90"
+                  stroke="var(--cream)" stroke-width="4" stroke-linecap="round"
+                  class="draw-stroke delay-1"/>
+            <!-- Second pass for thickness -->
+            <path d="M90 95 C145 90, 225 88, 328 93"
+                  stroke="var(--cream)" stroke-width="2.5" stroke-linecap="round"
+                  class="draw-stroke delay-1" opacity="0.3"/>
+
+            <!-- Title bar dots - imperfect -->
+            <path d="M112 72 C116 70, 120 73, 118 77 C116 81, 110 81, 109 77 C108 73, 110 71, 112 72Z" fill="var(--cream)" class="fade-fill delay-2"/>
+            <path d="M135 71 C139 69, 143 72, 141 76 C139 80, 133 80, 132 76 C131 72, 133 70, 135 71Z" fill="var(--cream)" class="fade-fill delay-2"/>
+            <path d="M158 70 C162 68, 166 71, 164 75 C162 79, 156 79, 155 75 C154 71, 156 69, 158 70Z" fill="var(--cream)" class="fade-fill delay-2"/>
+
+            <!-- Cursor arrow - hand-drawn style -->
+            <g class="fade-fill delay-3">
+              <!-- Main arrow body -->
+              <path d="M222 138 C223 155, 221 175, 222 198 C222 205, 225 208, 230 205 L248 192 C252 190, 255 192, 257 196 L272 228 C274 232, 278 233, 282 231 L288 226 C292 223, 292 219, 290 215 L275 185 C273 181, 275 178, 279 177 L295 175 C299 174, 300 170, 297 167 L225 138 C223 137, 222 137, 222 138Z"
+                    fill="var(--cream)" stroke="var(--bg)" stroke-width="1.5"/>
+              <!-- Second outline for sketch feel -->
+              <path d="M222 138 C223 155, 221 175, 222 198 L248 192 L272 228 L288 226 L275 185 L295 175 L225 138Z"
+                    stroke="var(--cream)" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.3"
+                    transform="translate(-2, -1)"/>
+            </g>
+
+            <!-- Tab dividers - wobbly vertical lines -->
+            <path d="M208 52 C209 60, 207 72, 208 90" stroke="var(--cream)" stroke-width="3" stroke-linecap="round" class="draw-stroke delay-2"/>
+            <path d="M262 50 C263 58, 261 70, 262 88" stroke="var(--cream)" stroke-width="3" stroke-linecap="round" class="draw-stroke delay-2"/>
+
+            <!-- Content lines inside browser (sketchy) -->
+            <path d="M110 120 C140 118, 175 119, 200 120" stroke="var(--cream)" stroke-width="2" stroke-linecap="round" class="draw-stroke delay-3" opacity="0.3"/>
+            <path d="M110 140 C150 138, 220 137, 260 140" stroke="var(--cream)" stroke-width="2" stroke-linecap="round" class="draw-stroke delay-3" opacity="0.2"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="code-hint">Double-stroke with offset<br>feTurbulence for paper texture</div>
+</div>
+
+<!-- ============ Demo 4: Comparison ============ -->
+<div class="section" id="demo4" style="background: #15120f;">
+  <span class="section-label">Demo 04 / Before vs After</span>
+  <div style="max-width: 1000px; width: 100%; text-align: center;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 1rem; font-weight: 400;">Hand-drawn Techniques</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 3rem; font-family: sans-serif; font-size: 0.9rem;">Left: clean SVG &nbsp;/&nbsp; Right: with hand-drawn treatment</p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
+      <!-- Clean version -->
+      <div style="text-align: center;">
+        <svg viewBox="0 0 200 200" width="200" height="200" fill="none" style="margin-bottom: 1rem;">
+          <!-- Perfect circle -->
+          <circle cx="100" cy="70" r="30" fill="var(--terracotta)"/>
+          <!-- Perfect line -->
+          <line x1="70" y1="120" x2="130" y2="120" stroke="var(--cream)" stroke-width="3"/>
+          <!-- Perfect rectangle -->
+          <rect x="60" y="140" width="80" height="40" rx="2" stroke="var(--cream)" stroke-width="3" fill="none"/>
+        </svg>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); font-family: sans-serif;">Clean geometric SVG<br><code style="color: var(--terracotta);">&lt;circle&gt; &lt;line&gt; &lt;rect&gt;</code></p>
+      </div>
+
+      <!-- Hand-drawn version -->
+      <div style="text-align: center;">
+        <svg viewBox="0 0 200 200" width="200" height="200" fill="none" style="margin-bottom: 1rem;">
+          <defs>
+            <filter id="sketchCompare" x="-5%" y="-5%" width="110%" height="110%">
+              <feTurbulence type="turbulence" baseFrequency="0.03" numOctaves="4" seed="42" result="turbulence"/>
+              <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+          </defs>
+          <g filter="url(#sketchCompare)">
+            <!-- Imperfect circle via path -->
+            <path d="M100 38 C118 36, 134 48, 135 68 C136 88, 122 102, 102 103 C82 104, 66 90, 65 70 C64 50, 80 38, 100 38Z"
+                  fill="var(--terracotta)"/>
+            <!-- Wobbly line - double stroke -->
+            <path d="M68 118 C85 116, 105 122, 132 119" stroke="var(--cream)" stroke-width="3.5" stroke-linecap="round" opacity="0.4"/>
+            <path d="M70 121 C88 118, 108 124, 130 121" stroke="var(--cream)" stroke-width="3" stroke-linecap="round"/>
+            <!-- Wobbly rectangle -->
+            <path d="M62 142 C85 138, 120 137, 138 141 C141 155, 142 170, 139 182 C118 186, 82 187, 63 183 C60 170, 59 155, 62 142Z"
+                  stroke="var(--cream)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <!-- Ghost second pass -->
+            <path d="M64 144 C88 140, 122 139, 136 143 C139 157, 140 172, 137 180 C115 184, 80 185, 65 181 C62 168, 61 153, 64 144Z"
+                  stroke="var(--cream)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.25"/>
+          </g>
+        </svg>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); font-family: sans-serif;">Hand-drawn treatment<br><code style="color: var(--terracotta);">feTurbulence + path + double stroke</code></p>
+      </div>
+    </div>
+
+    <!-- Technique breakdown -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 4rem; text-align: left;">
+      <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+        <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--terracotta);">feTurbulence</h3>
+        <p style="font-size: 0.75rem; color: var(--text-secondary); font-family: sans-serif; line-height: 1.5;">SVG 滤镜添加有机抖动，所有路径自动获得手绘质感</p>
+      </div>
+      <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+        <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--terracotta);">Double Stroke</h3>
+        <p style="font-size: 0.75rem; color: var(--text-secondary); font-family: sans-serif; line-height: 1.5;">同一路径画两遍，第二遍偏移+降低透明度，模拟铅笔反复勾画</p>
+      </div>
+      <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+        <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--terracotta);">Path 替代几何</h3>
+        <p style="font-size: 0.75rem; color: var(--text-secondary); font-family: sans-serif; line-height: 1.5;">用 Bezier path 代替 circle/rect，坐标故意不规则</p>
+      </div>
+      <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+        <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--terracotta);">Pressure Variation</h3>
+        <p style="font-size: 0.75rem; color: var(--text-secondary); font-family: sans-serif; line-height: 1.5;">stroke-width 从粗到细，模拟笔压从重到轻抬起</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.animate-on-scroll').forEach(el => {
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>

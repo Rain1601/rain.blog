@@ -15,6 +15,14 @@
   z-index: 100;
 }
 
+/* Glass navbar for immersive pages (e.g., portfolio) */
+.navbarGlass {
+  background-color: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
 .navContainer {
   max-width: 1080px;
   margin: 0 auto;
@@ -351,4 +359,20 @@
   position: relative;
   overflow-x: hidden;
   padding-top: 85px; /* 给固定导航栏留出空间 */
+}
+
+/* Page Transition */
+.pageTransition {
+  animation: pageEnter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

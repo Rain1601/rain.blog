@@ -3,34 +3,6 @@
    ============================================ */
 
 /* ---- Keyframes ---- */
-@keyframes blobDrift1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25%      { transform: translate(25%, -18%) scale(1.12); }
-  50%      { transform: translate(-8%, 22%) scale(0.94); }
-  75%      { transform: translate(18%, 8%) scale(1.06); }
-}
-
-@keyframes blobDrift2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25%      { transform: translate(-22%, 12%) scale(1.08); }
-  50%      { transform: translate(18%, -16%) scale(0.9); }
-  75%      { transform: translate(-12%, -8%) scale(1.14); }
-}
-
-@keyframes blobDrift3 {
-  0%, 100% { transform: translate(0, 0) scale(1.05); }
-  25%      { transform: translate(12%, 20%) scale(0.92); }
-  50%      { transform: translate(-18%, -12%) scale(1.1); }
-  75%      { transform: translate(22%, -4%) scale(0.96); }
-}
-
-@keyframes blobDrift4 {
-  0%, 100% { transform: translate(0, 0) scale(0.95); }
-  25%      { transform: translate(-16%, -22%) scale(1.08); }
-  50%      { transform: translate(12%, 18%) scale(1.12); }
-  75%      { transform: translate(-8%, 12%) scale(0.9); }
-}
-
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -39,6 +11,26 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
+}
+
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(6px); }
+}
+
+@keyframes staggerIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes illustrationFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+@keyframes illustrationFloatReverse {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(6px); }
 }
 
 /* ---- Page shell ---- */
@@ -56,72 +48,28 @@
   opacity: 1;
 }
 
-/* ---- Full-screen blob background ---- */
-.blobBg {
+/* ---- Solid dark background (matches site theme) ---- */
+.solidBg {
   position: absolute;
   inset: 0;
-  transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: var(--bg-primary);
   z-index: 0;
 }
 
-.blobField {
-  position: absolute;
-  inset: -15%;
-  filter: blur(80px);
-  opacity: 0.8;
-}
-
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  will-change: transform;
-  transition: background-color 1s ease;
-}
-
-.b1 {
-  width: 50%;
-  height: 50%;
-  top: 5%;
-  left: 20%;
-  opacity: 0.85;
-  animation: blobDrift1 14s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.b2 {
-  width: 42%;
-  height: 42%;
-  top: 30%;
-  left: 5%;
-  opacity: 0.7;
-  animation: blobDrift2 18s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.b3 {
-  width: 38%;
-  height: 38%;
-  top: 10%;
-  right: 5%;
-  opacity: 0.65;
-  animation: blobDrift3 20s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.b4 {
-  width: 32%;
-  height: 32%;
-  bottom: 10%;
-  left: 40%;
-  opacity: 0.55;
-  animation: blobDrift4 12s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Noise texture */
-.noiseOverlay {
+/* ============================================
+   Hero View — the project carousel
+   ============================================ */
+.heroView {
   position: absolute;
   inset: 0;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 1;
+  z-index: 2;
+  transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.heroSlideUp {
+  transform: translateY(-100%);
+  opacity: 0;
 }
 
 /* ---- Content overlay ---- */
@@ -136,274 +84,319 @@
   pointer-events: none;
 }
 
-.content > * {
-  pointer-events: auto;
-}
+.content > * { pointer-events: auto; }
 
-/* Transitions */
-.contentEnter {
-  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
+.contentEnter { animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
+.contentExit { opacity: 0; transform: translateY(-12px); transition: opacity 0.25s ease, transform 0.25s ease; }
+.contentExitReverse { opacity: 0; transform: translateY(12px); transition: opacity 0.25s ease, transform 0.25s ease; }
 
-.contentExit {
-  opacity: 0;
-  transform: translateY(-12px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.contentExitReverse {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-/* ---- Top-left header ---- */
-.topLeft {
-  animation: fadeIn 0.6s ease 0.1s both;
-}
+/* Top-left */
+.topLeft { animation: fadeIn 0.6s ease 0.1s both; }
 
 .tagline {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  display: block;
-  margin-bottom: 0.375rem;
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.15em;
+  text-transform: uppercase; color: rgba(255, 255, 255, 0.5);
+  display: block; margin-bottom: 0.375rem;
 }
 
 .heroTitle {
-  font-size: 1.25rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.75);
-  letter-spacing: -0.01em;
-  line-height: 1.35;
+  font-size: 1.25rem; font-weight: 400; color: rgba(255, 255, 255, 0.75);
+  letter-spacing: -0.01em; line-height: 1.35;
   font-family: 'Times New Roman', 'SimSun', '宋体', serif;
-  white-space: pre-line;
-  margin: 0;
+  white-space: pre-line; margin: 0;
 }
 
-/* ---- Center title ---- */
+/* Center */
 .center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 0.75rem;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 0.75rem;
 }
 
 .indexLabel {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.35);
-  font-variant-numeric: tabular-nums;
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.35); font-variant-numeric: tabular-nums;
 }
 
 .productName {
-  font-size: clamp(2rem, 4vw, 3.25rem);
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
-  letter-spacing: -0.02em;
-  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
-  line-height: 1.2;
-  margin: 0;
-  max-width: 700px;
+  font-size: clamp(2rem, 4vw, 3.25rem); font-weight: 400;
+  color: rgba(255, 255, 255, 0.95); text-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+  letter-spacing: -0.02em; font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+  line-height: 1.2; margin: 0; max-width: 700px;
 }
 
-/* ---- Bottom-left info card ---- */
+/* Explore button */
+.exploreBtn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  margin-top: 0.5rem; padding: 0.5rem 1.25rem; border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.55); font-size: 0.8125rem; font-weight: 400;
+  letter-spacing: 0.04em; cursor: pointer; transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease 0.5s both;
+}
+
+.exploreBtn svg { animation: bounceDown 2s ease-in-out 1.5s infinite; }
+
+.exploreBtn:hover {
+  border-color: rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.exploreBtnText { font-family: 'Times New Roman', 'SimSun', '宋体', serif; }
+
+/* Info card — positioned right side */
 .infoCard {
-  max-width: 420px;
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 1.5rem;
+  max-width: 420px; align-self: flex-end;
+  background: transparent; padding: 0;
 }
 
-.productDesc {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.75;
-  margin: 0 0 1rem;
-}
+.productDesc { font-size: 0.875rem; color: rgba(255, 255, 255, 0.7); line-height: 1.75; margin: 0 0 1rem; }
 
-.techStack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-  margin-bottom: 1rem;
-}
+.techStack { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 1rem; }
 
 .techTag {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.6);
-  padding: 0.25rem 0.625rem;
-  border-radius: 4px;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.6);
+  padding: 0.25rem 0.625rem; border-radius: 4px; font-size: 0.6875rem;
+  font-weight: 500; letter-spacing: 0.02em; border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.links {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
+.links { display: flex; gap: 1rem; align-items: center; }
 
 .linkPrimary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.8125rem;
-  color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-  padding: 0.4rem 1rem;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 6px;
-  transition: background 0.2s ease;
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  font-size: 0.8125rem; color: #fff; text-decoration: none; font-weight: 500;
+  padding: 0.4rem 1rem; background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 6px; transition: background 0.2s ease;
 }
-
-.linkPrimary:hover {
-  background: rgba(255, 255, 255, 0.22);
-  color: #fff;
-  text-decoration: none;
-}
+.linkPrimary:hover { background: rgba(255, 255, 255, 0.22); color: #fff; text-decoration: none; }
 
 .linkGhost {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.8125rem;
-  color: rgba(255, 255, 255, 0.55);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease;
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  font-size: 0.8125rem; color: rgba(255, 255, 255, 0.55); text-decoration: none;
+  font-weight: 500; transition: color 0.2s ease;
 }
+.linkGhost:hover { color: rgba(255, 255, 255, 0.9); text-decoration: none; }
 
-.linkGhost:hover {
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-}
-
-/* ---- Side arrows ---- */
+/* Arrows — no disabled state, always loop */
 .arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.3s ease;
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.7); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   animation: fadeIn 0.5s ease 0.3s both;
 }
 
-.arrow:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #fff;
+.arrow:hover {
+  background: rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.3); color: #fff;
 }
 
-.arrow:disabled {
-  opacity: 0.2;
-  cursor: not-allowed;
-}
+.arrowLeft { left: 1.5rem; }
+.arrowRight { right: 1.5rem; }
 
-.arrowLeft {
-  left: 1.5rem;
-}
-
-.arrowRight {
-  right: 1.5rem;
-}
-
-/* ---- Bottom center dots ---- */
+/* Dots */
 .dots {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  z-index: 10; display: flex; gap: 0.5rem; align-items: center;
   animation: fadeIn 0.5s ease 0.4s both;
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  border: none;
-  cursor: pointer;
-  padding: 0;
+  width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.25);
+  border: none; cursor: pointer; padding: 0;
   transition: background 0.3s ease, width 0.3s ease, border-radius 0.3s ease;
 }
+.dot:hover { background: rgba(255, 255, 255, 0.5); }
+.dotActive { background: rgba(255, 255, 255, 0.85); width: 24px; border-radius: 4px; }
 
-.dot:hover {
-  background: rgba(255, 255, 255, 0.5);
+/* ============================================
+   Detail View — slides in from bottom
+   ============================================ */
+.detailView {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.dotActive {
-  background: rgba(255, 255, 255, 0.85);
-  width: 24px;
-  border-radius: 4px;
+.detailSlideIn {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Back button */
+.backBtn {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 2rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+}
+
+.backBtn:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Detail content */
+.detailContent {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem 5rem;
+}
+
+.detailHeader {
+  margin-bottom: 3rem;
+  animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s both;
+}
+
+.detailIndex {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.3);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.detailTitle {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: -0.02em;
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+}
+
+.detailDesc {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.8;
+  max-width: 640px;
+  margin: 0 0 1.5rem;
+}
+
+.detailLinks {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Highlights grid */
+.highlightsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.highlightCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.highlightCard:nth-child(1) { animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both; }
+.highlightCard:nth-child(2) { animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s both; }
+.highlightCard:nth-child(3) { animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both; }
+.highlightCard:nth-child(4) { animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s both; }
+
+.highlightCard:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.highlightTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.highlightDesc {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Detail tech section */
+.detailTech {
+  animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s both;
+}
+
+.detailTechLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+/* ============================================
+   Hand-drawn SVG Illustration
+   ============================================ */
+.illustrationWrap {
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+  z-index: 1;
+  pointer-events: none;
+  animation: fadeIn 1s ease 0.6s both;
+}
+
+.illustration {
+  width: 420px;
+  height: 440px;
+}
+
+.illustrationFloat {
+  animation: illustrationFloat 7s ease-in-out infinite;
+}
+
+.illustrationFloatReverse {
+  animation: illustrationFloatReverse 8s ease-in-out infinite;
 }
 
 /* ---- Mobile ---- */
 @media (max-width: 768px) {
-  .content {
-    padding: 1.5rem 1.25rem 4.5rem;
-  }
+  .content { padding: 1.5rem 1.25rem 4.5rem; }
+  .heroTitle { font-size: 1rem; }
+  .productName { font-size: 1.75rem; }
+  .infoCard { max-width: 100%; padding: 1rem; }
+  .productDesc { font-size: 0.8125rem; line-height: 1.65; }
+  .arrowLeft { left: 0.75rem; }
+  .arrowRight { right: 0.75rem; }
+  .arrow { width: 36px; height: 36px; }
+  .dots { bottom: 1.25rem; }
 
-  .heroTitle {
-    font-size: 1rem;
-  }
+  .illustrationWrap { left: 2%; bottom: 8%; }
+  .illustration { width: 250px; height: 260px; }
 
-  .productName {
-    font-size: 1.75rem;
-  }
+  .detailContent { padding: 0 1.25rem 3rem; }
+  .highlightsGrid { grid-template-columns: 1fr; }
+  .detailTitle { font-size: 1.75rem; }
+}
 
-  .infoCard {
-    max-width: 100%;
-    padding: 1rem;
-  }
-
-  .productDesc {
-    font-size: 0.8125rem;
-    line-height: 1.65;
-  }
-
-  .arrowLeft {
-    left: 0.75rem;
-  }
-
-  .arrowRight {
-    right: 0.75rem;
-  }
-
-  .arrow {
-    width: 36px;
-    height: 36px;
-  }
-
-  .dots {
-    bottom: 1.25rem;
-  }
+@media (max-width: 480px) {
+  .illustrationWrap { display: none; }
 }

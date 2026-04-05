@@ -243,7 +243,6 @@ export default function Layout({ children }: LayoutProps) {
         <main className={styles.main}>
           {children}
         </main>
-
       </LanguageContext.Provider>
     </div>
   );
