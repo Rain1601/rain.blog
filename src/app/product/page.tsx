@@ -116,6 +116,9 @@ export default function ProductPage() {
           </div>
 
           <div className={styles.center}>
+            {product.logo && (
+              <img src={product.logo} alt="" className={styles.productLogo} />
+            )}
             <span className={styles.indexLabel}>
               {String(currentIndex + 1).padStart(2, '0')}
             </span>

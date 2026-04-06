@@ -15,6 +15,8 @@ export interface ProductItem {
   techStack: string[];
   link?: string;
   github?: string;
+  /** Logo SVG path */
+  logo?: string;
   /** Detail page highlights */
   highlights?: ProductHighlight[];
 }
@@ -35,6 +37,7 @@ export const productData: ProductItem[] = [
     blobBg: '#070e1a',
     techStack: ['FastAPI', 'React', 'Flutter', 'PostgreSQL', 'ClickHouse', 'Qdrant'],
     github: 'https://github.com/Rain1601/uteki.open',
+    logo: '/images/logo-uteki.svg',
     highlights: [
       {
         title: { zh: '7-Gate Agentic Pipeline', en: '7-Gate Agentic Pipeline' },
@@ -80,6 +83,7 @@ export const productData: ProductItem[] = [
     blobColors: ['#c084fc', '#f472b6', '#a78bfa', '#fb923c'],
     blobBg: '#120a1e',
     techStack: ['FastAPI', 'Next.js', 'LiveKit', 'WebRTC', 'ChromaDB', 'Supabase'],
+    logo: '/images/logo-sumi.svg',
     highlights: [
       {
         title: { zh: '实时语音管线', en: 'Real-time Voice Pipeline' },
@@ -107,6 +111,52 @@ export const productData: ProductItem[] = [
         desc: {
           zh: 'ASR：Paraformer / Whisper。NLP：Qwen / Claude / GPT / Gemini / DeepSeek。TTS：CosyVoice / OpenAI TTS。统一工厂模式，Agent 从数据库动态选择模型组合。',
           en: 'ASR: Paraformer / Whisper. NLP: Qwen / Claude / GPT / Gemini / DeepSeek. TTS: CosyVoice / OpenAI TTS. Unified factory pattern, agents dynamically select model combinations from database.',
+        },
+      },
+    ],
+  },
+  {
+    id: 'muses',
+    title: {
+      zh: 'Muses — AI 写作 Agent',
+      en: 'Muses — AI Writing Agent',
+    },
+    description: {
+      zh: '将文章当作代码的 AI 写作平台。Claude 对话式编辑 + 实时 Diff（红删/绿增）+ Accept/Reject 工作流，选中文本自动注入上下文，编辑记录支持一键回退。',
+      en: 'AI writing platform that treats articles like code. Claude conversational editing + real-time diff (red delete / green add) + Accept/Reject workflow, text selection auto-injects context, edit history with one-click revert.',
+    },
+    coverGradient: 'linear-gradient(135deg, #1a1510 0%, #2d2418 50%, #3d3020 100%)',
+    blobColors: ['#d97757', '#c4654a', '#a8845c', '#e8c9a0'],
+    blobBg: '#1a1510',
+    techStack: ['Next.js', 'FastAPI', 'TipTap', 'Claude API', 'SSE'],
+    logo: '/images/logo-muses.svg',
+    highlights: [
+      {
+        title: { zh: 'Claude 对话式编辑', en: 'Claude Conversational Editing' },
+        desc: {
+          zh: '右侧 Claude 面板智能判断对话/编辑模式。问问题直接回答，要求修改则输出完整新内容并触发 Accept/Reject 横幅。<article_edit> 标签协议实现精准意图识别。',
+          en: 'Right-side Claude panel intelligently detects chat vs edit mode. Questions get direct answers, edit requests trigger Accept/Reject banner with full content diff via <article_edit> tag protocol.',
+        },
+      },
+      {
+        title: { zh: '实时 Diff 视图', en: 'Real-time Diff View' },
+        desc: {
+          zh: 'LCS 算法逐行对比新旧内容，红色删除线标记移除内容，绿色高亮标记新增内容。自动滚动到第一处变更，顶部显示 +N -M 变更统计。',
+          en: 'LCS algorithm for line-by-line diff. Red strikethrough for deletions, green highlight for additions. Auto-scrolls to first change, shows +N -M change stats at top.',
+        },
+      },
+      {
+        title: { zh: '选区上下文注入', en: 'Selection Context Injection' },
+        desc: {
+          zh: '编辑器中选中文本后，选区内容自动持久化并显示在 Claude 面板。发送消息时选区作为上下文一同传递，发送后自动清除。底部状态栏实时显示 N lines selected。',
+          en: 'Selected text persists and displays in Claude panel. Selection is sent as context with messages, auto-cleared after send. Status bar shows N lines selected in real-time.',
+        },
+      },
+      {
+        title: { zh: '编辑记录 + 回退', en: 'Edit History + Revert' },
+        desc: {
+          zh: '每次 Accept 操作记录为一条编辑历史，包含描述和 +/- 行数变化。底部状态栏累计显示总变更量，点击展开历史列表，支持一键回退到任意历史版本。',
+          en: 'Each Accept creates a history record with description and +/- line changes. Status bar shows cumulative changes, click to expand history list with one-click revert to any version.',
         },
       },
     ],

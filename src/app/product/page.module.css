@@ -112,6 +112,14 @@
   text-align: center; gap: 0.75rem;
 }
 
+.productLogo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+
 .indexLabel {
   font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.35); font-variant-numeric: tabular-nums;

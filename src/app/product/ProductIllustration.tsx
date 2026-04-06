@@ -12,6 +12,8 @@ export default function ProductIllustration({ projectId }: Props) {
       return <UtekiIllustration />;
     case 'sumi':
       return <SumiIllustration />;
+    case 'muses':
+      return <MusesIllustration />;
     default:
       return <ComingSoonIllustration />;
   }
@@ -102,6 +104,37 @@ function SumiIllustration() {
               stroke="rgba(255,255,255,0.78)" strokeWidth="7" strokeLinecap="round"/>
         {/* Terracotta dot */}
         <circle cx="168" cy="332" r="12" fill="#d97757"/>
+      </g>
+    </svg>
+  );
+}
+
+/** Muses: Letter paper + quill pen + hand squiggle */
+function MusesIllustration() {
+  return (
+    <svg viewBox="0 0 420 500" className={styles.illustration} fill="none">
+      {/* Letter paper */}
+      <g className={styles.illustrationFloat}>
+        <path d="M100 60 C104 52, 310 48, 316 58 L326 320 C324 330, 112 336, 106 324Z" fill="#d97757" opacity="0.2"/>
+        <path d="M140 110 L280 106" stroke="#d97757" strokeWidth="5" strokeLinecap="round" opacity="0.25"/>
+        <path d="M136 148 L284 144" stroke="#d97757" strokeWidth="5" strokeLinecap="round" opacity="0.2"/>
+        <path d="M132 186 L240 182" stroke="#d97757" strokeWidth="5" strokeLinecap="round" opacity="0.15"/>
+
+        {/* Quill pen — diagonal across the paper */}
+        <path d="M340 28 C346 22, 352 28, 350 34 L280 178 C268 206, 248 238, 228 262 C220 272, 212 276, 214 270 L234 244 C222 240, 228 224, 240 222 L262 190 C254 186, 260 174, 272 174Z" fill="#d97757"/>
+        <path d="M340 28 L228 262" stroke="#c4654a" strokeWidth="4" strokeLinecap="round"/>
+        <path d="M214 274 C208 282, 202 288, 198 286 C194 282, 200 276, 206 272Z" fill="#d97757"/>
+      </g>
+
+      {/* Hand squiggle */}
+      <g className={styles.illustrationFloatReverse}>
+        <path d="M90 370 C98 348, 110 378, 126 358 C142 338, 130 374, 150 360 C166 348, 160 376, 178 365"
+              stroke="rgba(255,255,255,0.88)" strokeWidth="9" strokeLinecap="round"/>
+        <path d="M178 365 C195 380, 210 362, 205 345 C200 328, 182 334, 185 355"
+              stroke="rgba(255,255,255,0.82)" strokeWidth="8" strokeLinecap="round"/>
+        <path d="M185 355 C200 375, 218 368, 228 385"
+              stroke="rgba(255,255,255,0.75)" strokeWidth="7" strokeLinecap="round"/>
+        <circle cx="188" cy="355" r="12" fill="#d97757"/>
       </g>
     </svg>
   );
