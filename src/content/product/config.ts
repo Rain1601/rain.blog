@@ -3,6 +3,26 @@ export interface ProductHighlight {
   desc: { zh: string; en: string };
 }
 
+export interface ProductDemo {
+  url: string;
+  title: { zh: string; en: string };
+  desc: { zh: string; en: string };
+}
+
+export interface ProductArchitecture {
+  title: { zh: string; en: string };
+  desc: { zh: string; en: string };
+  stages: Array<{
+    label: string;
+    title: { zh: string; en: string };
+    desc: { zh: string; en: string };
+  }>;
+  capabilities: Array<{
+    title: { zh: string; en: string };
+    items: { zh: string[]; en: string[] };
+  }>;
+}
+
 export interface ProductItem {
   id: string;
   title: { zh: string; en: string };
@@ -17,6 +37,12 @@ export interface ProductItem {
   github?: string;
   /** Logo SVG path */
   logo?: string;
+  /** Demo video URL (YouTube, Bilibili, or direct mp4) */
+  demoVideo?: string;
+  /** Interactive web demo URL */
+  interactiveDemo?: ProductDemo;
+  /** Visual architecture section */
+  architecture?: ProductArchitecture;
   /** Detail page highlights */
   highlights?: ProductHighlight[];
 }
@@ -36,8 +62,87 @@ export const productData: ProductItem[] = [
     blobColors: ['#3b82f6', '#6366f1', '#0ea5e9', '#8b5cf6'],
     blobBg: '#070e1a',
     techStack: ['FastAPI', 'React', 'Flutter', 'PostgreSQL', 'ClickHouse', 'Qdrant'],
+    link: 'https://utekiapp.vercel.app/dashboard',
     github: 'https://github.com/Rain1601/uteki.open',
     logo: '/images/logo-uteki.svg',
+    interactiveDemo: {
+      url: 'https://utekiapp.vercel.app/dashboard',
+      title: {
+        zh: '交互式产品 Demo',
+        en: 'Interactive Product Demo',
+      },
+      desc: {
+        zh: '嵌入 Uteki Web 的预录流程回放，直接展示交易日报、宏观曲面、新闻时间线、智能体助理与公司研究台等核心页面。',
+        en: 'Embedded Uteki Web replay showing the trading brief, macro surface, news timeline, agent assistant, and company research workspace.',
+      },
+    },
+    architecture: {
+      title: {
+        zh: 'Agent 如何持续运行',
+        en: 'How the Agent Keeps Running',
+      },
+      desc: {
+        zh: 'Uteki 的重点不是生成一份报告，而是把投研任务变成可追踪、可回放、可评测的运行过程。',
+        en: 'Uteki is not just a report generator. It turns investment research into a traceable, replayable, and evaluable runtime process.',
+      },
+      stages: [
+        {
+          label: '01',
+          title: { zh: '任务拆解', en: 'Task Decomposition' },
+          desc: {
+            zh: 'Lead Agent 将投资问题拆成公司、行业、估值、风险和反证任务。',
+            en: 'The Lead Agent decomposes an investment question into company, industry, valuation, risk, and counter-evidence tasks.',
+          },
+        },
+        {
+          label: '02',
+          title: { zh: '工具执行', en: 'Tool Execution' },
+          desc: {
+            zh: 'Sub-Agents 调用行情、财务、新闻、向量检索和研究资料工具收集证据。',
+            en: 'Sub-agents call market, financial, news, vector search, and research tools to collect evidence.',
+          },
+        },
+        {
+          label: '03',
+          title: { zh: 'Trace 汇总', en: 'Trace Aggregation' },
+          desc: {
+            zh: '每一步保留输入、工具调用、输出、置信度、引用和错误信息。',
+            en: 'Each step records inputs, tool calls, outputs, confidence, citations, and errors.',
+          },
+        },
+        {
+          label: '04',
+          title: { zh: '评测与回放', en: 'Evaluation & Replay' },
+          desc: {
+            zh: '通过任务集、指标、人工反馈和历史回放持续改进 Agent 表现。',
+            en: 'Task sets, metrics, human feedback, and replay are used to improve agent behavior over time.',
+          },
+        },
+      ],
+      capabilities: [
+        {
+          title: { zh: '可观测', en: 'Observable' },
+          items: {
+            zh: ['Step Trace', 'Tool Call Log', 'Latency / Cost', 'Failure Reason'],
+            en: ['Step Trace', 'Tool Call Log', 'Latency / Cost', 'Failure Reason'],
+          },
+        },
+        {
+          title: { zh: '可评测', en: 'Evaluable' },
+          items: {
+            zh: ['Benchmark Tasks', 'Evidence Quality', 'Decision Consistency', 'Human Review'],
+            en: ['Benchmark Tasks', 'Evidence Quality', 'Decision Consistency', 'Human Review'],
+          },
+        },
+        {
+          title: { zh: '可持续运行', en: 'Continuous' },
+          items: {
+            zh: ['Scheduled Runs', 'Retry / Degradation', 'Report Versioning', 'State Replay'],
+            en: ['Scheduled Runs', 'Retry / Degradation', 'Report Versioning', 'State Replay'],
+          },
+        },
+      ],
+    },
     highlights: [
       {
         title: { zh: '7-Gate Agentic Pipeline', en: '7-Gate Agentic Pipeline' },
@@ -70,14 +175,14 @@ export const productData: ProductItem[] = [
     ],
   },
   {
-    id: 'sumi',
+    id: 'naomi',
     title: {
-      zh: 'Sumi — 实时语音 AI Agent',
-      en: 'Sumi — Real-time Voice AI Agent',
+      zh: 'Naomi — 实时语音 AI Agent',
+      en: 'Naomi — Real-time Voice AI Agent',
     },
     description: {
-      zh: '实时语音 AI Agent 平台，基于 LiveKit WebRTC 实现端到端低延迟语音交互。可插拔 ASR/TTS/NLP 供应商架构，声纹验证实现零注册说话人识别，混合记忆系统（结构化事实 + 向量语义检索）让 Agent 具备长期记忆能力。',
-      en: 'Real-time voice AI agent platform built on LiveKit WebRTC for end-to-end low-latency voice interaction. Pluggable ASR/TTS/NLP provider architecture, voiceprint verification for zero-registration speaker identification, and hybrid memory (structured facts + vector semantic search) for long-term agent memory.',
+      zh: 'Naomi 意为美好与温柔。它是一个实时语音 AI Agent 平台，基于 LiveKit WebRTC 实现端到端低延迟语音交互。可插拔 ASR/TTS/NLP 供应商架构，声纹验证实现零注册说话人识别，混合记忆系统（结构化事实 + 向量语义检索）让 Agent 具备长期记忆能力。',
+      en: 'Naomi means beautiful and gentle. It is a real-time voice AI agent platform built on LiveKit WebRTC for end-to-end low-latency voice interaction. Pluggable ASR/TTS/NLP provider architecture, voiceprint verification for zero-registration speaker identification, and hybrid memory (structured facts + vector semantic search) for long-term agent memory.',
     },
     coverGradient: 'linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #4a1942 100%)',
     blobColors: ['#c084fc', '#f472b6', '#a78bfa', '#fb923c'],
@@ -116,14 +221,14 @@ export const productData: ProductItem[] = [
     ],
   },
   {
-    id: 'muses',
+    id: 'sumi',
     title: {
-      zh: 'Muses — AI 写作 Agent',
-      en: 'Muses — AI Writing Agent',
+      zh: 'Sumi — AI 写作 Agent',
+      en: 'Sumi — AI Writing Agent',
     },
     description: {
-      zh: '将文章当作代码的 AI 写作平台。Claude 对话式编辑 + 实时 Diff（红删/绿增）+ Accept/Reject 工作流，选中文本自动注入上下文，编辑记录支持一键回退。',
-      en: 'AI writing platform that treats articles like code. Claude conversational editing + real-time diff (red delete / green add) + Accept/Reject workflow, text selection auto-injects context, edit history with one-click revert.',
+      zh: 'Sumi 意为墨水。它是一个将文章当作代码的 AI 写作 Agent：Claude 对话式编辑 + 实时 Diff（红删/绿增）+ Accept/Reject 工作流，选中文本自动注入上下文，编辑记录支持一键回退。',
+      en: 'Sumi means ink. It is an AI writing agent that treats articles like code: Claude conversational editing + real-time diff (red delete / green add) + Accept/Reject workflow, text selection auto-injects context, edit history with one-click revert.',
     },
     coverGradient: 'linear-gradient(135deg, #1a1510 0%, #2d2418 50%, #3d3020 100%)',
     blobColors: ['#d97757', '#c4654a', '#a8845c', '#e8c9a0'],

@@ -10,9 +10,9 @@ export default function ProductIllustration({ projectId }: Props) {
   switch (projectId) {
     case 'uteki':
       return <UtekiIllustration />;
-    case 'sumi':
+    case 'naomi':
       return <SumiIllustration />;
-    case 'muses':
+    case 'sumi':
       return <MusesIllustration />;
     default:
       return <ComingSoonIllustration />;
