@@ -6,7 +6,7 @@ import styles from './page.module.css';
 type Drop = { x: number; y: number; size: number; vy: number; alpha: number };
 
 const COLOR = '217, 113, 73';      // terracotta — matches accent
-const BG_FADE = '28, 25, 23';      // matches --bg-primary in dark mode
+const TAIL_SEGS = 6;               // vertical pixels of fading tail behind each drop
 
 export default function PixelRain() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -47,14 +47,19 @@ export default function PixelRain() {
     window.addEventListener('resize', resize, { passive: true });
 
     const tick = () => {
-      // Trail-fade balances streak length with overall dim level
-      ctx.fillStyle = `rgba(${BG_FADE}, 0.18)`;
-      ctx.fillRect(0, 0, w, h);
+      // Hard clear — no canvas-level accumulation, each drop owns its own tail
+      ctx.clearRect(0, 0, w, h);
       for (const d of drops) {
-        ctx.fillStyle = `rgba(${COLOR}, ${d.alpha})`;
-        ctx.fillRect(Math.floor(d.x), Math.floor(d.y), d.size, d.size);
+        const xi = Math.floor(d.x);
+        // Per-drop fading tail: head is bright, segments above dim linearly to 0
+        for (let i = 0; i < TAIL_SEGS; i++) {
+          const segAlpha = d.alpha * (1 - i / TAIL_SEGS);
+          if (segAlpha <= 0.02) continue;
+          ctx.fillStyle = `rgba(${COLOR}, ${segAlpha})`;
+          ctx.fillRect(xi, Math.floor(d.y - i * d.size), d.size, d.size);
+        }
         d.y += d.vy;
-        if (d.y > h + 8) Object.assign(d, spawn(true));
+        if (d.y > h + TAIL_SEGS * 4) Object.assign(d, spawn(true));
       }
       rafId = requestAnimationFrame(tick);
     };
