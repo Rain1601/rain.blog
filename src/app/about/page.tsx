@@ -8,9 +8,12 @@ import styles from './page.module.css';
 
 const translations = {
   zh: {
-    role: '后端应用开发 | Agent 开发',
+    role: '投研 Agent | Agent Research | Agent Engineering',
     description: '开发，思考，投资，睡觉。',
-    intro: '目前在阿里云智能从事后端应用开发与 Agent 系统建设，专注于实时语音 Agent、Multi-Agent 架构与 Context Engineering 等方向。工作之余，我在构建一个面向个人投资者的智能投研平台 Uteki，探索 AI Agent 在交易决策中的应用。',
+    intro: [
+      '专注于投研 Agent、Agent Research 与 Agent Engineering，关注 AI Agent 如何在复杂信息环境中完成研究、推理与决策支持。',
+      '目前在阿里云智能从事后端应用开发与 Agent 系统建设。长期以投资研究为核心场景，构建面向个人投资者与复杂宏观问题的智能投研系统。我的项目包括 Uteki、Shinkai 与 Suimyaku：Uteki 面向公司研究与投资决策，Shinkai 从宏观主题出发探索产业链与优质公司发现，Suimyaku 关注世界秩序、宏观变化与资金分配逻辑。',
+    ],
     copyEmail: '复制邮箱',
     emailCopied: '已复制!',
     location: '杭州',
@@ -23,9 +26,12 @@ const translations = {
     present: '至今',
   },
   en: {
-    role: 'Backend Dev | Agent Dev',
+    role: 'Investment Research Agent | Agent Research | Agent Engineering',
     description: 'Dev, Think, Invest, Sleep.',
-    intro: 'Currently at Alibaba Cloud Intelligence, working on backend development and Agent systems — focused on real-time voice Agents, Multi-Agent architecture, and Context Engineering. Outside of work, I\'m building Uteki, an intelligent investment platform for individual investors, exploring AI Agent applications in trading decisions.',
+    intro: [
+      'Focused on Investment Research Agents, Agent Research, and Agent Engineering, with an interest in how AI Agents can conduct research, reasoning, and decision support in complex information environments.',
+      'Currently at Alibaba Cloud Intelligence, working on backend application development and Agent systems. I use investment research as my core scenario, building intelligent research systems for individual investors and complex macro questions. My projects include Uteki, Shinkai, and Suimyaku: Uteki focuses on company research and investment decisions, Shinkai starts from macro themes to explore industry chains and high-quality companies, and Suimyaku studies world order, macro shifts, and capital allocation.',
+    ],
     copyEmail: 'Copy Email',
     emailCopied: 'Copied!',
     location: 'Hangzhou',
@@ -103,7 +109,11 @@ export default function AboutPage() {
 
         {/* 右侧内容区 — 自我介绍 */}
         <main className={styles.content}>
-          <p className={styles.introText}>{t.intro}</p>
+          <div className={styles.introText}>
+            {t.intro.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
 
           {/* Navigation Buttons */}
           <div className={styles.toggleWrap}>
