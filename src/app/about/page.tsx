@@ -16,7 +16,6 @@ const translations = {
     location: '杭州',
     toggleBtn: '个人经历',
     toggleClose: '收起',
-    articles: '我的文章',
     portfolio: '作品集',
     experience: '个人经历',
     projects: '个人项目',
@@ -32,7 +31,6 @@ const translations = {
     location: 'Hangzhou',
     toggleBtn: 'Background',
     toggleClose: 'Close',
-    articles: 'Articles',
     portfolio: 'Portfolio',
     experience: 'Background',
     projects: 'Projects',
@@ -120,22 +118,13 @@ export default function AboutPage() {
               </svg>
             </button>
             {!expanded && (
-              <>
-                <Link href="/articles" className={styles.navBtn}>
-                  <span>{t.articles}</span>
-                  <svg className={styles.navArrow} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                    <polyline points="12 5 19 12 12 19"/>
-                  </svg>
-                </Link>
-                <Link href="/product" className={styles.navBtn}>
-                  <span>{t.portfolio}</span>
-                  <svg className={styles.navArrow} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                    <polyline points="12 5 19 12 12 19"/>
-                  </svg>
-                </Link>
-              </>
+              <Link href="/product" className={styles.navBtn}>
+                <span>{t.portfolio}</span>
+                <svg className={styles.navArrow} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </Link>
             )}
           </div>
         </main>
