@@ -148,6 +148,17 @@
   line-height: 1.2; margin: 0; max-width: 700px;
 }
 
+.productTagline {
+  font-size: clamp(0.875rem, 1.05vw, 1rem);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.005em;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 560px;
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+}
+
 /* Explore button */
 .exploreBtn {
   display: inline-flex; align-items: center; gap: 0.5rem;
@@ -930,6 +941,7 @@
   .content { padding: 1.5rem 1.25rem 4.5rem; }
   .heroTitle { font-size: 1rem; }
   .productName { font-size: 1.75rem; }
+  .productTagline { font-size: 0.8125rem; padding: 0 1rem; }
   .infoCard { max-width: 100%; }
   .productDesc { font-size: 0.8125rem; line-height: 1.65; }
   .arrowLeft { left: 0.75rem; }
@@ -1008,6 +1020,7 @@
   .content { padding: 1rem 1rem 4rem; }
   .topLeft { display: none; }
   .productName { font-size: 1.5rem; }
+  .productTagline { font-size: 0.75rem; padding: 0 0.5rem; }
   .productDesc { font-size: 0.75rem; line-height: 1.6; }
   .techTag { font-size: 0.625rem; padding: 0.2rem 0.5rem; }
   .exploreBtn { font-size: 0.75rem; padding: 0.4rem 1rem; }

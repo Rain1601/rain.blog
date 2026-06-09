@@ -26,6 +26,8 @@ export interface ProductArchitecture {
 export interface ProductItem {
   id: string;
   title: { zh: string; en: string };
+  /** Short positioning sentence shown directly under the title in hero center */
+  tagline?: { zh: string; en: string };
   description: { zh: string; en: string };
   coverGradient: string;
   /** Colors for animated gradient blobs [blob1, blob2, blob3, blob4] */
@@ -51,8 +53,12 @@ export const productData: ProductItem[] = [
   {
     id: 'uteki',
     title: {
-      zh: 'Uteki — AI 量化交易平台',
-      en: 'Uteki — AI Quantitative Trading',
+      zh: 'Uteki 雨滴 — 投研 Agent',
+      en: 'Uteki — Investment Research Agent',
+    },
+    tagline: {
+      zh: '在标普 500 与纳斯达克里持续筛出值得长期持有的优质公司。',
+      en: 'Continuously surfaces high-quality companies worth holding from the S&P 500 and Nasdaq.',
     },
     description: {
       zh: '开源 AI 量化交易平台，7-Gate Agentic Pipeline 系统化公司分析，多数据库降级架构保障弹性，统一 LLM 适配器支持 7 家模型供应商。结构化编排保证质量可预测，ReAct 在每个节点保留灵活性。',

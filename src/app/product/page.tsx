@@ -223,6 +223,9 @@ function ProductPageInner() {
               {String(currentIndex + 1).padStart(2, '0')}
             </span>
             <h2 className={styles.productName}>{product.title[language]}</h2>
+            {product.tagline && (
+              <p className={styles.productTagline}>{product.tagline[language]}</p>
+            )}
 
             {hasDetail && (
               <button
