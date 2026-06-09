@@ -14,12 +14,11 @@ const translations = {
     copyEmail: '复制邮箱',
     emailCopied: '已复制!',
     location: '杭州',
-    toggleBtn: '工作经历',
+    toggleBtn: '个人经历',
     toggleClose: '收起',
     articles: '我的文章',
     portfolio: '作品集',
-    education: '教育经历',
-    experience: '工作经历',
+    experience: '个人经历',
     projects: '个人项目',
     skills: '技能兴趣',
     present: '至今',
@@ -31,12 +30,11 @@ const translations = {
     copyEmail: 'Copy Email',
     emailCopied: 'Copied!',
     location: 'Hangzhou',
-    toggleBtn: 'Experience',
+    toggleBtn: 'Background',
     toggleClose: 'Close',
     articles: 'Articles',
     portfolio: 'Portfolio',
-    education: 'Education',
-    experience: 'Experience',
+    experience: 'Background',
     projects: 'Projects',
     skills: 'Skills & Interests',
     present: 'Present',
@@ -147,9 +145,9 @@ export default function AboutPage() {
       <div className={`${styles.resumeWrapper} ${expanded ? styles.resumeOpen : ''}`}>
         <div className={styles.resume}>
 
-          {/* Education */}
+          {/* 教育 & 工作合并为「个人经历」单一 section */}
           <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>{t.education}</h2>
+            <h2 className={styles.sectionTitle}>{t.experience}</h2>
             <div className={styles.entry}>
               <div className={styles.entryHeader}>
                 <h3 className={styles.entryTitle}>
@@ -172,11 +170,6 @@ export default function AboutPage() {
                 {language === 'zh' ? '软件工程 本科 | 软件学院' : 'B.S. Software Engineering'}
               </p>
             </div>
-          </section>
-
-          {/* Work Experience */}
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>{t.experience}</h2>
             <div className={styles.entry}>
               <div className={styles.entryHeader}>
                 <h3 className={styles.entryTitle}>
@@ -184,67 +177,9 @@ export default function AboutPage() {
                 </h3>
                 <span className={styles.entryDate}>2023.07 - {t.present}</span>
               </div>
-
-              <div className={styles.subEntry}>
-                <div className={styles.subEntryHeader}>
-                  <span className={styles.subEntryTitle}>
-                    {language === 'zh' ? '智能外呼 | 营销数字人' : 'AI Outbound Call | Digital Sales'}
-                  </span>
-                  <span className={styles.subEntryDate}>2024.11 -</span>
-                </div>
-                <p className={styles.entryDesc}>
-                  {language === 'zh'
-                    ? '基于通义大模型与语音实时识别合成能力，结合销售语料训练，向企业提供 7x24 小时自动化语音交互与销售服务'
-                    : 'AI-powered outbound call product providing 7x24 automated voice interaction and sales services based on Tongyi LLM'}
-                </p>
-                <ul className={styles.entryList}>
-                  <li>{language === 'zh'
-                    ? '构建高并发实时语音交互能力，支撑日均 3.6 万+外呼，峰值 200 QPM，通过 vLLM + LLM Cache 将端到端延迟控制在 1.2~1.5s'
-                    : 'Built high-concurrency real-time voice interaction, supporting 36K+ daily calls, 200 QPM peak, end-to-end latency 1.2~1.5s via vLLM + LLM Cache'}</li>
-                  <li>{language === 'zh'
-                    ? '基于 SFT 微调与高质量对话数据优化模型表达能力，结合提示词工程、函数调用与 RAG 构建对话策略体系'
-                    : 'Optimized model expression via SFT fine-tuning, combined with prompt engineering, function calling, and RAG for dialogue strategy'}</li>
-                  <li>{language === 'zh'
-                    ? '构建"双VAD + 双路ASR"语音理解体系并引入降噪模型 Omni3，解决专有名词识别、环境噪音等问题'
-                    : 'Built "Dual VAD + Dual ASR" voice understanding system with Omni3 denoising model for robust speech recognition'}</li>
-                  <li>{language === 'zh'
-                    ? '推动外呼系统由单一流程向可配置 Agent 平台升级，支持基于目标快速构建 Prompt、在线调试与版本管理'
-                    : 'Drove upgrade from single-flow to configurable Agent platform with goal-based Prompt building and version management'}</li>
-                </ul>
-              </div>
-
-              <div className={styles.subEntry}>
-                <div className={styles.subEntryHeader}>
-                  <span className={styles.subEntryTitle}>
-                    {language === 'zh' ? '云栖大会 | 应用开发 & PM' : 'Apsara Conference | App Dev & PM'}
-                  </span>
-                </div>
-                <ul className={styles.entryList}>
-                  <li>{language === 'zh'
-                    ? '主导核心系统开发与稳定性建设，涵盖运营后台、票证系统、展商系统、云上峰会与内容审核等模块'
-                    : 'Led core system development including operations, ticketing, exhibitor, cloud summit and content review modules'}</li>
-                  <li>{language === 'zh'
-                    ? '担任 2024/2025 年技术 PM，协调多团队推进需求交付与变更管理，系统可用性 99.9%+'
-                    : '2024/2025 Tech PM, coordinating multi-team delivery, 99.9%+ system availability'}</li>
-                  <li>{language === 'zh'
-                    ? '主导内容审核系统智能化升级，累计处理 800 万文件，自动化覆盖 95%，提升审核人效 70%'
-                    : 'Led content review system AI upgrade, processed 8M files, 95% automation coverage, 70% efficiency improvement'}</li>
-                </ul>
-              </div>
-
-              <div className={styles.subEntry}>
-                <div className={styles.subEntryHeader}>
-                  <span className={styles.subEntryTitle}>
-                    {language === 'zh' ? '线索市场 | 应用开发' : 'Lead Market | App Dev'}
-                  </span>
-                  <span className={styles.subEntryDate}>2023.07 -</span>
-                </div>
-                <ul className={styles.entryList}>
-                  <li>{language === 'zh'
-                    ? '负责规则中心模块迁移开发与市场系统迭代，构建客户从报名到线索的自动化转化与分发链路'
-                    : 'Led rule center migration and market system iteration, built automated lead conversion pipeline'}</li>
-                </ul>
-              </div>
+              <p className={styles.entrySubtitle}>
+                {language === 'zh' ? '营销数字人' : 'Digital Sales'}
+              </p>
             </div>
           </section>
 
