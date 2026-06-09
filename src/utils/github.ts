@@ -325,77 +325,79 @@ GITHUB_TOKEN=your_token_here
   async getAllPosts(): Promise<BlogPost[]> {
     try {
       const files = await this.getAllFiles();
-      const posts: BlogPost[] = [];
 
-      for (const file of files) {
-        try {
-          const rawContent = await this.getFileContent(file);
-          const pathInfo = this.parsePathInfo(file.path);
+      // 并发拉取所有文件内容（替代原本串行的 for-await）
+      const results = await Promise.all(
+        files.map(async (file): Promise<BlogPost | null> => {
+          try {
+            const rawContent = await this.getFileContent(file);
+            const pathInfo = this.parsePathInfo(file.path);
 
-          // 解析front matter
-          const {
-            title: frontMatterTitle,
-            date: frontMatterDate,
-            updated: frontMatterUpdated,
-            author,
-            tags,
-            categories,
-            summary
-          } = this.parseFrontMatter(rawContent);
+            // 解析front matter
+            const {
+              title: frontMatterTitle,
+              date: frontMatterDate,
+              updated: frontMatterUpdated,
+              author,
+              tags,
+              categories,
+              summary
+            } = this.parseFrontMatter(rawContent);
 
-          // 决定使用的标题和日期
-          let title: string;
-          let year = pathInfo.year;
-          let month = pathInfo.month;
-          let date: string;
+            // 决定使用的标题和日期
+            let title: string;
+            let year = pathInfo.year;
+            let month = pathInfo.month;
+            let date: string;
 
-          // 如果有front matter，优先使用其中的信息
-          if (frontMatterTitle) {
-            title = frontMatterTitle;
+            // 如果有front matter，优先使用其中的信息
+            if (frontMatterTitle) {
+              title = frontMatterTitle;
 
-            // 如果有front matter日期，使用它
-            if (frontMatterDate) {
-              date = frontMatterDate;
-              // 尝试从front matter日期中提取年月
-              const dateParts = frontMatterDate.split('-');
-              if (dateParts.length >= 2) {
-                year = dateParts[0];
-                month = dateParts[1].padStart(2, '0');
+              // 如果有front matter日期，使用它
+              if (frontMatterDate) {
+                date = frontMatterDate;
+                // 尝试从front matter日期中提取年月
+                const dateParts = frontMatterDate.split('-');
+                if (dateParts.length >= 2) {
+                  year = dateParts[0];
+                  month = dateParts[1].padStart(2, '0');
+                }
+              } else {
+                // 有标题但没有日期，使用路径日期
+                date = `${year}-${month}`;
               }
             } else {
-              // 有标题但没有日期，使用路径日期
+              // 没有front matter，使用原来的逻辑
+              title = this.extractTitleFromFilename(file.name);
               date = `${year}-${month}`;
             }
-          } else {
-            // 没有front matter，使用原来的逻辑
-            title = this.extractTitleFromFilename(file.name);
-            date = `${year}-${month}`;
+
+            return {
+              id: this.generateId(file.path),
+              title,
+              content: rawContent, // 保留完整内容，包括front matter
+              path: file.path,
+              date,
+              updated: frontMatterUpdated,
+              year,
+              month,
+              size: file.size,
+              sha: file.sha,
+              url: file.html_url,
+              author,
+              tags,
+              categories,
+              summary
+            };
+          } catch (error) {
+            console.warn(`跳过文件 ${file.path}:`, error);
+            return null;
           }
+        })
+      );
 
-          const post: BlogPost = {
-            id: this.generateId(file.path),
-            title,
-            content: rawContent, // 保留完整内容，包括front matter
-            path: file.path,
-            date,
-            updated: frontMatterUpdated,
-            year,
-            month,
-            size: file.size,
-            sha: file.sha,
-            url: file.html_url,
-            author,
-            tags,
-            categories,
-            summary
-          };
-
-          posts.push(post);
-        } catch (error) {
-          console.warn(`跳过文件 ${file.path}:`, error);
-          continue;
-        }
-      }
+      const posts = results.filter((p): p is BlogPost => p !== null);
 
       // 按日期排序（最新的在前）
       posts.sort((a, b) => {
@@ -583,6 +585,43 @@ GITHUB_TOKEN=your_token_here
         authors: []
       };
     }
+  }
+
+  /**
+   * 一次性获取文章列表 + 统计派生（避免重复调用 getAllPosts）
+   * /articles 首屏专用
+   */
+  async getFeed(): Promise<{
+    posts: BlogPost[];
+    stats: {
+      totalPosts: number;
+      years: string[];
+      latestPost?: BlogPost;
+      tags: string[];
+      categories: string[];
+    };
+  }> {
+    const posts = await this.getAllPosts();
+    const years = [...new Set(posts.map(post => post.year))].sort().reverse();
+
+    // 聚合所有 tag / category（仅按出现的全集，未来需要带计数再加 Map）
+    const tagSet = new Set<string>();
+    const categorySet = new Set<string>();
+    posts.forEach(post => {
+      post.tags?.forEach(tag => tagSet.add(tag));
+      post.categories?.forEach(cat => categorySet.add(cat));
+    });
+
+    return {
+      posts,
+      stats: {
+        totalPosts: posts.length,
+        years,
+        latestPost: posts[0] || undefined,
+        tags: [...tagSet].sort(),
+        categories: [...categorySet].sort(),
+      },
+    };
   }
 }
 
