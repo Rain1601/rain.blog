@@ -381,18 +381,22 @@
   }
 }
 
-/* Page Transition */
-.pageTransition {
-  animation: pageEnter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+/* Page Transition — 应用在 Layout 的 <main> 上，每次 pathname 变化重启 */
+.pageEnter {
+  animation: pageEnter 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageEnter { animation: none; }
 }

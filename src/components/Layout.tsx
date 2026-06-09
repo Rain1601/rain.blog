@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, createContext, useContext, useEffect } from 'react';
+import { useState, createContext, useContext, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import styles from './Layout.module.css';
 
@@ -43,6 +43,17 @@ export default function Layout({ children }: LayoutProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const pathname = usePathname();
+  const mainRef = useRef<HTMLElement>(null);
+
+  // 页面切换时重启 main 元素上的 pageEnter 动画（不重挂载，避免 removeChild 雷）
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    el.classList.remove(styles.pageEnter);
+    // 强制 reflow，让 remove + add 生效
+    void el.offsetHeight;
+    el.classList.add(styles.pageEnter);
+  }, [pathname]);
 
   // 判断是否在文章页
   const isHomePage = pathname === '/articles';
@@ -74,11 +85,9 @@ export default function Layout({ children }: LayoutProps) {
 
   const navigationItems = language === 'zh' ? [
     { name: '关于', href: '/about' },
-    { name: '文章', href: '/articles' },
     { name: '作品', href: '/product' },
   ] : [
     { name: 'About', href: '/about' },
-    { name: 'Article', href: '/articles' },
     { name: 'Portfolio', href: '/product' },
   ];
 
@@ -240,7 +249,7 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Main content */}
       <LanguageContext.Provider value={{ language, setLanguage }}>
-        <main className={styles.main}>
+        <main ref={mainRef} className={`${styles.main} ${styles.pageEnter}`}>
           {children}
         </main>
       </LanguageContext.Provider>
