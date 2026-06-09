@@ -63,8 +63,24 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              opacity 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.62s cubic-bezier(0.22, 0.61, 0.36, 1),
+              opacity 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Uteki-only ambient: pixel rain behind the hero content. */
+.utekiRain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  animation: utekiRainFadeIn 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.25s forwards;
+}
+
+@keyframes utekiRainFadeIn {
+  to { opacity: 1; }
 }
 
 .heroSlideUp {
@@ -86,9 +102,9 @@
 
 .content > * { pointer-events: auto; }
 
-.contentEnter { animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
-.contentExit { opacity: 0; transform: translateY(-12px); transition: opacity 0.25s ease, transform 0.25s ease; }
-.contentExitReverse { opacity: 0; transform: translateY(12px); transition: opacity 0.25s ease, transform 0.25s ease; }
+.contentEnter { animation: fadeInUp 0.46s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+.contentExit { opacity: 0; transform: translateY(-10px); transition: opacity 0.22s cubic-bezier(0.4, 0, 1, 1), transform 0.22s cubic-bezier(0.4, 0, 1, 1); }
+.contentExitReverse { opacity: 0; transform: translateY(10px); transition: opacity 0.22s cubic-bezier(0.4, 0, 1, 1), transform 0.22s cubic-bezier(0.4, 0, 1, 1); }
 
 /* Top-left */
 .topLeft { animation: fadeIn 0.6s ease 0.1s both; }
@@ -138,15 +154,24 @@
   margin-top: 0.5rem; padding: 0.5rem 1.25rem; border-radius: 100px;
   border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.55); font-size: 0.8125rem; font-weight: 400;
-  letter-spacing: 0.04em; cursor: pointer; transition: all 0.3s ease;
-  animation: fadeIn 0.5s ease 0.5s both;
+  letter-spacing: 0.04em; cursor: pointer;
+  transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease,
+              transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+              box-shadow 0.3s ease;
+  animation: fadeIn 0.5s ease 0.4s both;
 }
 
 .exploreBtn svg { animation: bounceDown 2s ease-in-out 1.5s infinite; }
 
 .exploreBtn:hover {
-  border-color: rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.exploreBtn:active {
+  transform: translateY(0);
 }
 
 .exploreBtnText { font-family: 'Times New Roman', 'SimSun', '宋体', serif; }
@@ -184,20 +209,30 @@
 }
 .linkGhost:hover { color: rgba(255, 255, 255, 0.9); text-decoration: none; }
 
-/* Arrows — no disabled state, always loop */
+/* Arrows — subtle on idle, more visible on hover */
 .arrow {
-  position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+  position: absolute; top: 50%; z-index: 10;
   width: 44px; height: 44px; border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  color: rgba(255, 255, 255, 0.7); display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  color: rgba(255, 255, 255, 0.55); display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease,
+              transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
   animation: fadeIn 0.5s ease 0.3s both;
 }
 
 .arrow:hover {
-  background: rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.3); color: #fff;
+  background: rgba(0, 0, 0, 0.32); border-color: rgba(255, 255, 255, 0.36); color: #fff;
 }
+
+.arrowLeft:hover { transform: translate(-2px, -50%); }
+.arrowRight:hover { transform: translate(2px, -50%); }
+
+.arrow:active { transform: translateY(-50%) scale(0.94); }
+.arrowLeft:active { transform: translate(-2px, -50%) scale(0.94); }
+.arrowRight:active { transform: translate(2px, -50%) scale(0.94); }
 
 .arrowLeft { left: 1.5rem; }
 .arrowRight { right: 1.5rem; }
@@ -212,10 +247,14 @@
 .dot {
   width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.25);
   border: none; cursor: pointer; padding: 0;
-  transition: background 0.3s ease, width 0.3s ease, border-radius 0.3s ease;
+  transition: background 0.3s ease,
+              width 0.45s cubic-bezier(0.22, 0.61, 0.36, 1),
+              border-radius 0.3s ease,
+              transform 0.2s ease;
 }
-.dot:hover { background: rgba(255, 255, 255, 0.5); }
-.dotActive { background: rgba(255, 255, 255, 0.85); width: 24px; border-radius: 4px; }
+.dot:hover { background: rgba(255, 255, 255, 0.55); transform: scale(1.15); }
+.dotActive { background: rgba(255, 255, 255, 0.9); width: 26px; border-radius: 4px; }
+.dotActive:hover { transform: none; }
 
 /* ============================================
    Detail View — slides in from bottom
@@ -226,9 +265,10 @@
   z-index: 5;
   transform: translateY(100%);
   opacity: 0;
-  transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              opacity 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.62s cubic-bezier(0.22, 0.61, 0.36, 1),
+              opacity 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
   overflow-y: auto;
+  scroll-snap-type: y proximity;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -264,14 +304,23 @@
 
 /* Detail content */
 .detailContent {
-  max-width: 900px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 2rem 2rem 5rem;
 }
 
+.detailScreen {
+  min-height: calc(100vh - 85px);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem 0 2.5rem;
+}
+
 .detailHeader {
-  margin-bottom: 3rem;
-  animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s both;
+  margin-bottom: 1.5rem;
+  animation: staggerIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) 0.08s both;
 }
 
 .detailHeaderTop {
@@ -313,6 +362,490 @@
   gap: 0.75rem;
 }
 
+/* Interactive web demo */
+.demoFrameSection {
+  animation: staggerIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) 0.16s both;
+}
+
+.demoFrameHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.demoEyebrow {
+  display: block;
+  margin-bottom: 0.375rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.demoTitle {
+  margin: 0 0 0.5rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+}
+
+.demoDesc {
+  max-width: 640px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.demoOpenLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  font-size: 0.8125rem;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.demoOpenLink:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+}
+
+.demoFrameShell {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 8.4;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
+    #050505;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+}
+
+/* iframe skeleton + fade-in on load */
+.demoFrameSkeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(217, 119, 89, 0.08), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01));
+  transition: opacity 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  pointer-events: none;
+}
+
+.demoFrameSkeleton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.045) 50%,
+    transparent 70%
+  );
+  background-size: 220% 100%;
+  animation: demoFrameShimmer 1.8s linear infinite;
+}
+
+.demoFrameSkeletonHint {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+}
+
+.demoFrameSkeletonHidden {
+  opacity: 0;
+}
+
+@keyframes demoFrameShimmer {
+  from { background-position: 120% 0; }
+  to   { background-position: -120% 0; }
+}
+
+.demoFrame {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.demoFrameLoaded {
+  opacity: 1;
+}
+
+/* Uteki detail: single-screen demo-first layout */
+.utekiDetailView {
+  overflow-y: hidden;
+}
+
+.utekiDetailContent {
+  max-width: 1080px;
+  padding: 1.25rem 1.5rem 1rem;
+}
+
+.utekiSingleScreen {
+  justify-content: flex-start;
+  min-height: auto;
+  height: calc(100vh - 85px - 2.25rem);
+  padding: 0;
+  gap: 0.875rem;
+}
+
+.utekiDetailTop {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: start;
+  animation: staggerIn 0.48s cubic-bezier(0.22, 0.61, 0.36, 1) 0.06s both;
+}
+
+.utekiTitleBlock {
+  max-width: 780px;
+}
+
+.utekiTitleBlock .detailTitle {
+  margin-bottom: 0.625rem;
+}
+
+.utekiDetailDesc {
+  max-width: 720px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.utekiActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.625rem;
+  padding-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.utekiDemoSection {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.utekiDemoHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.utekiDemoHeader .demoTitle {
+  margin-bottom: 0;
+}
+
+.utekiDemoLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.utekiDemoFrameShell {
+  aspect-ratio: auto;
+  min-height: 560px;
+  height: min(56vh, 620px);
+  border-radius: 8px;
+}
+
+.utekiRuntimePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.028);
+}
+
+.utekiRuntimePanel p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+.utekiRuntimeTitle {
+  margin: 0 0 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.05rem;
+  font-weight: 500;
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+}
+
+.utekiStageList {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.utekiStageItem {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.625rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  animation: staggerIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.utekiStageItem > span {
+  color: rgba(255, 255, 255, 0.34);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+}
+
+.utekiStageItem h4 {
+  margin: 0 0 0.25rem;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.utekiStageItem p {
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+
+.utekiCapabilityRail {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.utekiCapabilityRail div {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.035);
+  animation: staggerIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.utekiCapabilityRail div:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.utekiCapabilityRail strong {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+
+.utekiCapabilityRail span {
+  color: rgba(255, 255, 255, 0.46);
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+.utekiTech {
+  display: flex;
+  align-items: baseline;
+  gap: 0.875rem;
+  animation-delay: 0.42s;
+}
+
+.utekiTech .detailTechLabel {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.utekiTech .techStack {
+  margin-bottom: 0;
+}
+
+/* Agent architecture */
+.architectureScreen {
+  gap: 2rem;
+}
+
+.architectureHeader {
+  max-width: 720px;
+}
+
+.architectureTitle {
+  margin: 0 0 0.75rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+}
+
+.architectureDesc {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.56);
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.architectureFlow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.architectureStage {
+  position: relative;
+  min-height: 260px;
+  padding: 1.5rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  animation: staggerIn 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.architectureStage:last-child {
+  border-right: 0;
+}
+
+.architectureStage::after {
+  content: '';
+  position: absolute;
+  top: 1.5rem;
+  right: -7px;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  border-right: 1px solid rgba(255, 255, 255, 0.22);
+  transform: rotate(45deg);
+  background: var(--bg-primary);
+}
+
+.architectureStage:last-child::after {
+  display: none;
+}
+
+.stageLabel {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.5rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+}
+
+.architectureStage h4 {
+  margin: 0 0 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  font-weight: 500;
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+}
+
+.architectureStage p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8125rem;
+  line-height: 1.75;
+}
+
+.capabilityGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.capabilityCard {
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  animation: staggerIn 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+
+.capabilityCard:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+.capabilityCard h4 {
+  margin: 0 0 1rem;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.capabilityItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.capabilityItems span {
+  padding: 0.25rem 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.56);
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.6875rem;
+  letter-spacing: 0.01em;
+}
+
+/* Demo video */
+.videoSection {
+  margin-bottom: 2.5rem;
+  animation: staggerIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) 0.2s both;
+}
+
+.videoPlayer {
+  width: 100%;
+  max-height: 480px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #000;
+  object-fit: contain;
+}
+
 /* Highlights grid */
 .highlightsGrid {
   display: grid;
@@ -326,17 +859,14 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 1.5rem;
-  transition: border-color 0.3s ease, background 0.3s ease;
+  animation: staggerIn 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
 }
 
-.highlightCard:nth-child(1) { animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both; }
-.highlightCard:nth-child(2) { animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s both; }
-.highlightCard:nth-child(3) { animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both; }
-.highlightCard:nth-child(4) { animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s both; }
-
 .highlightCard:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
 }
 
 .highlightTitle {
@@ -356,7 +886,7 @@
 
 /* Detail tech section */
 .detailTech {
-  animation: staggerIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s both;
+  animation: staggerIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) 0.32s both;
 }
 
 .detailTechLabel {
@@ -411,11 +941,66 @@
   .illustration { width: 220px; height: 230px; }
 
   .detailContent { padding: 1.5rem 1.25rem 3rem; }
+  .detailScreen { min-height: auto; padding: 1rem 0 2rem; }
   .detailHeader { margin-bottom: 2rem; }
+  .utekiDetailView { overflow-y: auto; }
+  .utekiDetailContent { padding: 1.5rem 1.25rem 3rem; }
+  .utekiSingleScreen { height: auto; min-height: auto; padding: 1rem 0 2rem; }
+  .utekiDetailTop { grid-template-columns: 1fr; gap: 1rem; }
+  .utekiActions { justify-content: flex-start; padding-top: 0; }
+  .demoFrameHeader { align-items: flex-start; flex-direction: column; gap: 1rem; }
+  .utekiDemoHeader { align-items: flex-start; flex-direction: column; gap: 0.875rem; }
+  .utekiDemoLayout { grid-template-columns: 1fr; }
+  .utekiDemoFrameShell { min-height: 440px; height: auto; aspect-ratio: 4 / 3; }
+  .utekiRuntimePanel { display: none; }
+  .utekiTech { display: block; }
+  .utekiTech .detailTechLabel { margin-bottom: 0.75rem; }
+  .demoFrameShell { aspect-ratio: 4 / 3; }
+  .architectureFlow { grid-template-columns: 1fr; }
+  .architectureStage { min-height: 180px; border-right: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+  .architectureStage:last-child { border-bottom: 0; }
+  .architectureStage::after { display: none; }
+  .capabilityGrid { grid-template-columns: 1fr; }
   .highlightsGrid { grid-template-columns: 1fr; }
   .highlightCard { padding: 1.25rem; }
   .detailTitle { font-size: 1.75rem; }
   .detailDesc { font-size: 0.875rem; }
+  .demoTitle { font-size: 1.125rem; }
+  .demoDesc { font-size: 0.8125rem; }
+}
+
+/* ---- Reduced motion: keep visibility, drop animations ---- */
+@media (prefers-reduced-motion: reduce) {
+  .heroView,
+  .detailView { transition: transform 0.001s linear, opacity 0.2s linear; }
+  .contentEnter,
+  .contentExit,
+  .contentExitReverse {
+    animation: none !important;
+    transition: opacity 0.2s linear !important;
+    transform: none !important;
+  }
+  .topLeft,
+  .exploreBtn,
+  .arrow,
+  .dots,
+  .detailHeader,
+  .demoFrameSection,
+  .videoSection,
+  .utekiDetailTop,
+  .utekiStageItem,
+  .utekiCapabilityRail div,
+  .architectureStage,
+  .capabilityCard,
+  .highlightCard,
+  .detailTech,
+  .illustrationFloat,
+  .illustrationFloatReverse,
+  .exploreBtn svg,
+  .demoFrameSkeleton::before {
+    animation: none !important;
+  }
+  .demoFrame { transition: opacity 0.2s linear; }
 }
 
 @media (max-width: 480px) {
@@ -438,6 +1023,13 @@
   .illustrationWrap { display: none; }
 
   .detailContent { padding: 0 0.75rem 2rem; }
+  .utekiDetailDesc { font-size: 0.8rem; line-height: 1.65; }
+  .utekiActions { gap: 0.5rem; }
+  .utekiActions .linkPrimary,
+  .utekiActions .backBtn { flex: 1 1 auto; justify-content: center; }
+  .utekiDemoFrameShell { min-height: 480px; aspect-ratio: 3 / 4; }
+  .demoFrameShell { aspect-ratio: 3 / 4; }
+  .demoOpenLink { width: 100%; }
   .highlightTitle { font-size: 0.875rem; }
   .highlightDesc { font-size: 0.75rem; }
   .detailTitle { font-size: 1.375rem; }
