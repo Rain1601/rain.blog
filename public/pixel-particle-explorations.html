@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel × Particle Explorations</title>
+  <style>
+    :root {
+      --paper-dark: #12100d;
+      --paper-cream: #faf8f4;
+      --paper-deep: #03070c;
+      --ink-warm: #eee8dc;
+      --ink-dark: #2a2620;
+      --accent: #d97149;
+      --muted-warm: rgba(238, 232, 220, .58);
+      --muted-cream: rgba(42, 38, 32, .55);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--paper-dark);
+      color: var(--ink-warm);
+      font-family: "Times New Roman", "Songti SC", "STSong", SimSun, serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 20px;
+      background: linear-gradient(to bottom, rgba(0,0,0,.55), transparent);
+      pointer-events: none;
+    }
+    .nav a {
+      pointer-events: auto;
+      font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border: 1px solid rgba(238,232,220,.18);
+      color: rgba(238,232,220,.75);
+      text-decoration: none;
+      border-radius: 999px;
+      transition: all .25s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    .nav a:hover {
+      color: var(--ink-warm);
+      border-color: rgba(238,232,220,.5);
+      transform: translateY(-1px);
+    }
+    section.demo {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    section.demo canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    section.demo .copy {
+      position: relative;
+      z-index: 2;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 22vh 28px 0;
+      text-align: left;
+    }
+    section.demo .eyebrow {
+      display: block;
+      margin-bottom: 22px;
+      color: rgba(185, 163, 122, .82);
+      font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+    section.demo h2 {
+      margin: 0;
+      font-size: clamp(48px, 7vw, 96px);
+      font-weight: 400;
+      line-height: .96;
+      letter-spacing: 0;
+    }
+    section.demo p {
+      margin: 30px 0 0;
+      max-width: 420px;
+      font-size: 17px;
+      line-height: 1.85;
+    }
+    /* Section palette overrides */
+    section.warm-dark { background: var(--paper-dark); color: var(--ink-warm); }
+    section.warm-dark p { color: var(--muted-warm); }
+    section.cream { background: var(--paper-cream); color: var(--ink-dark); }
+    section.cream .eyebrow { color: rgba(160, 110, 70, .78); }
+    section.cream p { color: var(--muted-cream); }
+    section.deep { background: var(--paper-deep); color: var(--ink-warm); }
+    section.deep .eyebrow { color: rgba(160, 195, 220, .68); }
+    section.deep p { color: rgba(238, 244, 250, .56); }
+    /* Soft vignette overlay shared */
+    section.demo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,.22) 100%);
+    }
+    section.cream.demo::after {
+      background: radial-gradient(ellipse at center, transparent 60%, rgba(120,80,40,.08) 100%);
+    }
+    .footnote {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(238,232,220,.32);
+    }
+    section.cream .footnote { color: rgba(42,38,32,.32); }
+    @media (prefers-reduced-motion: reduce) {
+      section.demo canvas { opacity: .35; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="#v1">v1 · Rain</a>
+    <a href="#v2">v2 · Wave</a>
+    <a href="#v4">v4 · Cream</a>
+    <a href="#v5">v5 · Deep Sea</a>
+    <a href="#v8">v8 · Flow</a>
+    <a href="#v10">v10 · Cross</a>
+  </nav>
+
+  <!-- v1: 像素雨 — 暗暖纸 -->
+  <section id="v1" class="demo warm-dark">
+    <canvas data-effect="pixel-rain" data-density="120" data-color="217,113,73" data-bg="18,16,13"></canvas>
+    <div class="copy">
+      <span class="eyebrow">V1 · Pixel Rain</span>
+      <h2>雨滴</h2>
+      <p>3px 的小方块从顶端落下，密度低、速度有别。颜色是暖朱在暗纸上 —— 落下时是字、不是水。</p>
+    </div>
+    <div class="footnote">120 particles · canvas · 60fps</div>
+  </section>
+
+  <!-- v2: 像素海浪 — 点阵正弦 -->
+  <section id="v2" class="demo warm-dark">
+    <canvas data-effect="dot-wave" data-cols="64" data-rows="22" data-color="217,113,73"></canvas>
+    <div class="copy">
+      <span class="eyebrow">V2 · Pixel Sea Wave</span>
+      <h2>海浪</h2>
+      <p>一张点阵，每一颗按双 sin 偏移。整片东西在缓慢呼吸，像从高空看海面 —— 没有泡沫、没有泛光，只有秩序。</p>
+    </div>
+    <div class="footnote">64 × 22 dots · sin + sin · 0.5s/cycle</div>
+  </section>
+
+  <!-- v4: 浅色变体 -->
+  <section id="v4" class="demo cream">
+    <canvas data-effect="pixel-rain" data-density="90" data-color="42,38,32" data-bg="250,248,244"></canvas>
+    <div class="copy">
+      <span class="eyebrow">V4 · Cream Variant</span>
+      <h2>暖白纸</h2>
+      <p>同一张雨换到米白底色上。墨点在纸上的样子 —— 比暗底版本更安静、更"白日"。</p>
+    </div>
+    <div class="footnote">90 particles · ink on paper</div>
+  </section>
+
+  <!-- v5: 深海 — 浪 + 偶尔的滴 -->
+  <section id="v5" class="demo deep">
+    <canvas data-effect="deep-sea" data-color="160,195,220"></canvas>
+    <div class="copy">
+      <span class="eyebrow">V5 · Deep Sea</span>
+      <h2>深海</h2>
+      <p>底层是缓慢起伏的点阵浪，偶尔有一颗光点向下沉。给 Shinkai 用 —— 深、慢、有节奏。</p>
+    </div>
+    <div class="footnote">dot wave + descending motes</div>
+  </section>
+
+  <!-- v8: 流场（水脉 / suimyaku） -->
+  <section id="v8" class="demo warm-dark">
+    <canvas data-effect="flow-field" data-color="217,113,73"></canvas>
+    <div class="copy">
+      <span class="eyebrow">V8 · Flow Field</span>
+      <h2>水脉</h2>
+      <p>220 个粒子在一个被 sin 复合出来的流场里漂。轨迹自己慢慢画出洋流的形状 —— 没有"波"，只有"流"。</p>
+    </div>
+    <div class="footnote">220 particles · curl field · long trails</div>
+  </section>
+
+  <!-- v10: 横切图 — 从侧面看水面 -->
+  <section id="v10" class="demo warm-dark">
+    <canvas data-effect="cross-section" data-color="217,113,73"></canvas>
+    <div class="copy">
+      <span class="eyebrow">V10 · Cross Section / 横切</span>
+      <h2>水的侧面</h2>
+      <p>不画水面线，让密度自己描出它 —— 表层最密，向深处衰减。上方留白。波在横向缓慢移动。</p>
+    </div>
+    <div class="footnote">density gradient only · no surface line</div>
+  </section>
+
+  <script>
+    // === Shared utilities ===
+    function setupCanvas(canvas) {
+      const dpr = window.devicePixelRatio || 1;
+      const resize = () => {
+        const w = canvas.offsetWidth;
+        const h = canvas.offsetHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+        return { ctx, w, h };
+      };
+      let state = resize();
+      window.addEventListener('resize', () => { state = resize(); }, { passive: true });
+      return () => state;
+    }
+
+    // === Effect: Pixel Rain ===
+    function pixelRain(canvas) {
+      const get = setupCanvas(canvas);
+      const density = parseInt(canvas.dataset.density || '100', 10);
+      const color = canvas.dataset.color || '217,113,73';
+      const bg = canvas.dataset.bg || '18,16,13';
+      let drops = [];
+      function spawn(forceTop) {
+        const { w, h } = get();
+        return {
+          x: Math.random() * w,
+          y: forceTop ? -10 - Math.random() * 40 : Math.random() * h,
+          size: 2 + Math.floor(Math.random() * 2), // 2 or 3 px
+          vy: 0.5 + Math.random() * 1.6,
+          alpha: 0.18 + Math.random() * 0.55,
+        };
+      }
+      function reset() {
+        drops = Array.from({ length: density }, () => spawn(false));
+      }
+      reset();
+      window.addEventListener('resize', reset, { passive: true });
+      function frame() {
+        const { ctx, w, h } = get();
+        // Trail fade — gives short streaks without explicit trail tracking
+        ctx.fillStyle = `rgba(${bg}, 0.22)`;
+        ctx.fillRect(0, 0, w, h);
+        for (const d of drops) {
+          ctx.fillStyle = `rgba(${color}, ${d.alpha})`;
+          ctx.fillRect(Math.floor(d.x), Math.floor(d.y), d.size, d.size);
+          d.y += d.vy;
+          if (d.y > h + 8) Object.assign(d, spawn(true));
+        }
+        requestAnimationFrame(frame);
+      }
+      frame();
+    }
+
+    // === Effect: Dot Wave (traveling wave, depth fade, per-cell jitter) ===
+    function dotWave(canvas) {
+      const get = setupCanvas(canvas);
+      const cols = parseInt(canvas.dataset.cols || '80', 10);
+      const rows = parseInt(canvas.dataset.rows || '26', 10);
+      const color = canvas.dataset.color || '217,113,73';
+      let t = 0;
+      function frame() {
+        const { ctx, w, h } = get();
+        ctx.clearRect(0, 0, w, h);
+        const cellW = w / cols;
+        const cellH = (h * 0.78) / rows;
+        const offsetY = h * 0.14;
+        for (let i = 0; i < cols; i++) {
+          for (let j = 0; j < rows; j++) {
+            const cx = i * cellW + cellW / 2;
+            const baseY = offsetY + j * cellH;
+            // Primary traveling wave (moves across screen)
+            const wave1 = Math.sin(i * 0.18 - t * 0.018);
+            // Secondary interference, slow
+            const wave2 = Math.sin(i * 0.07 + j * 0.05 + t * 0.011);
+            const yOffset = wave1 * 14 + wave2 * 6;
+            const y = baseY + yOffset;
+            // Per-cell stable jitter (breaks grid feel)
+            const jitter = Math.sin(i * 7.13 + j * 13.7) * 1.6;
+            // Depth fade — lower rows recede
+            const depthFade = 1 - (j / rows) * 0.62;
+            // Bright at crests
+            const peakness = Math.max(0, wave1 * 0.72 + wave2 * 0.28);
+            const a = (0.06 + peakness * 0.52) * depthFade;
+            ctx.fillStyle = `rgba(${color}, ${a})`;
+            ctx.fillRect(Math.floor(cx + jitter), Math.floor(y), 2, 2);
+          }
+        }
+        t++;
+        requestAnimationFrame(frame);
+      }
+      frame();
+    }
+
+    // === Effect: Deep Sea (atmospheric wave + sparkling motes + abyss gradient) ===
+    function deepSea(canvas) {
+      const get = setupCanvas(canvas);
+      const color = canvas.dataset.color || '160,195,220';
+      const cols = 56;
+      const rows = 18;
+      let t = 0;
+      // Each mote falls to its own random targetY then disappears — not full-fall like rain
+      function freshMote(m) {
+        m = m || {};
+        m.x = Math.random();
+        m.y = -0.05;
+        m.vy = 0.06 + Math.random() * 0.5;
+        m.vx = (Math.random() - 0.5) * 0.18;
+        // Brighter base — 0.45 ~ 0.95
+        m.a = 0.45 + Math.random() * 0.5;
+        m.phase = Math.random() * Math.PI * 2;
+        m.twinkleSpeed = 0.005 + Math.random() * 0.014;
+        // Wider fall-distance range — some die after 15% drop, some after 95%
+        m.targetY = 0.15 + Math.random() * 0.80;
+        return m;
+      }
+      const motes = Array.from({ length: 48 }, () => {
+        const m = freshMote();
+        m.y = Math.random() * m.targetY; // stagger initial positions
+        return m;
+      });
+      function frame() {
+        const { ctx, w, h } = get();
+        // Trail fade matched to darker bg (#03070c)
+        ctx.fillStyle = `rgba(3, 7, 12, 0.45)`;
+        ctx.fillRect(0, 0, w, h);
+        // Abyss gradient stronger — pulls eye deeper
+        const grad = ctx.createLinearGradient(0, h * 0.5, 0, h);
+        grad.addColorStop(0, 'rgba(0,0,0,0)');
+        grad.addColorStop(1, 'rgba(0,0,0,0.72)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, h * 0.5, w, h * 0.5);
+        // Dot wave — atmospheric, slow
+        const cellW = w / cols;
+        const cellH = (h * 0.6) / rows;
+        const offsetY = h * 0.28;
+        for (let i = 0; i < cols; i++) {
+          for (let j = 0; j < rows; j++) {
+            const cx = i * cellW + cellW / 2;
+            const baseY = offsetY + j * cellH;
+            const wave = Math.sin(i * 0.18 + t * 0.008) * 18
+                       + Math.sin((i + j * 0.6) * 0.1 + t * 0.005) * 10;
+            const y = baseY + wave;
+            const depth = j / rows;
+            const a = (0.04 + Math.max(0, Math.sin(i * 0.18 + t * 0.008)) * 0.25) * (1 - depth * 0.4);
+            ctx.fillStyle = `rgba(${color}, ${a})`;
+            ctx.fillRect(Math.floor(cx), Math.floor(y), 2, 2);
+          }
+        }
+        // Motes — bright spark (1px hot center + 4 cardinal halo),
+        // fades in last 14% before targetY, then respawns at top
+        for (const m of motes) {
+          const x = m.x * w;
+          const y = m.y * h;
+          // Tighter twinkle range — stays brighter on average (0.4 ~ 1.0)
+          const twinkle = 0.7 + 0.3 * Math.sin(m.phase + t * m.twinkleSpeed);
+          const remaining = m.targetY - m.y;
+          const approachFade = remaining < 0.14 ? Math.max(0, remaining / 0.14) : 1;
+          const alpha = m.a * twinkle * approachFade;
+          const xi = Math.floor(x), yi = Math.floor(y);
+          // Hot center — pure white at full brightness
+          ctx.fillStyle = `rgba(252, 253, 255, ${alpha})`;
+          ctx.fillRect(xi, yi, 1, 1);
+          // Cardinal halo — 0.55× alpha for stronger spark
+          ctx.fillStyle = `rgba(238, 244, 250, ${alpha * 0.55})`;
+          ctx.fillRect(xi - 1, yi, 1, 1);
+          ctx.fillRect(xi + 1, yi, 1, 1);
+          ctx.fillRect(xi, yi - 1, 1, 1);
+          ctx.fillRect(xi, yi + 1, 1, 1);
+          m.y += m.vy / h;
+          m.x += m.vx / w;
+          if (m.y >= m.targetY) freshMote(m);
+          if (m.x < -0.02) m.x += 1.04;
+          if (m.x > 1.02) m.x -= 1.04;
+        }
+        t++;
+        requestAnimationFrame(frame);
+      }
+      frame();
+    }
+
+    // === Effect: Flow Field ===
+    function flowField(canvas) {
+      const get = setupCanvas(canvas);
+      const color = canvas.dataset.color || '217,113,73';
+      let particles = [];
+      function reset() {
+        const { w, h } = get();
+        particles = Array.from({ length: 240 }, () => ({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          a: 0.15 + Math.random() * 0.45,
+          size: 1 + Math.floor(Math.random() * 2),
+        }));
+      }
+      reset();
+      window.addEventListener('resize', reset, { passive: true });
+      let t = 0;
+      function fieldAt(x, y) {
+        // Composite sin curl — produces meandering currents
+        const angle = (Math.sin(x * 0.008 + t * 0.005) + Math.cos(y * 0.010 + t * 0.003)) * Math.PI * 0.5;
+        return { dx: Math.cos(angle) * 0.7, dy: Math.sin(angle) * 0.7 };
+      }
+      function frame() {
+        const { ctx, w, h } = get();
+        ctx.fillStyle = 'rgba(18, 16, 13, 0.08)'; // long trails
+        ctx.fillRect(0, 0, w, h);
+        for (const p of particles) {
+          ctx.fillStyle = `rgba(${color}, ${p.a})`;
+          ctx.fillRect(Math.floor(p.x), Math.floor(p.y), p.size, p.size);
+          const f = fieldAt(p.x, p.y);
+          p.x += f.dx;
+          p.y += f.dy;
+          if (p.x < 0) p.x += w;
+          if (p.x > w) p.x -= w;
+          if (p.y < 0) p.y += h;
+          if (p.y > h) p.y -= h;
+        }
+        t++;
+        requestAnimationFrame(frame);
+      }
+      frame();
+    }
+
+    // === Effect: Cross Section (横切图) — density + twinkle + drift + bubbles ===
+    function crossSection(canvas) {
+      const get = setupCanvas(canvas);
+      const color = canvas.dataset.color || '217,113,73';
+      let t = 0;
+      let waterDots = [];
+      let bubbles = [];
+      function reset() {
+        const { w } = get();
+        const target = Math.round(w * 1.8);
+        waterDots = Array.from({ length: target }, () => ({
+          x: Math.random() * w,
+          // Stronger surface bias (2.5) — surface band reads more clearly
+          depth: Math.pow(Math.random(), 2.5),
+          a: 0.18 + Math.random() * 0.42,
+          size: 1 + Math.floor(Math.random() * 2),
+          // Per-dot randomness for non-mechanical feel:
+          phase: Math.random() * Math.PI * 2,
+          twinkleSpeed: 0.004 + Math.random() * 0.012,
+          driftAmp: 2 + Math.random() * 6,
+          driftSpeed: 0.003 + Math.random() * 0.008,
+        }));
+      }
+      reset();
+      window.addEventListener('resize', reset, { passive: true });
+
+      function surfaceAt(x) {
+        // 5 sines at uncorrelated freqs — feels organic, never repeats clean
+        return Math.sin(x * 0.0095 + t * 0.013) * 30
+             + Math.sin(x * 0.024  + t * 0.020) * 12
+             + Math.sin(x * 0.005  - t * 0.008) * 6
+             + Math.sin(x * 0.0028 + t * 0.0055) * 18
+             + Math.sin(x * 0.041  + t * 0.029) * 4;
+      }
+
+      function spawnBubble() {
+        const { w, h } = get();
+        bubbles.push({
+          x: Math.random() * w,
+          y: h - 16 - Math.random() * 80,
+          vy: 0.25 + Math.random() * 0.55,
+          a: 0.25 + Math.random() * 0.35,
+          size: 1 + Math.floor(Math.random() * 2),
+          life: 0,
+        });
+      }
+
+      function frame() {
+        const { ctx, w, h } = get();
+        ctx.fillStyle = 'rgba(18, 16, 13, 0.18)';
+        ctx.fillRect(0, 0, w, h);
+
+        const surfaceY = h * 0.42;
+
+        // Water-column dots with twinkle + horizontal drift
+        for (const d of waterDots) {
+          const sY = surfaceY + surfaceAt(d.x);
+          const maxDepth = h - sY - 6;
+          if (maxDepth < 4) continue;
+          const y = sY + d.depth * maxDepth;
+          const depthFade = 1 - d.depth * 0.78;
+          // Twinkle: 0.6 - 1.0 multiplier on alpha
+          const twinkle = 0.6 + 0.4 * Math.sin(d.phase + t * d.twinkleSpeed);
+          // Horizontal drift — slow, sine-based, depth-modulated (deeper drifts less)
+          const drift = d.driftAmp * (1 - d.depth * 0.6) * Math.sin(t * d.driftSpeed + d.phase);
+          ctx.fillStyle = `rgba(${color}, ${d.a * depthFade * twinkle})`;
+          ctx.fillRect(Math.floor(d.x + drift), Math.floor(y), d.size, d.size);
+        }
+
+        // Rising bubbles — spawn occasionally, wobble up, vanish near surface
+        for (let i = bubbles.length - 1; i >= 0; i--) {
+          const b = bubbles[i];
+          b.y -= b.vy;
+          b.life++;
+          const wiggle = Math.sin(b.life * 0.12) * 0.8;
+          const sY = surfaceY + surfaceAt(b.x);
+          if (b.y <= sY + 2) { bubbles.splice(i, 1); continue; }
+          // Fade as it gets older
+          const lifeFade = Math.max(0, 1 - b.life * 0.002);
+          ctx.fillStyle = `rgba(${color}, ${b.a * lifeFade})`;
+          ctx.fillRect(Math.floor(b.x + wiggle), Math.floor(b.y), b.size, b.size);
+        }
+        if (Math.random() < 0.06) spawnBubble();
+
+        t++;
+        requestAnimationFrame(frame);
+      }
+      frame();
+    }
+
+    // === Boot ===
+    const effects = {
+      'pixel-rain': pixelRain,
+      'dot-wave': dotWave,
+      'deep-sea': deepSea,
+      'flow-field': flowField,
+      'cross-section': crossSection,
+    };
+    document.querySelectorAll('canvas[data-effect]').forEach((c) => {
+      const fn = effects[c.dataset.effect];
+      if (fn) fn(c);
+    });
+  </script>
+</body>
+</html>
