@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Logos — Hand-drawn Style</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1C1917; color: #FAFAF9; font-family: 'Times New Roman', serif; min-height: 100vh; padding: 4rem 2rem; }
+  .grid { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; }
+  .card { text-align: center; }
+  .card h2 { font-size: 1.25rem; font-weight: 400; margin-bottom: 0.5rem; color: #A8A29E; }
+  .card p { font-size: 0.8125rem; color: #57534E; margin-bottom: 2rem; }
+  .logo-wrap { display: flex; justify-content: center; margin-bottom: 2rem; }
+  .sizes { display: flex; align-items: flex-end; justify-content: center; gap: 1.5rem; margin-top: 1rem; }
+  .sizes .size-label { font-size: 0.6875rem; color: #57534E; text-align: center; }
+  h1 { text-align: center; font-size: 2rem; font-weight: 400; margin-bottom: 0.5rem; }
+  .subtitle { text-align: center; color: #57534E; font-size: 0.875rem; margin-bottom: 3rem; }
+  .divider { width: 100%; height: 1px; background: #292524; margin: 3rem 0; grid-column: 1/-1; }
+</style>
+</head>
+<body>
+
+<h1>Project Logos</h1>
+<p class="subtitle">Hand-drawn style · Pure fill · Single color · Scalable</p>
+
+<div class="grid">
+
+  <!-- ===== 1. Uteki — K-line Trading ===== -->
+  <div class="card">
+    <h2>Uteki</h2>
+    <p>K-line / Trading</p>
+    <div class="logo-wrap">
+      <svg viewBox="0 0 200 200" width="160" height="160" fill="none">
+        <!-- 3 candlestick bars radiating from center, like asterisk petals -->
+        <!-- Bar 1 (left, bearish/filled, tilted) -->
+        <path d="M62 42 L58 62 L48 64 C50 58, 52 50, 48 46 L42 78 C40 82, 38 98, 42 102 L48 106 C52 108, 60 108, 64 104 L68 100 C72 96, 74 82, 70 76 L66 46 C64 42, 58 40, 62 42Z" fill="#d97757"/>
+        <!-- Wick 1 -->
+        <path d="M54 30 C52 28, 56 26, 58 28 L60 42 C58 44, 54 44, 52 42Z" fill="#d97757"/>
+        <path d="M54 106 L52 126 C50 130, 56 132, 58 128 L60 108Z" fill="#d97757"/>
+
+        <!-- Bar 2 (center, bullish/tall) -->
+        <path d="M92 18 C90 16, 96 14, 98 16 L100 36 C98 38, 94 38, 92 36Z" fill="#d97757"/>
+        <path d="M86 36 C88 32, 108 31, 112 36 L114 118 C112 124, 90 125, 86 118Z" fill="#d97757"/>
+        <path d="M96 118 L94 148 C92 152, 98 154, 100 150 L102 120Z" fill="#d97757"/>
+
+        <!-- Bar 3 (right, bearish/filled, tilted) -->
+        <path d="M138 52 C140 48, 146 50, 144 54 L142 68Z" fill="#d97757"/>
+        <path d="M130 68 C132 64, 148 63, 152 68 L156 110 C154 116, 134 117, 130 110Z" fill="#d97757"/>
+        <path d="M140 110 L138 138 C136 142, 142 144, 144 140 L146 112Z" fill="#d97757"/>
+
+        <!-- Trend line — diagonal slash connecting bars -->
+        <path d="M36 140 C40 138, 52 118, 68 108 C84 98, 96 72, 112 82 C128 92, 140 68, 168 58 C172 56, 174 60, 170 62 C142 72, 130 96, 114 86 C98 76, 86 102, 70 112 C54 122, 42 142, 38 144Z" fill="#d97757" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="sizes">
+      <div>
+        <svg viewBox="0 0 200 200" width="64" height="64"><use href="#uteki-logo"/></svg>
+        <div class="size-label">64px</div>
+      </div>
+      <div>
+        <svg viewBox="0 0 200 200" width="32" height="32"><use href="#uteki-logo"/></svg>
+        <div class="size-label">32px</div>
+      </div>
+      <div>
+        <svg viewBox="0 0 200 200" width="16" height="16"><use href="#uteki-logo"/></svg>
+        <div class="size-label">16px</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 2. Sumi — Microphone ===== -->
+  <div class="card">
+    <h2>Sumi</h2>
+    <p>Microphone / Voice</p>
+    <div class="logo-wrap">
+      <svg viewBox="0 0 200 200" width="160" height="160" fill="none">
+        <!-- Mic head — rounded capsule -->
+        <path d="M80 28 C82 12, 118 10, 122 28 L126 98 C124 118, 78 120, 76 98Z" fill="#d97757"/>
+
+        <!-- Mic grille slots (negative space illusion via darker shapes) -->
+        <path d="M90 48 C92 46, 110 45, 112 48 C114 50, 112 54, 110 56 C108 58, 92 59, 90 56 C88 54, 88 50, 90 48Z" fill="#c4654a"/>
+        <path d="M89 68 C91 66, 111 65, 113 68 C115 70, 113 74, 111 76 C109 78, 91 79, 89 76 C87 74, 87 70, 89 68Z" fill="#c4654a"/>
+
+        <!-- U-shaped holder arc -->
+        <path d="M60 92 C58 88, 56 82, 58 78 C60 74, 64 72, 66 76 C68 80, 68 92, 68 100 C70 116, 82 130, 100 132 C118 134, 130 120, 134 102 C136 92, 136 80, 138 76 C140 72, 144 74, 146 78 C148 82, 146 90, 144 96 C140 126, 124 142, 100 144 C76 146, 62 128, 60 98Z" fill="#d97757"/>
+
+        <!-- Stand -->
+        <path d="M94 144 C92 142, 92 140, 94 138 L106 138 C108 140, 108 142, 106 144 L108 172 C108 174, 106 176, 104 176 L96 176 C94 176, 92 174, 92 172Z" fill="#d97757"/>
+
+        <!-- Base -->
+        <path d="M72 176 C74 172, 126 171, 130 176 C132 180, 128 184, 126 184 L76 186 C72 186, 70 180, 72 176Z" fill="#d97757"/>
+      </svg>
+    </div>
+    <div class="sizes">
+      <div>
+        <svg viewBox="0 0 200 200" width="64" height="64"><use href="#sumi-logo"/></svg>
+        <div class="size-label">64px</div>
+      </div>
+      <div>
+        <svg viewBox="0 0 200 200" width="32" height="32"><use href="#sumi-logo"/></svg>
+        <div class="size-label">32px</div>
+      </div>
+      <div>
+        <svg viewBox="0 0 200 200" width="16" height="16"><use href="#sumi-logo"/></svg>
+        <div class="size-label">16px</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3. Muses — Quill Pen ===== -->
+  <div class="card">
+    <h2>Muses</h2>
+    <p>Quill / Writing</p>
+    <div class="logo-wrap">
+      <svg viewBox="0 0 200 200" width="160" height="160" fill="none">
+        <!-- Feather body — organic curved shape -->
+        <path d="M148 16
+                 C152 12, 158 14, 156 20
+                 L128 72
+                 C120 88, 108 108, 96 128
+                 C84 148, 68 166, 52 178
+                 C48 182, 44 180, 46 176
+                 L62 158
+                 C50 162, 38 160, 36 154
+                 C34 148, 42 142, 54 140
+                 L74 116
+                 C62 120, 48 118, 46 112
+                 C44 106, 52 100, 66 98
+                 L90 78
+                 C78 80, 68 76, 68 70
+                 C68 64, 76 60, 88 60
+                 L118 36
+                 C108 38, 100 34, 100 28
+                 C100 22, 108 20, 118 22
+                 Z" fill="#d97757"/>
+
+        <!-- Quill spine (central line — slightly thicker) -->
+        <path d="M148 16
+                 C146 20, 138 38, 128 58
+                 C118 78, 106 100, 94 122
+                 C82 144, 66 162, 52 178
+                 C50 180, 48 178, 50 176
+                 C64 160, 80 140, 92 118
+                 C104 96, 116 74, 126 54
+                 C136 34, 144 20, 146 16Z" fill="#c4654a"/>
+
+        <!-- Nib tip — the writing point -->
+        <path d="M52 178
+                 C48 184, 42 190, 38 194
+                 C36 196, 34 196, 34 194
+                 C32 190, 34 184, 38 180
+                 C42 176, 48 176, 52 178Z" fill="#d97757"/>
+
+        <!-- Ink dot -->
+        <path d="M30 194 C34 192, 38 196, 36 200 C34 204, 28 204, 27 200 C26 196, 28 194, 30 194Z" fill="#d97757" opacity="0.7"/>
+      </svg>
+    </div>
+    <div class="sizes">
+      <div>
+        <svg viewBox="0 0 200 200" width="64" height="64"><use href="#muses-logo"/></svg>
+        <div class="size-label">64px</div>
+      </div>
+      <div>
+        <svg viewBox="0 0 200 200" width="32" height="32"><use href="#muses-logo"/></svg>
+        <div class="size-label">32px</div>
+      </div>
+      <div>
+        <svg viewBox="0 0 200 200" width="16" height="16"><use href="#muses-logo"/></svg>
+        <div class="size-label">16px</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- All 3 on light background -->
+  <div style="grid-column:1/-1; text-align:center;">
+    <p style="color:#57534E; font-size:0.8125rem; margin-bottom:1.5rem;">Light background preview</p>
+    <div style="background:#f0ebe3; border-radius:12px; padding:2rem; display:flex; justify-content:center; gap:4rem; align-items:center;">
+      <svg viewBox="0 0 200 200" width="80" height="80" fill="none">
+        <path d="M92 18 C90 16, 96 14, 98 16 L100 36 C98 38, 94 38, 92 36Z" fill="#d97757"/>
+        <path d="M86 36 C88 32, 108 31, 112 36 L114 118 C112 124, 90 125, 86 118Z" fill="#d97757"/>
+        <path d="M96 118 L94 148 C92 152, 98 154, 100 150 L102 120Z" fill="#d97757"/>
+        <path d="M54 30 C52 28, 56 26, 58 28 L60 42 C58 44, 54 44, 52 42Z" fill="#d97757"/>
+        <path d="M48 46 C50 42, 66 41, 68 46 L70 96 C68 102, 50 103, 48 96Z" fill="#d97757"/>
+        <path d="M56 96 L54 120 C52 124, 58 126, 60 122 L62 98Z" fill="#d97757"/>
+        <path d="M138 52 C140 48, 146 50, 144 54 L142 68Z" fill="#d97757"/>
+        <path d="M130 68 C132 64, 148 63, 152 68 L156 110 C154 116, 134 117, 130 110Z" fill="#d97757"/>
+        <path d="M140 110 L138 138 C136 142, 142 144, 144 140 L146 112Z" fill="#d97757"/>
+      </svg>
+      <svg viewBox="0 0 200 200" width="80" height="80" fill="none">
+        <path d="M80 28 C82 12, 118 10, 122 28 L126 98 C124 118, 78 120, 76 98Z" fill="#d97757"/>
+        <path d="M90 48 C92 46, 110 45, 112 48 C114 50, 112 54, 110 56 C108 58, 92 59, 90 56 C88 54, 88 50, 90 48Z" fill="#c4654a"/>
+        <path d="M89 68 C91 66, 111 65, 113 68 C115 70, 113 74, 111 76 C109 78, 91 79, 89 76 C87 74, 87 70, 89 68Z" fill="#c4654a"/>
+        <path d="M60 92 C58 88, 56 82, 58 78 C60 74, 64 72, 66 76 C68 80, 68 92, 68 100 C70 116, 82 130, 100 132 C118 134, 130 120, 134 102 C136 92, 136 80, 138 76 C140 72, 144 74, 146 78 C148 82, 146 90, 144 96 C140 126, 124 142, 100 144 C76 146, 62 128, 60 98Z" fill="#d97757"/>
+        <path d="M94 144 L106 138 L108 172 C108 174, 106 176, 104 176 L96 176 C94 176, 92 174, 92 172Z" fill="#d97757"/>
+        <path d="M72 176 C74 172, 126 171, 130 176 C132 180, 128 184, 126 184 L76 186 C72 186, 70 180, 72 176Z" fill="#d97757"/>
+      </svg>
+      <svg viewBox="0 0 200 200" width="80" height="80" fill="none">
+        <path d="M148 16 C152 12, 158 14, 156 20 L128 72 C120 88, 108 108, 96 128 C84 148, 68 166, 52 178 C48 182, 44 180, 46 176 L62 158 C50 162, 38 160, 36 154 C34 148, 42 142, 54 140 L74 116 C62 120, 48 118, 46 112 C44 106, 52 100, 66 98 L90 78 C78 80, 68 76, 68 70 C68 64, 76 60, 88 60 L118 36 C108 38, 100 34, 100 28 C100 22, 108 20, 118 22Z" fill="#d97757"/>
+        <path d="M148 16 C146 20, 138 38, 128 58 C118 78, 106 100, 94 122 C82 144, 66 162, 52 178 C50 180, 48 178, 50 176 C64 160, 80 140, 92 118 C104 96, 116 74, 126 54 C136 34, 144 20, 146 16Z" fill="#c4654a"/>
+        <path d="M52 178 C48 184, 42 190, 38 194 C36 196, 34 196, 34 194 C32 190, 34 184, 38 180 C42 176, 48 176, 52 178Z" fill="#d97757"/>
+        <path d="M30 194 C34 192, 38 196, 36 200 C34 204, 28 204, 27 200 C26 196, 28 194, 30 194Z" fill="#d97757" opacity="0.7"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Editorial v2 · Cover Story — Rain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4ede0;
+    --bg-2: #e7decb;
+    --ink: #15120e;
+    --ink-soft: #4a4338;
+    --ink-faint: #9c9285;
+    --rule: #15120e;
+    --accent: #b8391c;
+    --paper: #fffdf8;
+  }
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: 'Fraunces', Georgia, serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ============ paper grain ============ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.07  0 0 0 0 0.05  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ============ SVG halftone filter (for images) ============ */
+  /* This is the proper halftone — varying dot density follows the image luminance */
+
+  /* ============ masthead ============ */
+  .masthead {
+    border-bottom: 2px solid var(--rule);
+    padding: 14px 6vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .masthead .brand {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    text-transform: none;
+  }
+  .masthead nav { display: flex; gap: 18px; }
+  .masthead nav a { color: var(--ink); text-decoration: none; }
+  .masthead nav a:hover { color: var(--accent); }
+  .masthead .lang { color: var(--ink-soft); }
+  .masthead .lang b { color: var(--ink); }
+
+  @media (max-width: 600px) {
+    .masthead { padding: 12px 5vw; font-size: 10px; }
+    .masthead nav { display: none; }
+  }
+
+  /* ============ COVER STORY HERO ============ */
+  .cover {
+    padding: clamp(40px, 5vw, 64px) 6vw clamp(48px, 6vw, 80px);
+    position: relative;
+    border-bottom: 2px solid var(--rule);
+  }
+  .cover-issue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .cover-issue::before, .cover-issue::after {
+    content: "";
+    flex: 0 0 40px;
+    height: 1px;
+    background: var(--ink);
+  }
+  .cover-issue::after { flex: 1; }
+
+  .cover-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .cover-grid {
+      grid-template-columns: 1fr 1.1fr;
+      gap: clamp(40px, 5vw, 80px);
+    }
+  }
+
+  .cover-text .kicker {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .cover-text .kicker::before { content: ""; width: 32px; height: 1px; background: var(--accent); }
+
+  .cover-text h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(40px, 7vw, 88px);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    font-variation-settings: 'opsz' 144;
+    margin-bottom: 24px;
+  }
+  .cover-text h1 em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .cover-text .standfirst {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(17px, 1.6vw, 22px);
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 42ch;
+    margin-bottom: 28px;
+  }
+  .cover-text .byline {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .cover-text .byline b { color: var(--ink); }
+
+  /* ============ HALFTONE PORTRAIT ============ */
+  .cover-portrait {
+    position: relative;
+    aspect-ratio: 4/5;
+    max-width: 540px;
+    width: 100%;
+    justify-self: end;
+    background: var(--bg-2);
+    overflow: hidden;
+    border: 1.5px solid var(--ink);
+  }
+  /* the source image — turned grayscale + slight contrast */
+  .cover-portrait img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    filter: grayscale(1) contrast(1.15) brightness(0.95);
+    display: block;
+  }
+  /* halftone dot overlay — mix-blend with the photo */
+  .cover-portrait::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--ink) 1.5px, transparent 1.7px);
+    background-size: 5px 5px;
+    mix-blend-mode: screen;
+    z-index: 2;
+    pointer-events: none;
+  }
+  /* duotone tint (warm) */
+  .cover-portrait::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(184,57,28,0.15) 0%, rgba(21,18,14,0.35) 100%);
+    mix-blend-mode: multiply;
+    z-index: 3;
+    pointer-events: none;
+  }
+  /* caption tag */
+  .cover-portrait .caption {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    z-index: 4;
+    background: var(--bg);
+    border: 1px solid var(--ink);
+    padding: 6px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  /* corner marks (registration-style) */
+  .cover-portrait .mark {
+    position: absolute;
+    width: 24px; height: 24px;
+    z-index: 4;
+    pointer-events: none;
+  }
+  .cover-portrait .mark::before, .cover-portrait .mark::after {
+    content: "";
+    position: absolute;
+    background: var(--bg);
+  }
+  .cover-portrait .mark::before { width: 100%; height: 2px; top: 50%; }
+  .cover-portrait .mark::after { width: 2px; height: 100%; left: 50%; }
+  .cover-portrait .mark.tl { top: -8px; left: -8px; }
+  .cover-portrait .mark.tr { top: -8px; right: -8px; }
+  .cover-portrait .mark.bl { bottom: -8px; left: -8px; }
+  .cover-portrait .mark.br { bottom: -8px; right: -8px; }
+
+  /* ============ section ============ */
+  .section {
+    padding: clamp(48px, 7vw, 100px) 6vw;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: clamp(28px, 4vw, 56px);
+    flex-wrap: wrap;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .section-head h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .section-head h2 em { font-style: italic; color: var(--accent); }
+  .section-head .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  /* ============ ARTICLE GRID with halftone thumbs ============ */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(32px, 4vw, 48px);
+  }
+  @media (min-width: 700px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1200px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .post {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    cursor: pointer;
+  }
+  .post .thumb {
+    aspect-ratio: 4/3;
+    background: var(--bg-2);
+    border: 1px solid var(--ink);
+    position: relative;
+    overflow: hidden;
+    transition: transform .3s ease;
+  }
+  .post:hover .thumb { transform: translate(-4px, -4px); box-shadow: 8px 8px 0 var(--ink); }
+
+  /* each thumb is a gradient + halftone — different per topic */
+  .thumb.t-ai {
+    background:
+      radial-gradient(circle at 30% 30%, #c44b2c 0%, transparent 60%),
+      radial-gradient(circle at 70% 70%, #15120e 0%, transparent 60%),
+      linear-gradient(135deg, #e7decb, #b8391c);
+  }
+  .thumb.t-voice {
+    background:
+      radial-gradient(circle at 50% 30%, #6a5d3f 0%, transparent 65%),
+      radial-gradient(circle at 30% 80%, #15120e 0%, transparent 60%),
+      linear-gradient(160deg, #e7decb, #4a4338);
+  }
+  .thumb.t-agent {
+    background:
+      radial-gradient(circle at 20% 50%, #b8391c 0%, transparent 60%),
+      radial-gradient(circle at 80% 30%, #2a2418 0%, transparent 70%),
+      linear-gradient(45deg, #e7decb, #15120e);
+  }
+  .thumb.t-systems {
+    background:
+      conic-gradient(from 45deg at 50% 50%, #15120e, #6a5d3f, #b8391c, #15120e),
+      linear-gradient(180deg, #e7decb, #4a4338);
+  }
+  .thumb.t-backend {
+    background:
+      linear-gradient(135deg, #b8391c, #15120e 70%),
+      radial-gradient(circle at 40% 40%, #e7decb, transparent 50%);
+  }
+  .thumb.t-llm {
+    background:
+      radial-gradient(circle at 50% 50%, #b8391c 0%, transparent 40%),
+      radial-gradient(circle at 20% 20%, #15120e 0%, transparent 60%),
+      radial-gradient(circle at 80% 80%, #6a5d3f 0%, transparent 50%),
+      var(--bg-2);
+  }
+
+  /* halftone overlay on every thumb */
+  .thumb::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--ink) 1.6px, transparent 1.8px);
+    background-size: 6px 6px;
+    mix-blend-mode: multiply;
+    opacity: 0.7;
+  }
+  .thumb .label {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 2;
+    background: var(--bg);
+    border: 1px solid var(--ink);
+    padding: 4px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .thumb .num {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    z-index: 2;
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--paper);
+    text-shadow: 2px 2px 0 var(--ink);
+    font-variation-settings: 'opsz' 144;
+  }
+
+  .post h3 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(22px, 2vw, 28px);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+  .post h3 em { font-style: italic; color: var(--accent); }
+  .post .meta {
+    display: flex;
+    gap: 14px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding-top: 12px;
+    border-top: 1px solid rgba(21,18,14,0.2);
+  }
+  .post .meta b { color: var(--accent); }
+
+  /* ============ footer ============ */
+  .footer {
+    padding: 80px 6vw 100px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .footer .ornament {
+    margin-bottom: 16px;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 32px;
+    color: var(--ink);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <span class="brand">Rain Journal</span>
+  <nav>
+    <a href="#">关于</a>
+    <a href="#">文章</a>
+    <a href="#">作品</a>
+  </nav>
+  <span class="lang"><b>中</b> / EN</span>
+</header>
+
+<!-- ============ COVER STORY ============ -->
+<section class="cover">
+  <div class="cover-issue">№ 07 · Spring 2026 · Hangzhou</div>
+  <div class="cover-grid">
+    <div class="cover-text">
+      <div class="kicker">Cover Story</div>
+      <h1>The <em>quiet</em><br>machinery of<br>making things.</h1>
+      <p class="standfirst">
+        关于一个工程师怎样在阿里云的实时语音 Agent、自己写的量化平台、和一个 AI 写作工具之间寻找节奏。
+      </p>
+      <p class="byline">
+        Words & code by <b>Rain</b> · 2026 / 05 / 22
+      </p>
+    </div>
+    <div class="cover-portrait">
+      <span class="mark tl"></span>
+      <span class="mark tr"></span>
+      <span class="mark bl"></span>
+      <span class="mark br"></span>
+      <img src="/images/head.jpg" alt="Rain">
+      <span class="caption">PHOTOGRAPH · 2025</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARTICLES GRID ============ -->
+<section class="section">
+  <div class="section-head">
+    <h2>The <em>Index</em></h2>
+    <span class="meta">24 entries · all topics</span>
+  </div>
+
+  <div class="grid">
+
+    <a href="#" class="post">
+      <div class="thumb t-ai">
+        <span class="num">07</span>
+        <span class="label">Essay · AI</span>
+      </div>
+      <h3>当文章变成 <em>代码</em>——Muses 的可编辑性实验</h3>
+      <div class="meta"><b>Essay</b><span>2026.05.22</span><span>14 min</span></div>
+    </a>
+
+    <a href="#" class="post">
+      <div class="thumb t-voice">
+        <span class="num">06</span>
+        <span class="label">Voice · WebRTC</span>
+      </div>
+      <h3>实时语音 Agent <em>不只是</em> chatbot</h3>
+      <div class="meta"><b>Voice</b><span>2026.05.14</span><span>10 min</span></div>
+    </a>
+
+    <a href="#" class="post">
+      <div class="thumb t-agent">
+        <span class="num">05</span>
+        <span class="label">Agent · Finance</span>
+      </div>
+      <h3>七闸门 — 系统化分析一家 <em>公司</em></h3>
+      <div class="meta"><b>Agent</b><span>2026.04.30</span><span>18 min</span></div>
+    </a>
+
+    <a href="#" class="post">
+      <div class="thumb t-backend">
+        <span class="num">04</span>
+        <span class="label">Backend</span>
+      </div>
+      <h3>为什么我不再相信 <em>mock</em> 测试</h3>
+      <div class="meta"><b>Backend</b><span>2026.04.12</span><span>6 min</span></div>
+    </a>
+
+    <a href="#" class="post">
+      <div class="thumb t-systems">
+        <span class="num">03</span>
+        <span class="label">Systems</span>
+      </div>
+      <h3>多数据库的 <em>优雅</em> 退场，三层架构</h3>
+      <div class="meta"><b>Systems</b><span>2026.03.28</span><span>12 min</span></div>
+    </a>
+
+    <a href="#" class="post">
+      <div class="thumb t-llm">
+        <span class="num">02</span>
+        <span class="label">LLM · Context</span>
+      </div>
+      <h3>Context engineering, <em>not</em> prompt engineering</h3>
+      <div class="meta"><b>LLM</b><span>2026.03.02</span><span>9 min</span></div>
+    </a>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="ornament">— fin —</div>
+  Rain · MMXXVI · Made in Hangzhou
+</footer>
+
+</body>
+</html>

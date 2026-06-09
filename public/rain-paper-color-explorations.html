@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rain Paper Color Explorations</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-snap-type: y mandatory;
+      background: #e6dcc7;
+    }
+
+    body {
+      margin: 0;
+      color: #29241d;
+      font-family: "Times New Roman", "Songti SC", "Noto Serif CJK SC", SimSun, serif;
+      background: #e6dcc7;
+    }
+
+    .scene {
+      --ink: #29241d;
+      --muted: rgba(41, 36, 29, .58);
+      --rain: rgba(41, 36, 29, .25);
+      --seal: rgba(115, 88, 48, .62);
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      scroll-snap-align: start;
+      isolation: isolate;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    .scene::before,
+    .scene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .scene::before {
+      background: var(--wash);
+      animation: breathe 20s ease-in-out infinite;
+    }
+
+    .scene::after {
+      background:
+        linear-gradient(to bottom, transparent 42%, var(--shade) 100%),
+        radial-gradient(ellipse at 50% 45%, transparent 0 48%, var(--edge) 100%);
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      opacity: .18;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.22) 0 1px, transparent 1px 4px),
+        repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0 1px, transparent 1px 7px);
+    }
+
+    .rainLine {
+      position: absolute;
+      width: 1px;
+      height: var(--h);
+      left: var(--x);
+      top: -18vh;
+      z-index: 2;
+      background: linear-gradient(to bottom, transparent, var(--rain), transparent);
+      opacity: var(--o);
+      transform: rotate(6deg);
+      animation: fall var(--d) linear infinite;
+      animation-delay: var(--delay);
+    }
+
+    .droplet {
+      position: absolute;
+      z-index: 2;
+      width: var(--s);
+      height: calc(var(--s) * 1.32);
+      left: var(--x);
+      top: var(--y);
+      border-radius: 60% 60% 72% 72%;
+      background:
+        radial-gradient(circle at 35% 18%, rgba(255,255,255,.62), rgba(255,255,255,.2) 20%, transparent 52%),
+        linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.2);
+      box-shadow: inset 0 0 18px rgba(255,255,255,.14);
+      opacity: var(--o);
+      animation: dropletFloat var(--d) ease-in-out infinite;
+      animation-delay: var(--delay);
+    }
+
+    .copy {
+      position: relative;
+      z-index: 5;
+      width: min(1120px, calc(100vw - 64px));
+      min-height: 100vh;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .copyInner {
+      width: min(520px, 100%);
+    }
+
+    .number {
+      display: block;
+      margin-bottom: 28px;
+      color: var(--muted);
+      font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(60px, 9vw, 138px);
+      line-height: .9;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 32px 0 0;
+      max-width: 430px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.92;
+    }
+
+    .seal {
+      display: inline-grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      margin-top: 42px;
+      border: 1px solid var(--seal);
+      color: var(--seal);
+      font-size: 18px;
+      writing-mode: vertical-rl;
+    }
+
+    .caption {
+      position: absolute;
+      right: 48px;
+      bottom: 38px;
+      z-index: 6;
+      color: var(--muted);
+      font: 500 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .v01 {
+      --bg:
+        radial-gradient(ellipse at 78% 20%, rgba(184,160,112,.18), transparent 28%),
+        radial-gradient(ellipse at 24% 70%, rgba(90,116,112,.1), transparent 30%),
+        linear-gradient(115deg, #e8dfcb 0%, #d6c8ae 48%, #efe8d9 100%);
+      --wash:
+        radial-gradient(ellipse at 72% 20%, rgba(255,255,255,.42), transparent 22%),
+        radial-gradient(ellipse at 14% 12%, rgba(255,255,255,.32), transparent 28%);
+      --shade: rgba(84, 65, 42, .13);
+      --edge: rgba(84, 65, 42, .08);
+      --ink: #28231c;
+      --muted: rgba(40,35,28,.58);
+      --seal: rgba(123, 91, 43, .62);
+    }
+
+    .v02 {
+      --bg:
+        radial-gradient(ellipse at 76% 18%, rgba(205,183,140,.14), transparent 30%),
+        radial-gradient(ellipse at 22% 72%, rgba(102,121,116,.08), transparent 34%),
+        linear-gradient(115deg, #f2eadb 0%, #e3d6bc 52%, #fbf7ec 100%);
+      --wash:
+        radial-gradient(ellipse at 68% 22%, rgba(255,255,255,.5), transparent 24%),
+        radial-gradient(ellipse at 12% 12%, rgba(255,255,255,.35), transparent 30%);
+      --shade: rgba(122, 92, 49, .1);
+      --edge: rgba(122, 92, 49, .055);
+      --ink: #2d2820;
+      --muted: rgba(45,40,32,.56);
+      --rain: rgba(45,40,32,.2);
+      --seal: rgba(132, 94, 42, .58);
+    }
+
+    .v03 {
+      --bg:
+        radial-gradient(ellipse at 75% 20%, rgba(166,150,118,.16), transparent 30%),
+        radial-gradient(ellipse at 18% 74%, rgba(87,105,103,.12), transparent 32%),
+        linear-gradient(115deg, #d8ceb8 0%, #c7b899 50%, #e7dec9 100%);
+      --wash:
+        radial-gradient(ellipse at 72% 18%, rgba(248,241,225,.3), transparent 24%),
+        radial-gradient(ellipse at 10% 10%, rgba(255,255,255,.22), transparent 28%);
+      --shade: rgba(66, 50, 34, .16);
+      --edge: rgba(66, 50, 34, .09);
+      --ink: #211d17;
+      --muted: rgba(33,29,23,.56);
+      --rain: rgba(33,29,23,.22);
+      --seal: rgba(106, 75, 34, .64);
+    }
+
+    .v04 {
+      --bg:
+        radial-gradient(ellipse at 78% 20%, rgba(198,180,145,.12), transparent 30%),
+        radial-gradient(ellipse at 20% 72%, rgba(88,115,119,.13), transparent 34%),
+        linear-gradient(115deg, #dfe3d8 0%, #c9d1c7 52%, #eef0e8 100%);
+      --wash:
+        radial-gradient(ellipse at 68% 22%, rgba(255,255,255,.36), transparent 24%),
+        radial-gradient(ellipse at 14% 14%, rgba(255,255,255,.24), transparent 30%);
+      --shade: rgba(55, 73, 72, .12);
+      --edge: rgba(55, 73, 72, .07);
+      --ink: #202723;
+      --muted: rgba(32,39,35,.56);
+      --rain: rgba(32,39,35,.2);
+      --seal: rgba(91, 96, 68, .6);
+    }
+
+    .v05 {
+      --bg:
+        radial-gradient(ellipse at 78% 22%, rgba(224,198,145,.16), transparent 28%),
+        radial-gradient(ellipse at 20% 72%, rgba(116,104,86,.08), transparent 32%),
+        linear-gradient(115deg, #efe1c5 0%, #d9bf8f 54%, #f7eedb 100%);
+      --wash:
+        radial-gradient(ellipse at 70% 20%, rgba(255,255,255,.42), transparent 24%),
+        radial-gradient(ellipse at 10% 12%, rgba(255,250,236,.32), transparent 28%);
+      --shade: rgba(118, 78, 33, .13);
+      --edge: rgba(118, 78, 33, .07);
+      --ink: #302414;
+      --muted: rgba(48,36,20,.56);
+      --rain: rgba(48,36,20,.18);
+      --seal: rgba(143, 88, 29, .58);
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); opacity: .86; }
+      50% { transform: scale(1.025); opacity: 1; }
+    }
+
+    @keyframes fall {
+      from { transform: translate3d(0, -20vh, 0) rotate(6deg); }
+      to { transform: translate3d(18px, 136vh, 0) rotate(6deg); }
+    }
+
+    @keyframes dropletFloat {
+      0%, 100% { transform: translate3d(0,0,0) scale(1); }
+      50% { transform: translate3d(10px,-14px,0) scale(1.025); }
+    }
+  </style>
+</head>
+<body>
+  <section class="scene v01">
+    <i class="rainLine" style="--x:15%;--h:80px;--o:.28;--d:12s;--delay:-1s"></i>
+    <i class="rainLine" style="--x:48%;--h:120px;--o:.18;--d:15s;--delay:-8s"></i>
+    <i class="rainLine" style="--x:78%;--h:90px;--o:.22;--d:13s;--delay:-4s"></i>
+    <i class="droplet" style="--x:72%;--y:18%;--s:92px;--o:.28;--d:16s;--delay:-3s"></i>
+    <div class="grain"></div>
+    <div class="copy"><div class="copyInner"><span class="number">PAPER 01 / ORIGINAL</span><h1>雨滴</h1><p>保留原始方向：温润纸色、低对比、安静的雨。作为基准版本。</p><span class="seal">雨</span></div></div>
+    <span class="caption">baseline</span>
+  </section>
+
+  <section class="scene v02">
+    <i class="rainLine" style="--x:14%;--h:90px;--o:.22;--d:13s;--delay:-4s"></i>
+    <i class="rainLine" style="--x:54%;--h:118px;--o:.14;--d:16s;--delay:-9s"></i>
+    <i class="rainLine" style="--x:82%;--h:78px;--o:.2;--d:12s;--delay:-2s"></i>
+    <i class="droplet" style="--x:70%;--y:16%;--s:88px;--o:.24;--d:17s;--delay:-5s"></i>
+    <div class="grain"></div>
+    <div class="copy"><div class="copyInner"><span class="number">PAPER 02 / WHITE TEA</span><h1>雨滴</h1><p>更亮、更轻，像白茶色的纸。高级感更干净，但可能少一点深度。</p><span class="seal">雨</span></div></div>
+    <span class="caption">lightest</span>
+  </section>
+
+  <section class="scene v03">
+    <i class="rainLine" style="--x:16%;--h:84px;--o:.25;--d:12s;--delay:-3s"></i>
+    <i class="rainLine" style="--x:46%;--h:128px;--o:.16;--d:16s;--delay:-8s"></i>
+    <i class="rainLine" style="--x:76%;--h:88px;--o:.2;--d:14s;--delay:-5s"></i>
+    <i class="droplet" style="--x:72%;--y:20%;--s:96px;--o:.24;--d:18s;--delay:-6s"></i>
+    <div class="grain"></div>
+    <div class="copy"><div class="copyInner"><span class="number">PAPER 03 / OLD PAPER</span><h1>雨滴</h1><p>更旧、更沉，像潮湿的古纸。东方感更强，但会更厚重。</p><span class="seal">雨</span></div></div>
+    <span class="caption">aged</span>
+  </section>
+
+  <section class="scene v04">
+    <i class="rainLine" style="--x:17%;--h:82px;--o:.23;--d:14s;--delay:-2s"></i>
+    <i class="rainLine" style="--x:50%;--h:118px;--o:.15;--d:17s;--delay:-7s"></i>
+    <i class="rainLine" style="--x:80%;--h:90px;--o:.19;--d:13s;--delay:-4s"></i>
+    <i class="droplet" style="--x:72%;--y:18%;--s:92px;--o:.22;--d:16s;--delay:-3s"></i>
+    <div class="grain"></div>
+    <div class="copy"><div class="copyInner"><span class="number">PAPER 04 / RAIN MIST</span><h1>雨滴</h1><p>冷一点的灰绿纸色，更像雨后空气。适合“雨滴”主题本身。</p><span class="seal">雨</span></div></div>
+    <span class="caption">cool mist</span>
+  </section>
+
+  <section class="scene v05">
+    <i class="rainLine" style="--x:15%;--h:84px;--o:.2;--d:13s;--delay:-3s"></i>
+    <i class="rainLine" style="--x:48%;--h:120px;--o:.12;--d:17s;--delay:-10s"></i>
+    <i class="rainLine" style="--x:78%;--h:88px;--o:.18;--d:14s;--delay:-5s"></i>
+    <i class="droplet" style="--x:72%;--y:17%;--s:92px;--o:.22;--d:18s;--delay:-4s"></i>
+    <div class="grain"></div>
+    <div class="copy"><div class="copyInner"><span class="number">PAPER 05 / GOLDEN RAIN</span><h1>雨滴</h1><p>更暖、更金，接近器物和茶室的光。高级但可能偏商业和装饰。</p><span class="seal">雨</span></div></div>
+    <span class="caption">warmest</span>
+  </section>
+</body>
+</html>

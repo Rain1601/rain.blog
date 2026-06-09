@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deep Sea Hero Demo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      background: #020610;
+      color: white;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 72px 8vw;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(ellipse at 70% 18%, rgba(125,89,255,.52), transparent 30%),
+        radial-gradient(ellipse at 20% 28%, rgba(0,143,255,.58), transparent 32%),
+        radial-gradient(ellipse at 52% 78%, rgba(0,13,58,.9), transparent 55%),
+        linear-gradient(135deg, #020714 0%, #06245c 45%, #151471 72%, #332068 100%);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: -18%;
+      z-index: -2;
+      background:
+        radial-gradient(ellipse at 12% 18%, rgba(192,224,255,.7) 0 10%, transparent 25%),
+        radial-gradient(ellipse at 86% 15%, rgba(165,128,255,.55) 0 13%, transparent 30%),
+        radial-gradient(ellipse at 36% 42%, rgba(16,118,255,.48) 0 20%, transparent 42%),
+        radial-gradient(ellipse at 62% 68%, rgba(5,14,82,.95) 0 22%, transparent 50%);
+      filter: blur(28px) saturate(1.2);
+      animation: tide 12s ease-in-out infinite;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,0) 0 46%, rgba(0,0,0,.76) 100%),
+        repeating-linear-gradient(115deg, rgba(255,255,255,.08) 0 1px, transparent 1px 18px);
+      mask-image: radial-gradient(ellipse at 42% 40%, rgba(0,0,0,.72), transparent 72%);
+      opacity: .42;
+      animation: caustics 9s linear infinite;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: radial-gradient(circle at 35% 25%, rgba(255,255,255,.34), rgba(67,139,255,.08) 36%, transparent 70%);
+      filter: blur(.3px);
+      opacity: .72;
+      animation: float 14s ease-in-out infinite;
+    }
+
+    .orb.a { width: 36vw; height: 36vw; right: -8vw; top: -5vw; }
+    .orb.b { width: 28vw; height: 28vw; left: -8vw; bottom: 6vw; animation-delay: -5s; }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      width: min(760px, 100%);
+      padding-top: 4vh;
+    }
+
+    .eyebrow {
+      display: block;
+      margin-bottom: 22px;
+      color: rgba(196, 222, 255, .72);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      color: rgba(255,255,255,.96);
+      font-family: Georgia, "Times New Roman", SimSun, serif;
+      font-size: clamp(64px, 8vw, 128px);
+      line-height: .92;
+      letter-spacing: -0.05em;
+      font-weight: 400;
+    }
+
+    p {
+      margin: 30px 0 0;
+      max-width: 560px;
+      color: rgba(255,255,255,.66);
+      font-size: clamp(17px, 1.5vw, 22px);
+      line-height: 1.8;
+    }
+
+    .panel {
+      position: absolute;
+      right: 8vw;
+      bottom: 11vh;
+      width: min(420px, 36vw);
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      background: rgba(3,8,20,.34);
+      backdrop-filter: blur(28px);
+      box-shadow: 0 30px 90px rgba(0,0,0,.36);
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 15px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.7);
+    }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      padding: 14px 0;
+      border-top: 1px solid rgba(255,255,255,.1);
+      color: rgba(255,255,255,.58);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .step b {
+      color: rgba(141,196,255,.88);
+      font-variant-numeric: tabular-nums;
+    }
+
+    @keyframes tide {
+      0%, 100% { transform: translate3d(0,0,0) scale(1); }
+      50% { transform: translate3d(-2%, 2%, 0) scale(1.06); }
+    }
+
+    @keyframes caustics {
+      from { transform: translate3d(-2%, -2%, 0); }
+      to { transform: translate3d(2%, 2%, 0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate3d(0,0,0) scale(1); }
+      50% { transform: translate3d(-20px, 24px, 0) scale(1.06); }
+    }
+  </style>
+</head>
+<body>
+  <main class="hero">
+    <div class="orb a"></div>
+    <div class="orb b"></div>
+    <section class="content">
+      <span class="eyebrow">Shinkai / Deep Research Agent</span>
+      <h1>Deep Sea Intelligence</h1>
+      <p>更深、更慢、更有层次的背景。适合 Shinkai：从宏观主题潜入产业链，发现水面下的公司与结构变化。</p>
+    </section>
+    <aside class="panel">
+      <h2>Agent Runtime</h2>
+      <div class="step"><b>01</b><span>Theme decomposition across macro, industry, and company layers.</span></div>
+      <div class="step"><b>02</b><span>Evidence collection from filings, news, market data, and vector memory.</span></div>
+      <div class="step"><b>03</b><span>Traceable synthesis with confidence, citations, and replay.</span></div>
+    </aside>
+  </main>
+</body>
+</html>

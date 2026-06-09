@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rain Wabi Hero</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --paper: #12100d;
+      --ink: #eee8dc;
+      --muted: rgba(238, 232, 220, .58);
+      --line: rgba(238, 232, 220, .14);
+      --accent: #b9a37a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Times New Roman", "Songti SC", SimSun, serif;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      background:
+        linear-gradient(to bottom, rgba(18,16,13,.72), rgba(18,16,13,.96)),
+        radial-gradient(circle at 78% 20%, rgba(196,177,136,.13), transparent 24%),
+        radial-gradient(circle at 18% 76%, rgba(78,107,118,.12), transparent 28%),
+        #12100d;
+      isolation: isolate;
+    }
+
+    .wash {
+      position: absolute;
+      inset: 0;
+      opacity: .78;
+      background:
+        radial-gradient(ellipse at 18% 18%, rgba(239,233,221,.18) 0 4%, transparent 22%),
+        radial-gradient(ellipse at 68% 36%, rgba(129,143,139,.12) 0 8%, transparent 34%),
+        radial-gradient(ellipse at 88% 80%, rgba(220,210,184,.12) 0 7%, transparent 30%);
+      filter: blur(18px);
+      transform-origin: 50% 50%;
+      animation: breathe 16s ease-in-out infinite;
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      opacity: .2;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 1px, transparent 1px 5px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 1px, transparent 1px 7px);
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+    }
+
+    .rain {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .drop {
+      position: absolute;
+      width: 1px;
+      height: 72px;
+      background: linear-gradient(to bottom, transparent, rgba(238,232,220,.22), transparent);
+      opacity: .42;
+      transform: rotate(8deg);
+      animation: fall var(--dur) linear infinite;
+    }
+
+    .drop:nth-child(1) { left: 16%; top: -20%; --dur: 9s; }
+    .drop:nth-child(2) { left: 34%; top: -30%; --dur: 12s; animation-delay: -4s; }
+    .drop:nth-child(3) { left: 57%; top: -24%; --dur: 10s; animation-delay: -8s; }
+    .drop:nth-child(4) { left: 73%; top: -42%; --dur: 14s; animation-delay: -5s; }
+    .drop:nth-child(5) { left: 88%; top: -18%; --dur: 11s; animation-delay: -2s; }
+
+    .enso {
+      position: absolute;
+      right: 8vw;
+      top: 19vh;
+      width: min(34vw, 460px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid rgba(238,232,220,.12);
+      opacity: .42;
+      mask-image: conic-gradient(from 24deg, black 0 72%, transparent 74% 82%, black 84%);
+      animation: enso 22s ease-in-out infinite;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      width: min(1080px, calc(100vw - 56px));
+      min-height: 100vh;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+    }
+
+    .copy {
+      width: min(520px, 100%);
+      margin-top: 8vh;
+    }
+
+    .eyebrow {
+      display: block;
+      margin-bottom: 30px;
+      color: rgba(185,163,122,.82);
+      font: 600 12px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(58px, 8vw, 122px);
+      font-weight: 400;
+      line-height: .94;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 34px 0 0;
+      max-width: 430px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.9;
+    }
+
+    .seal {
+      margin-top: 42px;
+      display: inline-grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(185,163,122,.55);
+      color: rgba(185,163,122,.84);
+      font-size: 18px;
+      writing-mode: vertical-rl;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); opacity: .72; }
+      50% { transform: scale(1.035); opacity: .9; }
+    }
+
+    @keyframes fall {
+      from { transform: translate3d(0, -20vh, 0) rotate(8deg); opacity: 0; }
+      15% { opacity: .36; }
+      85% { opacity: .24; }
+      to { transform: translate3d(22px, 130vh, 0) rotate(8deg); opacity: 0; }
+    }
+
+    @keyframes enso {
+      0%, 100% { transform: rotate(-4deg) scale(1); }
+      50% { transform: rotate(3deg) scale(1.02); }
+    }
+  </style>
+</head>
+<body>
+  <main class="hero">
+    <div class="wash"></div>
+    <div class="grain"></div>
+    <div class="enso"></div>
+    <div class="rain">
+      <i class="drop"></i><i class="drop"></i><i class="drop"></i><i class="drop"></i><i class="drop"></i>
+    </div>
+    <section class="content">
+      <div class="copy">
+        <span class="eyebrow">RAIN / OBSERVABLE AGENT</span>
+        <h1>雨滴</h1>
+        <p>不是炫技的背景，而是一种缓慢落下的秩序。留白让系统的运行过程有地方呼吸。</p>
+        <span class="seal">雨</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

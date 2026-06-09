@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rain Hero Explorations</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-snap-type: y mandatory;
+      background: #0f0e0b;
+    }
+
+    body {
+      margin: 0;
+      color: #eee8dc;
+      font-family: "Times New Roman", "Songti SC", "Noto Serif CJK SC", SimSun, serif;
+      background: #0f0e0b;
+    }
+
+    .scene {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      scroll-snap-align: start;
+      isolation: isolate;
+    }
+
+    .scene::before,
+    .scene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      opacity: .13;
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 1px, transparent 1px 4px),
+        repeating-linear-gradient(90deg, rgba(0,0,0,.08) 0 1px, transparent 1px 6px);
+    }
+
+    .copy {
+      position: relative;
+      z-index: 3;
+      width: min(1120px, calc(100vw - 64px));
+      min-height: 100vh;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+    }
+
+    .copyInner {
+      width: min(520px, 100%);
+    }
+
+    .number {
+      display: block;
+      margin-bottom: 28px;
+      font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .18em;
+      color: currentColor;
+      opacity: .42;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(60px, 9vw, 138px);
+      line-height: .9;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 32px 0 0;
+      max-width: 430px;
+      font-size: 18px;
+      line-height: 1.92;
+      color: currentColor;
+      opacity: .58;
+    }
+
+    .caption {
+      position: absolute;
+      right: 48px;
+      bottom: 38px;
+      z-index: 6;
+      font: 500 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .16em;
+      opacity: .45;
+      text-transform: uppercase;
+    }
+
+    .seal {
+      display: inline-grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      margin-top: 42px;
+      border: 1px solid currentColor;
+      color: currentColor;
+      opacity: .55;
+      font-size: 18px;
+      writing-mode: vertical-rl;
+    }
+
+    .rainLine {
+      position: absolute;
+      width: 1px;
+      height: var(--h);
+      left: var(--x);
+      top: -18vh;
+      z-index: 2;
+      background: linear-gradient(to bottom, transparent, var(--rain), transparent);
+      opacity: var(--o);
+      transform: rotate(var(--r));
+      animation: fall var(--d) linear infinite;
+      animation-delay: var(--delay);
+    }
+
+    .droplet {
+      position: absolute;
+      z-index: 2;
+      width: var(--s);
+      height: calc(var(--s) * 1.32);
+      left: var(--x);
+      top: var(--y);
+      border-radius: 60% 60% 72% 72%;
+      background:
+        radial-gradient(circle at 36% 20%, rgba(255,255,255,.7), rgba(255,255,255,.18) 18%, transparent 48%),
+        linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: inset 0 0 18px rgba(255,255,255,.12);
+      opacity: var(--o);
+      filter: blur(.1px);
+      animation: dropletFloat var(--d) ease-in-out infinite;
+      animation-delay: var(--delay);
+    }
+
+    /* 01: warm blank paper */
+    .s01 {
+      color: #28231c;
+      background:
+        radial-gradient(ellipse at 78% 20%, rgba(184,160,112,.18), transparent 28%),
+        radial-gradient(ellipse at 24% 70%, rgba(90,116,112,.1), transparent 30%),
+        linear-gradient(115deg, #e8dfcb 0%, #d6c8ae 48%, #efe8d9 100%);
+    }
+
+    .s01::before {
+      background:
+        radial-gradient(ellipse at 72% 20%, rgba(255,255,255,.42), transparent 22%),
+        radial-gradient(ellipse at 14% 12%, rgba(255,255,255,.32), transparent 28%),
+        linear-gradient(to bottom, transparent 45%, rgba(84,65,42,.13) 100%);
+      animation: paperBreathe 18s ease-in-out infinite;
+    }
+
+    .s01 .copy { justify-content: flex-start; }
+
+    /* 02: black lacquer */
+    .s02 {
+      color: #f2ead9;
+      background:
+        radial-gradient(ellipse at 78% 20%, rgba(160,138,93,.13), transparent 28%),
+        radial-gradient(ellipse at 18% 82%, rgba(73,93,92,.16), transparent 34%),
+        #100e0b;
+    }
+
+    .s02::before {
+      inset: -12%;
+      background:
+        radial-gradient(ellipse at 22% 16%, rgba(236,226,205,.12), transparent 24%),
+        radial-gradient(ellipse at 72% 62%, rgba(60,74,74,.18), transparent 36%),
+        radial-gradient(ellipse at 90% 8%, rgba(177,151,96,.12), transparent 28%);
+      filter: blur(22px);
+      animation: paperBreathe 20s ease-in-out infinite;
+    }
+
+    .s02 .copy { justify-content: center; text-align: center; }
+    .s02 .copyInner { margin-top: -4vh; }
+    .s02 p { margin-left: auto; margin-right: auto; }
+
+    /* 03: mist blue */
+    .s03 {
+      color: #ebefe9;
+      background:
+        linear-gradient(180deg, rgba(8,15,18,.18), rgba(8,15,18,.9)),
+        radial-gradient(ellipse at 20% 18%, rgba(220,232,226,.38), transparent 28%),
+        radial-gradient(ellipse at 78% 34%, rgba(103,128,129,.28), transparent 36%),
+        #11181a;
+    }
+
+    .s03::before {
+      inset: -14%;
+      background:
+        radial-gradient(ellipse at 15% 30%, rgba(236,242,234,.3), transparent 26%),
+        radial-gradient(ellipse at 86% 18%, rgba(133,153,151,.26), transparent 34%),
+        radial-gradient(ellipse at 54% 90%, rgba(4,12,14,.88), transparent 50%);
+      filter: blur(28px);
+      animation: tide 22s ease-in-out infinite;
+    }
+
+    .s03 .copy { justify-content: flex-end; }
+
+    /* 04: ink wash */
+    .s04 {
+      color: #e8dfce;
+      background:
+        radial-gradient(ellipse at 82% 22%, rgba(221,209,180,.11), transparent 22%),
+        linear-gradient(160deg, #171510 0%, #0d0d0b 54%, #1a1812 100%);
+    }
+
+    .s04::before {
+      background:
+        conic-gradient(from 15deg at 72% 44%, transparent 0 18%, rgba(232,223,206,.1) 20% 23%, transparent 25% 100%),
+        radial-gradient(ellipse at 70% 44%, transparent 0 26%, rgba(232,223,206,.11) 27% 27.6%, transparent 30%),
+        radial-gradient(ellipse at 34% 20%, rgba(232,223,206,.11), transparent 26%);
+      opacity: .72;
+      animation: ensoMove 26s ease-in-out infinite;
+    }
+
+    .s04 .copy { justify-content: flex-start; }
+
+    /* 05: quiet terminal */
+    .s05 {
+      color: #e9e2d3;
+      background:
+        radial-gradient(ellipse at 78% 24%, rgba(109,132,127,.14), transparent 30%),
+        radial-gradient(ellipse at 24% 72%, rgba(174,151,98,.1), transparent 34%),
+        linear-gradient(135deg, #11100d 0%, #151611 52%, #080807 100%);
+    }
+
+    .s05::before {
+      background-image:
+        linear-gradient(rgba(233,226,211,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(233,226,211,.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: radial-gradient(ellipse at 58% 45%, rgba(0,0,0,.72), transparent 68%);
+      animation: gridDrift 18s linear infinite;
+    }
+
+    .s05 .copy { justify-content: center; }
+    .s05 .copyInner { width: min(680px, 100%); }
+    .s05 h1 { font-size: clamp(56px, 7vw, 106px); }
+    .s05 p { max-width: 560px; }
+
+    .terminal {
+      margin-top: 44px;
+      max-width: 520px;
+      border-top: 1px solid rgba(233,226,211,.16);
+      padding-top: 18px;
+      color: rgba(233,226,211,.48);
+      font: 13px/1.9 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    @keyframes fall {
+      from { transform: translate3d(0, -20vh, 0) rotate(var(--r)); }
+      to { transform: translate3d(18px, 136vh, 0) rotate(var(--r)); }
+    }
+
+    @keyframes dropletFloat {
+      0%, 100% { transform: translate3d(0,0,0) scale(1); }
+      50% { transform: translate3d(10px,-14px,0) scale(1.025); }
+    }
+
+    @keyframes paperBreathe {
+      0%, 100% { transform: scale(1); opacity: .84; }
+      50% { transform: scale(1.025); opacity: 1; }
+    }
+
+    @keyframes tide {
+      0%, 100% { transform: translate3d(0,0,0) scale(1); }
+      50% { transform: translate3d(-1.2%, 1%, 0) scale(1.035); }
+    }
+
+    @keyframes ensoMove {
+      0%, 100% { transform: rotate(-2deg) scale(1); opacity: .62; }
+      50% { transform: rotate(3deg) scale(1.02); opacity: .78; }
+    }
+
+    @keyframes gridDrift {
+      from { background-position: 0 0; }
+      to { background-position: 42px 42px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="scene s01" style="--rain: rgba(40,35,28,.26);">
+    <i class="rainLine" style="--x:15%;--h:80px;--o:.28;--r:6deg;--d:12s;--delay:-1s"></i>
+    <i class="rainLine" style="--x:48%;--h:120px;--o:.18;--r:6deg;--d:15s;--delay:-8s"></i>
+    <i class="rainLine" style="--x:78%;--h:90px;--o:.22;--r:6deg;--d:13s;--delay:-4s"></i>
+    <i class="droplet" style="--x:72%;--y:18%;--s:92px;--o:.28;--d:16s;--delay:-3s"></i>
+    <div class="grain"></div>
+    <div class="copy">
+      <div class="copyInner">
+        <span class="number">RAIN 01 / PAPER</span>
+        <h1>雨滴</h1>
+        <p>浅色留白方向。像一张被雨水轻轻压住的纸，适合更安静、更个人化的首页。</p>
+        <span class="seal">雨</span>
+      </div>
+    </div>
+    <span class="caption">score this direction</span>
+  </section>
+
+  <section class="scene s02" style="--rain: rgba(242,234,217,.24);">
+    <i class="rainLine" style="--x:21%;--h:96px;--o:.24;--r:8deg;--d:12s;--delay:-5s"></i>
+    <i class="rainLine" style="--x:39%;--h:150px;--o:.16;--r:8deg;--d:17s;--delay:-10s"></i>
+    <i class="rainLine" style="--x:81%;--h:110px;--o:.2;--r:8deg;--d:14s;--delay:-2s"></i>
+    <i class="droplet" style="--x:17%;--y:16%;--s:110px;--o:.18;--d:17s;--delay:-6s"></i>
+    <div class="grain"></div>
+    <div class="copy">
+      <div class="copyInner">
+        <span class="number">RAIN 02 / KURO</span>
+        <h1>雨滴</h1>
+        <p>黑漆方向。更深、更稳，适合投研 Agent 的严肃感，雨只作为隐约的呼吸。</p>
+        <span class="seal">雨</span>
+      </div>
+    </div>
+    <span class="caption">dark lacquer</span>
+  </section>
+
+  <section class="scene s03" style="--rain: rgba(235,239,233,.22);">
+    <i class="rainLine" style="--x:12%;--h:100px;--o:.2;--r:5deg;--d:15s;--delay:-8s"></i>
+    <i class="rainLine" style="--x:52%;--h:140px;--o:.15;--r:5deg;--d:18s;--delay:-2s"></i>
+    <i class="rainLine" style="--x:88%;--h:96px;--o:.18;--r:5deg;--d:13s;--delay:-6s"></i>
+    <i class="droplet" style="--x:20%;--y:26%;--s:138px;--o:.2;--d:19s;--delay:-4s"></i>
+    <div class="grain"></div>
+    <div class="copy">
+      <div class="copyInner">
+        <span class="number">RAIN 03 / MIST</span>
+        <h1>雨滴</h1>
+        <p>雾蓝方向。保留水汽与空气感，比大渐变更克制，也更接近雨后的湿润。</p>
+        <span class="seal">雨</span>
+      </div>
+    </div>
+    <span class="caption">mist and air</span>
+  </section>
+
+  <section class="scene s04" style="--rain: rgba(232,223,206,.2);">
+    <i class="rainLine" style="--x:16%;--h:80px;--o:.18;--r:9deg;--d:16s;--delay:-3s"></i>
+    <i class="rainLine" style="--x:64%;--h:130px;--o:.13;--r:9deg;--d:20s;--delay:-13s"></i>
+    <i class="rainLine" style="--x:84%;--h:96px;--o:.17;--r:9deg;--d:15s;--delay:-7s"></i>
+    <div class="grain"></div>
+    <div class="copy">
+      <div class="copyInner">
+        <span class="number">RAIN 04 / ENSO</span>
+        <h1>雨滴</h1>
+        <p>墨与圆相方向。更东方，但风险是过于“禅意符号化”，需要谨慎使用。</p>
+        <span class="seal">雨</span>
+      </div>
+    </div>
+    <span class="caption">ink restraint</span>
+  </section>
+
+  <section class="scene s05" style="--rain: rgba(233,226,211,.18);">
+    <i class="rainLine" style="--x:18%;--h:92px;--o:.18;--r:7deg;--d:14s;--delay:-6s"></i>
+    <i class="rainLine" style="--x:44%;--h:146px;--o:.12;--r:7deg;--d:18s;--delay:-11s"></i>
+    <i class="rainLine" style="--x:71%;--h:88px;--o:.18;--r:7deg;--d:12s;--delay:-1s"></i>
+    <div class="grain"></div>
+    <div class="copy">
+      <div class="copyInner">
+        <span class="number">RAIN 05 / SYSTEM</span>
+        <h1>Rain builds observable agents.</h1>
+        <p>把雨滴主题和工程系统结合。适合你的个人定位：克制、可运行、可观测。</p>
+        <div class="terminal">trace.step: observe → reason → act → evaluate<br />runtime: quiet, continuous, replayable</div>
+      </div>
+    </div>
+    <span class="caption">system poetry</span>
+  </section>
+</body>
+</html>

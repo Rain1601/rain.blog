@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shinkai Wabi Hero</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      background: #080c0f;
+      color: #ebe6da;
+      font-family: "Times New Roman", "Songti SC", SimSun, serif;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(8,12,15,.68), rgba(8,12,15,1) 78%),
+        radial-gradient(ellipse at 74% 18%, rgba(80,104,118,.18), transparent 30%),
+        radial-gradient(ellipse at 20% 82%, rgba(29,58,70,.24), transparent 34%),
+        #080c0f;
+      isolation: isolate;
+    }
+
+    .depth {
+      position: absolute;
+      inset: -12%;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(236,229,212,.13) 0 8%, transparent 28%),
+        radial-gradient(ellipse at 80% 22%, rgba(96,126,138,.18) 0 10%, transparent 38%),
+        radial-gradient(ellipse at 54% 86%, rgba(3,20,28,.92) 0 24%, transparent 48%);
+      filter: blur(26px);
+      animation: tide 20s ease-in-out infinite;
+    }
+
+    .horizon {
+      position: absolute;
+      left: 10vw;
+      right: 10vw;
+      top: 34vh;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(235,230,218,.18), transparent);
+      opacity: .7;
+    }
+
+    .horizon::after {
+      content: "";
+      position: absolute;
+      left: 18%;
+      right: 12%;
+      top: 72px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(104,134,145,.16), transparent);
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      width: min(1120px, calc(100vw - 56px));
+      min-height: 100vh;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      align-items: center;
+      gap: 8vw;
+    }
+
+    .eyebrow {
+      display: block;
+      margin-bottom: 28px;
+      color: rgba(179,161,122,.82);
+      font: 600 12px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(64px, 9vw, 138px);
+      font-weight: 400;
+      line-height: .92;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 34px 0 0;
+      max-width: 470px;
+      color: rgba(235,230,218,.56);
+      font-size: 18px;
+      line-height: 1.95;
+    }
+
+    .runtime {
+      align-self: end;
+      margin-bottom: 18vh;
+      padding: 0 0 0 28px;
+      border-left: 1px solid rgba(235,230,218,.16);
+    }
+
+    .runtime h2 {
+      margin: 0 0 22px;
+      color: rgba(235,230,218,.78);
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    .runtime ol {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 16px;
+      color: rgba(235,230,218,.48);
+      font: 13px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .runtime b {
+      color: rgba(179,161,122,.78);
+      margin-right: 12px;
+      font-weight: 500;
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      opacity: .16;
+      background-image: repeating-radial-gradient(circle at 30% 30%, rgba(255,255,255,.12) 0 1px, transparent 1px 5px);
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+    }
+
+    @keyframes tide {
+      0%, 100% { transform: translate3d(0,0,0) scale(1); opacity: .74; }
+      50% { transform: translate3d(-1.4%, 1%, 0) scale(1.035); opacity: .9; }
+    }
+  </style>
+</head>
+<body>
+  <main class="hero">
+    <div class="depth"></div>
+    <div class="horizon"></div>
+    <div class="grain"></div>
+    <section class="content">
+      <div>
+        <span class="eyebrow">SHINKAI / INDUSTRY CHAIN RESEARCH</span>
+        <h1>深海</h1>
+        <p>宏观主题像海面，真正的结构在水下。Agent 的任务是慢慢下潜，穿过产业链、数据和反证。</p>
+      </div>
+      <aside class="runtime">
+        <h2>下潜路径</h2>
+        <ol>
+          <li><b>一</b>主题拆解</li>
+          <li><b>二</b>产业链映射</li>
+          <li><b>三</b>公司发现</li>
+          <li><b>四</b>证据回放</li>
+        </ol>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>
