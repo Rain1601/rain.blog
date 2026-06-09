@@ -91,7 +91,8 @@ export default function ArticlesClient({ initialPosts, initialStats }: ArticlesC
   const [searchQuery, setSearchQuery] = useState('');
   // chip 立即响应的"选中"状态
   const [selectedYear, setSelectedYear] = useState<string>('all');
-  const [selectedMonth, setSelectedMonth] = useState<string>('all');
+  // selectedMonth value 暂未驱动 active class（month 下拉项目前无选中态），只保留 setter
+  const [, setSelectedMonth] = useState<string>('all');
   // 列表实际应用的"已生效"状态（exit 动画结束后才更新）
   const [appliedYear, setAppliedYear] = useState<string>('all');
   const [appliedMonth, setAppliedMonth] = useState<string>('all');
