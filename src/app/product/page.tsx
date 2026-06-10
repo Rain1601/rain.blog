@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/components/Layout';
 import { productData, sectionTitles } from '@/content/product/config';
 import PixelRain from './PixelRain';
+import DeepSeaCanvas from '@/components/DeepSeaCanvas';
 import styles from './page.module.css';
 
 // useSearchParams() must live under a Suspense boundary so the rest of the
@@ -42,11 +43,29 @@ function ProductPageInner() {
   const product = productData[currentIndex];
   const total = productData.length;
   const isUteki = product.id === 'uteki';
+  const isShinkai = product.id === 'shinkai';
   const hasDetail = !!(product.highlights && product.highlights.length > 0);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(id);
+  }, []);
+
+  // Per-product theme color — drives navbar + .solidBg via --page-bg CSS var
+  useEffect(() => {
+    const themes: Record<string, string> = {
+      uteki: '#1C1917',     // warm dark, matches PixelRain trail-fade
+      shinkai: '#03070c',   // deep sea, matches DeepSeaCanvas trail-fade
+    };
+    const bg = themes[product.id] || '#1C1917';
+    document.documentElement.style.setProperty('--page-bg', bg);
+  }, [product.id]);
+
+  // Clean up on unmount so navbar reverts to default --bg-primary
+  useEffect(() => {
+    return () => {
+      document.documentElement.style.removeProperty('--page-bg');
+    };
   }, []);
 
   // Reset iframe load state whenever the slide changes
@@ -209,6 +228,7 @@ function ProductPageInner() {
       {/* ===== Hero view ===== */}
       <div className={`${styles.heroView} ${detailOpen ? styles.heroSlideUp : ''}`}>
         {isUteki && !detailOpen && <PixelRain />}
+        {isShinkai && !detailOpen && <DeepSeaCanvas className={styles.shinkaiSea} />}
         <div className={`${styles.content} ${contentClass}`}>
           <div className={styles.topLeft}>
             <span className={styles.tagline}>{language === 'zh' ? '作品集' : 'Portfolio'}</span>
@@ -216,8 +236,10 @@ function ProductPageInner() {
           </div>
 
           <div className={styles.center}>
-            {product.logo && (
+            {product.logo ? (
               <img src={product.logo} alt="" className={styles.productLogo} />
+            ) : (
+              <div className={styles.productLogoSpacer} aria-hidden="true" />
             )}
             <span className={styles.indexLabel}>
               {String(currentIndex + 1).padStart(2, '0')}
@@ -227,39 +249,42 @@ function ProductPageInner() {
               <p className={styles.productTagline}>{product.tagline[language]}</p>
             )}
 
-            {hasDetail && (
-              <button
-                className={styles.exploreBtn}
-                onClick={openDetail}
-                aria-label={language === 'zh' ? '探索项目' : 'Explore project'}
-              >
-                <span className={styles.exploreBtnText}>
-                  {language === 'zh' ? '探索' : 'Explore'}
-                </span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="6 9 12 15 18 9"/>
-                </svg>
-              </button>
-            )}
-          </div>
-
-          <div className={styles.infoCard}>
-            <p className={styles.productDesc}>{product.description[language]}</p>
-            <div className={styles.techStack}>
-              {product.techStack.map((tech) => (
-                <span key={tech} className={styles.techTag}>{tech}</span>
-              ))}
-            </div>
-            {(product.link || product.github) && (
-              <div className={styles.links}>
+            {(hasDetail || product.link || product.github) && (
+              <div className={styles.actionRow}>
+                {hasDetail && (
+                  <button
+                    className={styles.exploreBtn}
+                    onClick={openDetail}
+                    aria-label={language === 'zh' ? '探索项目' : 'Explore project'}
+                  >
+                    <span className={styles.exploreBtnText}>
+                      {language === 'zh' ? '探索' : 'Explore'}
+                    </span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                  </button>
+                )}
                 {product.link && (
-                  <a href={product.link} target="_blank" rel="noopener noreferrer" className={styles.linkPrimary}>
-                    {language === 'zh' ? '访问项目' : 'Visit'} →
+                  <a
+                    href={product.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.actionLink}
+                  >
+                    <span>{language === 'zh' ? '访问项目' : 'Visit'}</span>
+                    <span className={styles.actionLinkArrow}>→</span>
                   </a>
                 )}
                 {product.github && (
-                  <a href={product.github} target="_blank" rel="noopener noreferrer" className={styles.linkGhost}>
-                    GitHub →
+                  <a
+                    href={product.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.actionLink}
+                  >
+                    <span>GitHub</span>
+                    <span className={styles.actionLinkArrow}>→</span>
                   </a>
                 )}
               </div>

@@ -181,6 +181,26 @@ export const productData: ProductItem[] = [
     ],
   },
   {
+    id: 'shinkai',
+    title: {
+      zh: 'Shinkai 深海 — 宏观投研',
+      en: 'Shinkai — Macro Research',
+    },
+    tagline: {
+      zh: '从宏观主题出发，沿产业链潜到深处，找出真正值得长期持有的优质公司。',
+      en: 'From macro themes, descend through the supply chain to surface companies worth holding.',
+    },
+    description: {
+      zh: '世界秩序、宏观变化、资金流向是水面 —— 问题不在表层，要往下沉。Shinkai 用 Agent 顺着产业链做深度研究，把宏观主题拆成可追踪的中观叙事和微观标的，每一层都保留证据与置信度。',
+      en: 'World order, macro shifts, capital flows — these are the surface. The signal lives below. Shinkai uses agents to descend through supply chains, turning macro themes into traceable mid-scale narratives and bottom-up picks, preserving evidence and confidence at every layer.',
+    },
+    coverGradient: 'linear-gradient(135deg, #02060f 0%, #03090f 50%, #050d18 100%)',
+    blobColors: ['#0a3a5c', '#155e75', '#0c4a6e', '#1e3a5f'],
+    blobBg: '#02050c',
+    techStack: ['Multi-Agent', 'ReAct', 'Context Engineering', 'GraphRAG', 'Python'],
+    link: '/shinkai',
+  },
+  {
     id: 'naomi',
     title: {
       zh: 'Naomi — 实时语音 AI Agent',

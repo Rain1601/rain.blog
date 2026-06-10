@@ -52,7 +52,10 @@
 .solidBg {
   position: absolute;
   inset: 0;
-  background-color: var(--bg-primary);
+  /* Same --page-bg variable as the navbar — keeps header and body unified.
+     Fallback hardcodes warm-dark since /product is always dark-themed regardless of system pref. */
+  background-color: var(--page-bg, #1C1917);
+  transition: background-color 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
   z-index: 0;
 }
 
@@ -83,6 +86,22 @@
   to { opacity: 1; }
 }
 
+/* Shinkai-only ambient: deep-sea descent canvas behind the hero content. */
+.shinkaiSea {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  animation: shinkaiSeaFadeIn 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) 0.25s forwards;
+}
+
+@keyframes shinkaiSeaFadeIn {
+  to { opacity: 1; }
+}
+
 .heroSlideUp {
   transform: translateY(-100%);
   opacity: 0;
@@ -93,10 +112,11 @@
   position: relative;
   z-index: 2;
   height: 100%;
+  /* 顶部对齐 + 预留 padding-top；配合 .productLogoSpacer，让所有 slide 的标题保持同一水平线 */
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 2.5rem 5rem 5rem;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 18vh 5rem 0;
   pointer-events: none;
 }
 
@@ -106,8 +126,14 @@
 .contentExit { opacity: 0; transform: translateY(-10px); transition: opacity 0.22s cubic-bezier(0.4, 0, 1, 1), transform 0.22s cubic-bezier(0.4, 0, 1, 1); }
 .contentExitReverse { opacity: 0; transform: translateY(10px); transition: opacity 0.22s cubic-bezier(0.4, 0, 1, 1), transform 0.22s cubic-bezier(0.4, 0, 1, 1); }
 
-/* Top-left */
-.topLeft { animation: fadeIn 0.6s ease 0.1s both; }
+/* Top-left — absolute 锚定左上角，避免影响 .center 的居中 */
+.topLeft {
+  position: absolute;
+  top: 2.5rem;
+  left: 5rem;
+  z-index: 2;
+  animation: fadeIn 0.6s ease 0.1s both;
+}
 
 .tagline {
   font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.15em;
@@ -128,12 +154,21 @@
   text-align: center; gap: 0.75rem;
 }
 
-.productLogo {
+.productLogo,
+.productLogoSpacer {
   width: 56px;
   height: 56px;
-  object-fit: contain;
   margin-bottom: 0.5rem;
+}
+
+.productLogo {
+  object-fit: contain;
   opacity: 0.9;
+}
+
+/* 无 logo 的 slide 留同样的空间，保证标题水平一致 */
+.productLogoSpacer {
+  visibility: hidden;
 }
 
 .indexLabel {
@@ -186,6 +221,53 @@
 }
 
 .exploreBtnText { font-family: 'Times New Roman', 'SimSun', '宋体', serif; }
+
+/* Action row — hosts Explore + Visit + GitHub side-by-side */
+.actionRow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.actionRow .exploreBtn { margin-top: 0; }
+
+/* Visit / GitHub link — same pill shape as exploreBtn for visual cohesion */
+.actionLink {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 1.25rem; border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8125rem; font-weight: 400;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+  animation: fadeIn 0.5s ease 0.45s both;
+  transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease,
+              transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+              box-shadow 0.3s ease;
+}
+
+.actionLink:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  text-decoration: none;
+}
+
+.actionLinkArrow {
+  font-size: 0.95em;
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.actionLink:hover .actionLinkArrow {
+  transform: translateX(2px);
+}
 
 /* Info card — positioned right side */
 .infoCard {
@@ -938,7 +1020,8 @@
 /* ---- Mobile ---- */
 @media (max-width: 768px) {
   .page { height: calc(100vh - 70px); }
-  .content { padding: 1.5rem 1.25rem 4.5rem; }
+  .content { padding: 14vh 1.25rem 0; }
+  .topLeft { top: 1.5rem; left: 1.25rem; }
   .heroTitle { font-size: 1rem; }
   .productName { font-size: 1.75rem; }
   .productTagline { font-size: 0.8125rem; padding: 0 1rem; }
@@ -1017,13 +1100,15 @@
 
 @media (max-width: 480px) {
   .page { height: calc(100vh - 60px); }
-  .content { padding: 1rem 1rem 4rem; }
+  .content { padding: 10vh 1rem 0; }
   .topLeft { display: none; }
   .productName { font-size: 1.5rem; }
   .productTagline { font-size: 0.75rem; padding: 0 0.5rem; }
   .productDesc { font-size: 0.75rem; line-height: 1.6; }
   .techTag { font-size: 0.625rem; padding: 0.2rem 0.5rem; }
   .exploreBtn { font-size: 0.75rem; padding: 0.4rem 1rem; }
+  .actionLink { font-size: 0.75rem; padding: 0.4rem 1rem; }
+  .actionRow { gap: 0.5rem; }
   .linkPrimary { font-size: 0.75rem; padding: 0.35rem 0.75rem; }
   .linkGhost { font-size: 0.75rem; }
   .arrow { width: 32px; height: 32px; }

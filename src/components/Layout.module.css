@@ -7,7 +7,9 @@
 
 /* Navigation Bar */
 .navbar {
-  background-color: var(--bg-primary);
+  /* --page-bg lets per-page themes (e.g. /product slide colors) drive navbar bg */
+  background-color: var(--page-bg, var(--bg-primary));
+  transition: background-color 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
   position: fixed;
   top: 0;
   left: 0;
@@ -363,7 +365,10 @@
 /* Main Content */
 .main {
   flex: 1;
-  background-color: var(--bg-primary);
+  /* Same --page-bg as navbar so per-page theming covers the whole viewport
+     (otherwise main's bg shows a stripe between navbar bottom and page top). */
+  background-color: var(--page-bg, var(--bg-primary));
+  transition: background-color 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
   position: relative;
   overflow-x: hidden;
   padding-top: 60px; /* 给固定导航栏留出空间 */
