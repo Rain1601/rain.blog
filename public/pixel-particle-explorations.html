@@ -174,15 +174,15 @@
     <div class="footnote">90 particles · ink on paper</div>
   </section>
 
-  <!-- v5: 深海 — 浪 + 偶尔的滴 -->
+  <!-- v5: 深海 — 下潜视角，粒子向上掠过 -->
   <section id="v5" class="demo deep">
-    <canvas data-effect="deep-sea" data-color="160,195,220"></canvas>
+    <canvas data-effect="deep-sea"></canvas>
     <div class="copy">
-      <span class="eyebrow">V5 · Deep Sea</span>
-      <h2>深海</h2>
-      <p>底层是缓慢起伏的点阵浪，偶尔有一颗光点向下沉。给 Shinkai 用 —— 深、慢、有节奏。</p>
+      <span class="eyebrow">V5 · Deep Sea / 下潜</span>
+      <h2>下潜</h2>
+      <p>视角在向下沉。水里的东西反而从下方掠向上 —— 远处微粒慢飘，近处气泡快速上窜，双层视差出深度。底下是越来越黑的深渊，没有水面，只有沉。</p>
     </div>
-    <div class="footnote">dot wave + descending motes</div>
+    <div class="footnote">parallax: distant motes + foreground bubbles · rising upward</div>
   </section>
 
   <!-- v8: 流场（水脉 / suimyaku） -->
@@ -304,87 +304,108 @@
       frame();
     }
 
-    // === Effect: Deep Sea (atmospheric wave + sparkling motes + abyss gradient) ===
+    // === Effect: Deep Sea / 下潜 (parallax rising particles) ===
+    // 视角在下沉，水里的东西从下往上掠过；远处粒子慢、近处气泡快，双层视差出深度。
+    // 不再画水面波 —— 减掉那一层呼吸感，只剩"沉"
     function deepSea(canvas) {
       const get = setupCanvas(canvas);
-      const color = canvas.dataset.color || '160,195,220';
-      const cols = 56;
-      const rows = 18;
       let t = 0;
-      // Each mote falls to its own random targetY then disappears — not full-fall like rain
+
+      // Layer A — distant motes: slow rise, dim, small. Marine snow seen from far.
       function freshMote(m) {
         m = m || {};
         m.x = Math.random();
-        m.y = -0.05;
-        m.vy = 0.06 + Math.random() * 0.5;
+        m.y = 1.08;                                 // start just below bottom edge
+        m.vy = 0.6 + Math.random() * 1.2;           // 0.6 ~ 1.8 — slow drift up
         m.vx = (Math.random() - 0.5) * 0.18;
-        // Brighter base — 0.45 ~ 0.95
-        m.a = 0.45 + Math.random() * 0.5;
+        m.a = 0.35 + Math.random() * 0.5;
         m.phase = Math.random() * Math.PI * 2;
         m.twinkleSpeed = 0.005 + Math.random() * 0.014;
-        // Wider fall-distance range — some die after 15% drop, some after 95%
-        m.targetY = 0.15 + Math.random() * 0.80;
+        m.targetY = 0.04 + Math.random() * 0.55;    // fade out between 4%~59% from top
         return m;
       }
-      const motes = Array.from({ length: 48 }, () => {
+      const motes = Array.from({ length: 52 }, () => {
         const m = freshMote();
-        m.y = Math.random() * m.targetY; // stagger initial positions
+        m.y = m.targetY + Math.random() * (1.08 - m.targetY); // stagger initial position
         return m;
       });
+
+      // Layer B — foreground bubbles: fast rise, larger, wobbly. Parallax = depth.
+      function freshBubble(b) {
+        b = b || {};
+        b.x = Math.random();
+        b.y = 1.10;
+        b.vy = 3.5 + Math.random() * 5.5;           // 3.5 ~ 9 — visibly streaming
+        b.r = 2 + Math.floor(Math.random() * 2);    // 2 or 3 px
+        b.a = 0.5 + Math.random() * 0.45;
+        b.phase = Math.random() * Math.PI * 2;
+        b.wiggleAmp = 0.5 + Math.random() * 1.4;
+        return b;
+      }
+      const bubbles = Array.from({ length: 22 }, () => {
+        const b = freshBubble();
+        b.y = Math.random() * 1.0;
+        return b;
+      });
+
       function frame() {
         const { ctx, w, h } = get();
-        // Trail fade matched to darker bg (#03070c)
-        ctx.fillStyle = `rgba(3, 7, 12, 0.45)`;
+        // Heavier trail-fade matches deeper background, also gives bubbles motion blur
+        ctx.fillStyle = `rgba(3, 7, 12, 0.5)`;
         ctx.fillRect(0, 0, w, h);
-        // Abyss gradient stronger — pulls eye deeper
-        const grad = ctx.createLinearGradient(0, h * 0.5, 0, h);
+
+        // Abyss gradient — heavy, pulls eye downward toward unknown
+        const grad = ctx.createLinearGradient(0, h * 0.38, 0, h);
         grad.addColorStop(0, 'rgba(0,0,0,0)');
-        grad.addColorStop(1, 'rgba(0,0,0,0.72)');
+        grad.addColorStop(1, 'rgba(0,0,0,0.80)');
         ctx.fillStyle = grad;
-        ctx.fillRect(0, h * 0.5, w, h * 0.5);
-        // Dot wave — atmospheric, slow
-        const cellW = w / cols;
-        const cellH = (h * 0.6) / rows;
-        const offsetY = h * 0.28;
-        for (let i = 0; i < cols; i++) {
-          for (let j = 0; j < rows; j++) {
-            const cx = i * cellW + cellW / 2;
-            const baseY = offsetY + j * cellH;
-            const wave = Math.sin(i * 0.18 + t * 0.008) * 18
-                       + Math.sin((i + j * 0.6) * 0.1 + t * 0.005) * 10;
-            const y = baseY + wave;
-            const depth = j / rows;
-            const a = (0.04 + Math.max(0, Math.sin(i * 0.18 + t * 0.008)) * 0.25) * (1 - depth * 0.4);
-            ctx.fillStyle = `rgba(${color}, ${a})`;
-            ctx.fillRect(Math.floor(cx), Math.floor(y), 2, 2);
-          }
-        }
-        // Motes — bright spark (1px hot center + 4 cardinal halo),
-        // fades in last 14% before targetY, then respawns at top
+        ctx.fillRect(0, h * 0.38, w, h * 0.62);
+
+        // Layer A — distant motes (rising slowly, twinkling)
         for (const m of motes) {
           const x = m.x * w;
           const y = m.y * h;
-          // Tighter twinkle range — stays brighter on average (0.4 ~ 1.0)
           const twinkle = 0.7 + 0.3 * Math.sin(m.phase + t * m.twinkleSpeed);
-          const remaining = m.targetY - m.y;
-          const approachFade = remaining < 0.14 ? Math.max(0, remaining / 0.14) : 1;
+          // Fade as approaching the top (target)
+          const remaining = m.y - m.targetY;
+          const approachFade = remaining < 0.12 ? Math.max(0, remaining / 0.12) : 1;
           const alpha = m.a * twinkle * approachFade;
           const xi = Math.floor(x), yi = Math.floor(y);
-          // Hot center — pure white at full brightness
           ctx.fillStyle = `rgba(252, 253, 255, ${alpha})`;
           ctx.fillRect(xi, yi, 1, 1);
-          // Cardinal halo — 0.55× alpha for stronger spark
-          ctx.fillStyle = `rgba(238, 244, 250, ${alpha * 0.55})`;
+          ctx.fillStyle = `rgba(238, 244, 250, ${alpha * 0.5})`;
           ctx.fillRect(xi - 1, yi, 1, 1);
           ctx.fillRect(xi + 1, yi, 1, 1);
           ctx.fillRect(xi, yi - 1, 1, 1);
           ctx.fillRect(xi, yi + 1, 1, 1);
-          m.y += m.vy / h;
+          m.y -= m.vy / h;
           m.x += m.vx / w;
-          if (m.y >= m.targetY) freshMote(m);
+          if (m.y <= m.targetY) freshMote(m);
           if (m.x < -0.02) m.x += 1.04;
           if (m.x > 1.02) m.x -= 1.04;
         }
+
+        // Layer B — foreground bubbles (fast parallax, wiggle, edge-fade in/out)
+        for (const b of bubbles) {
+          const wiggle = Math.sin(b.phase + t * 0.018) * b.wiggleAmp;
+          const x = b.x * w + wiggle;
+          const y = b.y * h;
+          // Fade in near bottom, fade out near top — bubbles emerge from abyss, dissolve at surface
+          const fadeIn = b.y > 0.95 ? Math.max(0, (1.08 - b.y) / 0.13) : 1;
+          const fadeOut = b.y < 0.08 ? Math.max(0, b.y / 0.08) : 1;
+          const alpha = b.a * fadeIn * fadeOut;
+          if (alpha > 0.02) {
+            // Soft cyan-white body
+            ctx.fillStyle = `rgba(200, 225, 240, ${alpha * 0.72})`;
+            ctx.fillRect(Math.floor(x), Math.floor(y), b.r, b.r);
+            // Hot top-left highlight pixel for 3D feel
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+            ctx.fillRect(Math.floor(x), Math.floor(y), 1, 1);
+          }
+          b.y -= b.vy / h;
+          if (b.y < -0.05) freshBubble(b);
+        }
+
         t++;
         requestAnimationFrame(frame);
       }
