@@ -27,7 +27,8 @@ function makeMote(): Mote {
   return {
     x: Math.random(),
     y: 1.08,
-    vy: 0.6 + Math.random() * 1.2,
+    // Slower drift — sense of slow descent (was 0.6 + 1.2)
+    vy: 0.3 + Math.random() * 0.7,
     vx: (Math.random() - 0.5) * 0.18,
     a: 0.35 + Math.random() * 0.5,
     phase: Math.random() * Math.PI * 2,
@@ -40,7 +41,8 @@ function makeBubble(): Bubble {
   return {
     x: Math.random(),
     y: 1.1,
-    vy: 3.5 + Math.random() * 5.5,
+    // Slower rise — was 3.5 + 5.5; now 2.0 + 3.0
+    vy: 2.0 + Math.random() * 3.0,
     r: 2 + Math.floor(Math.random() * 2),
     a: 0.5 + Math.random() * 0.45,
     phase: Math.random() * Math.PI * 2,
