@@ -23,6 +23,18 @@ export interface ProductArchitecture {
   }>;
 }
 
+/** A single utility listed inside a "tools" product card */
+export interface ProductTool {
+  id: string;
+  name: { zh: string; en: string };
+  desc: { zh: string; en: string };
+  /** Primary external link (download / open / try) */
+  link?: string;
+  /** Label for the primary link, defaults to "Open / 打开" if absent */
+  linkLabel?: { zh: string; en: string };
+  github?: string;
+}
+
 export interface ProductItem {
   id: string;
   title: { zh: string; en: string };
@@ -47,6 +59,8 @@ export interface ProductItem {
   architecture?: ProductArchitecture;
   /** Detail page highlights */
   highlights?: ProductHighlight[];
+  /** When present, this card renders a tools grid instead of a standard project hero */
+  tools?: ProductTool[];
 }
 
 export const productData: ProductItem[] = [
@@ -293,19 +307,36 @@ export const productData: ProductItem[] = [
     ],
   },
   {
-    id: 'coming-soon',
+    id: 'tools',
     title: {
-      zh: '更多项目开发中…',
-      en: 'More Projects Coming…',
+      zh: '小工具',
+      en: 'Small Tools',
+    },
+    tagline: {
+      zh: '不是产品 —— 是给自己用的趁手家伙。',
+      en: 'Not products — just tools I made for my own daily use.',
     },
     description: {
-      zh: '持续探索新的技术方向，更多作品即将上线。',
-      en: 'Continuously exploring new tech directions. More works coming soon.',
+      zh: '在主线项目之外做的一些小东西。先取悦自己，能帮到你就更好。',
+      en: 'Side utilities outside the main projects. Made to please myself first; happy if they help you too.',
     },
-    coverGradient: 'linear-gradient(135deg, #2d2d3a 0%, #3d3548 50%, #4a3f5c 100%)',
-    blobColors: ['#64748b', '#94a3b8', '#475569', '#78716c'],
-    blobBg: '#1a1825',
-    techStack: ['Coming Soon'],
+    coverGradient: 'linear-gradient(135deg, #1a1510 0%, #2d2418 50%, #3d3020 100%)',
+    blobColors: ['#d97149', '#b9a37a', '#c89a6b', '#a87a4f'],
+    blobBg: '#1a1510',
+    techStack: [],
+    tools: [
+      {
+        id: 'nemu',
+        name: { zh: 'Nemu', en: 'Nemu' },
+        desc: {
+          zh: 'Mac 桌面任务清单，可把 TODO 分派给 Claude Agent 后台跑',
+          en: 'Mac desktop task list — hands off TODOs to background Claude Agents',
+        },
+        link: 'https://github.com/Rain1601/Nemu/releases',
+        linkLabel: { zh: '下载', en: 'Download' },
+        github: 'https://github.com/Rain1601/Nemu',
+      },
+    ],
   },
 ];
 

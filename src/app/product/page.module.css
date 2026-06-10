@@ -269,6 +269,85 @@
   transform: translateX(2px);
 }
 
+/* === Tools list — minimal one-row-per-tool layout for the "Small Tools" card === */
+.toolsList {
+  display: flex;
+  flex-direction: column;
+  width: min(640px, 100%);
+  margin-top: 1.5rem;
+  animation: fadeIn 0.55s ease 0.45s both;
+}
+
+.toolRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.125rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+.toolRow:last-child {
+  border-bottom: none;
+}
+
+.toolMain {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.toolName {
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+  font-size: 1.125rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.3;
+}
+
+.toolDesc {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.toolActions {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.toolAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  font-family: 'Times New Roman', 'SimSun', '宋体', serif;
+  transition: color 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.toolAction:hover {
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+}
+
+.toolActionArrow {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.toolAction:hover .toolActionArrow {
+  transform: translateX(3px);
+}
+
 /* Info card — positioned right side */
 .infoCard {
   max-width: 420px; align-self: flex-end;
@@ -1109,6 +1188,17 @@
   .exploreBtn { font-size: 0.75rem; padding: 0.4rem 1rem; }
   .actionLink { font-size: 0.75rem; padding: 0.4rem 1rem; }
   .actionRow { gap: 0.5rem; }
+  .toolsList { margin-top: 1rem; }
+  .toolRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.875rem 0;
+  }
+  .toolName { font-size: 1rem; }
+  .toolDesc { font-size: 0.75rem; }
+  .toolActions { gap: 1rem; align-self: flex-start; }
+  .toolAction { font-size: 0.75rem; }
   .linkPrimary { font-size: 0.75rem; padding: 0.35rem 0.75rem; }
   .linkGhost { font-size: 0.75rem; }
   .arrow { width: 32px; height: 32px; }

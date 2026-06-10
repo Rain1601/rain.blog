@@ -32,6 +32,7 @@ export default function ProductPage() {
   const total = productData.length;
   const isUteki = product.id === 'uteki';
   const isShinkai = product.id === 'shinkai';
+  const isTools = !!(product.tools && product.tools.length > 0);
   const hasDetail = !!(product.highlights && product.highlights.length > 0);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ export default function ProductPage() {
     const themes: Record<string, string> = {
       uteki: '#1C1917',     // warm dark, matches PixelRain trail-fade
       shinkai: '#03070c',   // deep sea, matches DeepSeaCanvas trail-fade
+      tools: '#1a1510',     // warm dark with slight terracotta tilt
     };
     const bg = themes[product.id] || '#1C1917';
     document.documentElement.style.setProperty('--page-bg', bg);
@@ -293,6 +295,43 @@ export default function ProductPage() {
                     <span className={styles.actionLinkArrow}>→</span>
                   </a>
                 )}
+              </div>
+            )}
+
+            {isTools && product.tools && (
+              <div className={styles.toolsList}>
+                {product.tools.map((tool) => (
+                  <div key={tool.id} className={styles.toolRow}>
+                    <div className={styles.toolMain}>
+                      <span className={styles.toolName}>{tool.name[language]}</span>
+                      <span className={styles.toolDesc}>{tool.desc[language]}</span>
+                    </div>
+                    <div className={styles.toolActions}>
+                      {tool.github && (
+                        <a
+                          href={tool.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.toolAction}
+                        >
+                          GitHub
+                          <span className={styles.toolActionArrow}>→</span>
+                        </a>
+                      )}
+                      {tool.link && (
+                        <a
+                          href={tool.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.toolAction}
+                        >
+                          {tool.linkLabel?.[language] ?? (language === 'zh' ? '打开' : 'Open')}
+                          <span className={styles.toolActionArrow}>→</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
