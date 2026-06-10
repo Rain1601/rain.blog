@@ -101,9 +101,11 @@ export default function DeepSeaCanvas({ className }: Props) {
     window.addEventListener('resize', resize, { passive: true });
 
     const tick = () => {
-      ctx.fillStyle = 'rgba(3, 7, 12, 0.5)';
-      ctx.fillRect(0, 0, w, h);
+      // Hard clear — no particle trails, canvas stays fully transparent
+      // so .shinkaiBreath blue glow (underneath) shows through.
+      ctx.clearRect(0, 0, w, h);
 
+      // Abyss — fresh each frame, sits on top of breath layer
       const grad = ctx.createLinearGradient(0, h * 0.38, 0, h);
       grad.addColorStop(0, 'rgba(0,0,0,0)');
       grad.addColorStop(1, 'rgba(0,0,0,0.80)');
