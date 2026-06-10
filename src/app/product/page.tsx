@@ -1,32 +1,20 @@
 'use client';
 
-import { Suspense, useState, useCallback, useEffect, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/components/Layout';
 import { productData, sectionTitles } from '@/content/product/config';
 import PixelRain from './PixelRain';
 import DeepSeaCanvas from '@/components/DeepSeaCanvas';
 import styles from './page.module.css';
 
-// useSearchParams() must live under a Suspense boundary so the rest of the
-// page stays inert during the initial-params resolution.
-export default function ProductPage() {
-  return (
-    <Suspense fallback={null}>
-      <ProductPageInner />
-    </Suspense>
-  );
-}
-
 const SLIDE_OUT_MS = 240;
 const SLIDE_SETTLE_MS = 60;
 const SCROLL_CLOSE_THRESHOLD = 80; // cumulative upward px at scrollTop=0
 const ARM_SCROLL_PX = 8;            // user must scroll down at least this far first
 
-function ProductPageInner() {
+export default function ProductPage() {
   const { language } = useLanguage();
   const t = sectionTitles[language];
-  const searchParams = useSearchParams();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
@@ -73,18 +61,36 @@ function ProductPageInner() {
     setIframeLoaded(false);
   }, [currentIndex]);
 
-  // Deep-link: reactive to soft navigation, gated by hasDetail so we never open
-  // an empty detail panel for products without highlights (e.g. coming-soon).
+  // Hash routing: /product#uteki ↔ slide 0, /product#shinkai ↔ slide 1, …
+  // On mount + hashchange (back/forward / manual edit) sync state from URL.
   useEffect(() => {
-    const projectId = searchParams.get('project') || searchParams.get('detail');
-    if (!projectId) return;
-    const index = productData.findIndex((item) => item.id === projectId);
-    if (index < 0) return;
-    const target = productData[index];
-    const targetHasDetail = !!(target.highlights && target.highlights.length > 0);
-    setCurrentIndex(index);
-    if (targetHasDetail) setDetailOpen(true);
-  }, [searchParams]);
+    const applyHash = () => {
+      const hash = window.location.hash.slice(1);
+      if (!hash) return;
+      const index = productData.findIndex((p) => p.id === hash);
+      if (index >= 0) {
+        setCurrentIndex(index);
+        // Close detail panel on hash change — entering a new slide is a "fresh view"
+        setDetailOpen(false);
+      }
+    };
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, []);
+
+  // Sync URL hash whenever the active slide changes (replaceState — no history pollution
+  // when user clicks through many dots / arrows).
+  useEffect(() => {
+    const targetHash = `#${productData[currentIndex].id}`;
+    if (window.location.hash !== targetHash) {
+      window.history.replaceState(
+        null,
+        '',
+        `${window.location.pathname}${window.location.search}${targetHash}`,
+      );
+    }
+  }, [currentIndex]);
 
   const clearSlideTimers = useCallback(() => {
     if (slideOutTimerRef.current) {
