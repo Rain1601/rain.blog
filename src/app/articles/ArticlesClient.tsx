@@ -1,242 +1,269 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { BlogPost } from '@/utils/github';
 import { useLanguage } from '@/components/Layout';
 import styles from './page.module.css';
 
-interface ArticlesClientProps {
-  initialPosts: BlogPost[];
-  initialStats: {
-    totalPosts: number;
-    years: string[];
-    latestPost?: BlogPost;
-    tags: string[];
-    categories: string[];
-  };
+export interface ArticleCard {
+  id: string;
+  title: string;
+  /** YYYY-MM-DD，部分旧文章只有 YYYY-MM */
+  date: string;
+  excerpt: string;
+  topics: string[];
 }
 
-// 语言文本配置
+/** 精选「书」里放最新的几篇 */
+const BOOK_SIZE = 5;
+/** 往后翻一页的时长（与 CSS .turnOut 一致），动画事件没触发时用它兜底 */
+const TURN_MS = 700;
+/** 回到开头：每页翻回的时长（与 CSS .turnBack 一致）和相邻两页的间隔 */
+const BACK_MS = 520;
+/** 精选卡片背后最多叠几层书页 */
+const MAX_SHEETS = 2;
+const BACK_STAGGER_MS = 120;
+
 const translations = {
   zh: {
-    searchPlaceholder: '搜索博客文章标题或内容...',
+    title: '文章',
+    desc: '长文、拆解与译文。',
+    topics: '主题',
     all: '全部',
-    year: '年',
-    readMore: '阅读全文',
-    showingResults: '显示',
-    of: '/',
-    articles: '篇文章',
-    syncFrom: '博客内容实时同步自',
-    githubRepo: 'GitHub 仓库',
-    home: '首页',
-    about: '关于我',
-    january: '1月',
-    february: '2月',
-    march: '3月',
-    april: '4月',
-    may: '5月',
-    june: '6月',
-    july: '7月',
-    august: '8月',
-    september: '9月',
-    october: '10月',
-    november: '11月',
-    december: '12月',
+    featured: '精选 · 文章',
+    article: '文章',
+    remaining: '还有',
+    unit: '篇',
+    lastOne: '已是最后一篇',
+    next: '下一篇',
+    restart: '回到开头',
+    allArticles: '全部文章',
+    empty: '没有找到符合条件的文章。',
+    index: '目录',
+    search: '搜索文章…',
+    clearSearch: '清除搜索',
   },
   en: {
-    searchPlaceholder: 'Search blog posts title or content...',
+    title: 'Articles',
+    desc: 'Long-form writing, breakdowns, and translations.',
+    topics: 'Topics',
     all: 'All',
-    year: '',
-    readMore: 'Read More',
-    showingResults: 'Showing',
-    of: 'of',
-    articles: 'posts',
-    syncFrom: 'Blog content synced from',
-    githubRepo: 'GitHub Repository',
-    home: 'Home',
-    about: 'About',
-    january: 'Jan',
-    february: 'Feb',
-    march: 'Mar',
-    april: 'Apr',
-    may: 'May',
-    june: 'Jun',
-    july: 'Jul',
-    august: 'Aug',
-    september: 'Sep',
-    october: 'Oct',
-    november: 'Nov',
-    december: 'Dec',
-  }
+    featured: 'Featured · Article',
+    article: 'Article',
+    remaining: '',
+    unit: 'more',
+    lastOne: 'Last one',
+    next: 'Next',
+    restart: 'Back to start',
+    allArticles: 'All articles',
+    empty: 'No matching articles.',
+    index: 'Contents',
+    search: 'Search articles…',
+    clearSearch: 'Clear search',
+  },
 };
 
-// 月份映射
-const monthNames = {
-  zh: ['', '1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-  en: ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-};
+const dotDate = (date: string) => date.slice(0, 10).replace(/-/g, '.');
 
-// 检测文本是否包含中文
-const containsChinese = (text: string): boolean => {
-  return /[\u4e00-\u9fa5]/.test(text);
-};
+/** 精选卡片里的一页 */
+function Page({ article, label }: { article: ArticleCard; label: string }) {
+  return (
+    <>
+      <div className={styles.cardHead}>
+        <span className={styles.cardType}>{label}</span>
+        <span>{dotDate(article.date)}</span>
+      </div>
+      <div className={styles.cardBody}>
+        <h3 className={`${styles.featuredTitle} ${styles.clamp2}`}>{article.title}</h3>
+        {article.excerpt && <p className={`${styles.featuredExcerpt} ${styles.clamp2}`}>{article.excerpt}</p>}
+        {article.topics.length > 0 && <div className={styles.topicLine}>{article.topics.join(' · ')}</div>}
+      </div>
+    </>
+  );
+}
 
-// 双段动效时长（与 CSS 对齐）
-const EXIT_DURATION = 280;
+/** 精选：像一本书，背后叠着剩余篇数的书页，点「下一篇」翻页 */
+function FeaturedBook({ articles, t }: { articles: ArticleCard[]; t: (typeof translations)['zh'] }) {
+  const [cur, setCur] = useState(0); // 当前是第几篇（右侧信息按它显示）
+  const [shown, setShown] = useState(0); // 底下实际展示的那一页
+  const [stackIdx, setStackIdx] = useState(0); // 背后书页按它计算（回翻时一页页变厚）
+  const [turn, setTurn] = useState<{ kind: 'out'; idx: number } | { kind: 'back'; pages: number[] } | null>(null);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-export default function ArticlesClient({ initialPosts, initialStats }: ArticlesClientProps) {
-  const [posts] = useState<BlogPost[]>(initialPosts);
-  const [error] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  // chip 立即响应的"选中"状态
-  const [selectedYear, setSelectedYear] = useState<string>('all');
-  // selectedMonth value 暂未驱动 active class（month 下拉项目前无选中态），只保留 setter
-  const [, setSelectedMonth] = useState<string>('all');
-  // 列表实际应用的"已生效"状态（exit 动画结束后才更新）
-  const [appliedYear, setAppliedYear] = useState<string>('all');
-  const [appliedMonth, setAppliedMonth] = useState<string>('all');
-  const [isExiting, setIsExiting] = useState(false);
-  // 每次切换 +1，附加到 article 的 key 上让全部 article 重新挂载触发 stagger
-  // 注意：不能放在 <section> 的 key 上，否则 transition 中途卸载父节点会触发 React removeChild 错误
-  const [renderTick, setRenderTick] = useState(0);
-  const [openYear, setOpenYear] = useState<string | null>(null);
-  const { language } = useLanguage();
-  const [stats] = useState(initialStats);
+  const total = articles.length;
+  const isLast = cur === total - 1;
+  const remaining = total - 1 - cur;
+  const target = articles[isLast ? 0 : cur + 1];
 
-  // 双段动效：先 exit，再切数据，新数据自带 enter stagger
-  const applyFilter = (year: string, month: string) => {
-    // chip 立即更新
-    setSelectedYear(year);
-    setSelectedMonth(month);
-    // 已生效的目标过滤条件未变 → 无需动画
-    if (year === appliedYear && month === appliedMonth) return;
-    if (isExiting) return;
-    setIsExiting(true);
-    setTimeout(() => {
-      setAppliedYear(year);
-      setAppliedMonth(month);
-      setRenderTick(t => t + 1);
-      setIsExiting(false);
-    }, EXIT_DURATION);
-  };
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
-
-  const t = translations[language];
-
-  // 计算每年每月的文章数量
-  const yearMonthStats = useMemo(() => {
-    const stats: Record<string, Record<string, number>> = {};
-
-    posts.forEach(post => {
-      const year = post.year;
-      const month = post.month;
-
-      if (!stats[year]) {
-        stats[year] = {};
-      }
-
-      const monthNum = parseInt(month);
-      if (!isNaN(monthNum) && monthNum >= 1 && monthNum <= 12) {
-        if (!stats[year][month]) {
-          stats[year][month] = 0;
-        }
-        stats[year][month]++;
-      }
-    });
-
-    return stats;
-  }, [posts]);
-
-  // 计算每年的文章总数
-  const yearCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    posts.forEach(post => {
-      if (!counts[post.year]) {
-        counts[post.year] = 0;
-      }
-      counts[post.year]++;
-    });
-    return counts;
-  }, [posts]);
-
-  // 当前展示的文章（基于 applied 状态 + 搜索）— 同步派生，无 useEffect 延迟
-  const filteredPosts = useMemo(() => {
-    let filtered = posts;
-    if (appliedYear !== 'all') {
-      filtered = filtered.filter(post => post.year === appliedYear);
-      if (appliedMonth !== 'all') {
-        filtered = filtered.filter(post => post.month === appliedMonth);
-      }
-    }
-    if (searchQuery.trim() !== '') {
-      filtered = filtered.filter(post =>
-        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.content.toLowerCase().includes(searchQuery.toLowerCase())
+  const go = () => {
+    if (turn || total < 2) return;
+    if (isLast) {
+      // 回到开头：像翻书一样，从倒数第二页到第一页依次从左边翻回来
+      const pages = Array.from({ length: total - 1 }, (_, i) => total - 2 - i);
+      setCur(0);
+      setTurn({ kind: 'back', pages });
+      timers.current = pages.map((idx, i) => setTimeout(() => setStackIdx(idx), i * BACK_STAGGER_MS + BACK_MS));
+      timers.current.push(
+        setTimeout(() => {
+          setShown(0);
+          setTurn(null);
+        }, (pages.length - 1) * BACK_STAGGER_MS + BACK_MS + 40)
       );
+    } else {
+      // 当前页翻走，底下立刻换成下一篇
+      setTurn({ kind: 'out', idx: cur });
+      setCur(cur + 1);
+      setShown(cur + 1);
+      setStackIdx(cur + 1);
     }
-    return [...filtered].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [posts, appliedYear, appliedMonth, searchQuery]);
-
-  // 按年份分组文章（用于侧边栏目录）
-  const postsByYear = useMemo(() => {
-    const grouped: Record<string, BlogPost[]> = {};
-    filteredPosts.forEach(post => {
-      if (!grouped[post.year]) {
-        grouped[post.year] = [];
-      }
-      grouped[post.year].push(post);
-    });
-    // 按年份降序排列
-    const sortedYears = Object.keys(grouped).sort((a, b) => parseInt(b) - parseInt(a));
-    return sortedYears.map(year => ({ year, posts: grouped[year] }));
-  }, [filteredPosts]);
-
-  // 处理月份选择
-  const handleMonthSelect = (year: string, month: string) => {
-    applyFilter(year, month);
-    setOpenYear(null);
   };
 
-  // 处理点击外部关闭下拉菜单
+  // 往后翻：animationend 为主，计时器兜底（后台标签页里 animationend 可能不触发）
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest(`.${styles.yearChipWrapper}`)) {
-        setOpenYear(null);
-      }
-    };
+    if (turn?.kind !== 'out') return;
+    const timer = setTimeout(() => setTurn(null), TURN_MS + 100);
+    return () => clearTimeout(timer);
+  }, [turn]);
 
-    if (openYear) {
-      document.addEventListener('click', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, [openYear]);
+  // 背后最多叠 2 层：只提示「后面还有」，不随篇数一直变厚
+  const sheets = Math.min(total - 1 - stackIdx, MAX_SHEETS);
 
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.container}>
+    <div className={styles.book}>
+      {Array.from({ length: sheets }, (_, i) => (
+        <div key={i} className={styles.sheet} style={{ '--i': sheets - i } as React.CSSProperties} aria-hidden="true" />
+      ))}
 
-        {/* 左侧文章目录 */}
-        <aside className={styles.sidebar}>
-          <div className={styles.sidebarTitle}>
-            {language === 'zh' ? '目录' : 'Index'}
+      <div className={styles.featured}>
+        <div className={styles.pageArea}>
+          <Link href={`/blog/${articles[shown].id}`} className={styles.featuredMain}>
+            <Page article={articles[shown]} label={t.featured} />
+          </Link>
+          {turn?.kind === 'out' && (
+            <div className={`${styles.pageTurn} ${styles.turnOut}`} onAnimationEnd={() => setTurn(null)} aria-hidden="true">
+              <Page article={articles[turn.idx]} label={t.featured} />
+            </div>
+          )}
+          {/* 回翻：每一页错开一点时间从左边翻回来，后翻回的叠在上面 */}
+          {turn?.kind === 'back' &&
+            turn.pages.map((idx, i) => (
+              <div
+                key={idx}
+                className={`${styles.pageTurn} ${styles.turnBack}`}
+                style={{ animationDelay: `${i * BACK_STAGGER_MS}ms`, zIndex: 2 + i }}
+                aria-hidden="true"
+              >
+                <Page article={articles[idx]} label={t.featured} />
+              </div>
+            ))}
+        </div>
+
+        {total > 1 && (
+          <div className={styles.nextPanel}>
+            <div>
+              <div className={styles.remaining}>
+                {isLast ? (
+                  <>{t.lastOne}<b>{total}/{total}</b></>
+                ) : (
+                  <>{t.remaining}<b>{remaining} {t.unit}</b></>
+                )}
+              </div>
+              <div className={styles.dots} aria-hidden="true">
+                {articles.map((a, i) => (
+                  <i key={a.id} className={i === cur ? styles.dotOn : ''} />
+                ))}
+              </div>
+            </div>
+            <button type="button" className={styles.nextBtn} onClick={go}>
+              <span className={styles.nextLabel}>{isLast ? t.restart : t.next}</span>
+              <span className={styles.nextTitle}>{target.title}</span>
+              <span className={styles.nextArrow} aria-hidden="true">{isLast ? '↺' : '→'}</span>
+              {/* 悬停显示完整标题 */}
+              <span className={styles.nextTip} aria-hidden="true">{target.title}</span>
+            </button>
           </div>
-          <nav className={styles.sidebarNav}>
-            {postsByYear.map(({ year, posts: yearPosts }) => (
-              <div key={year} className={styles.sidebarGroup}>
-                <div className={styles.sidebarYearLabel}>
-                  <span>{year}</span>
-                  <span className={styles.sidebarCount}>{yearPosts.length}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function ArticlesClient({ articles }: { articles: ArticleCard[] }) {
+  const { language } = useLanguage();
+  const t = translations[language];
+  const [topic, setTopic] = useState('');
+  const [query, setQuery] = useState('');
+
+  const topicCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const a of articles) for (const tp of a.topics) counts[tp] = (counts[tp] ?? 0) + 1;
+    return Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  }, [articles]);
+
+  // 主题 + 搜索（标题、摘要、主题）一起筛
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return articles.filter(
+      (a) =>
+        (!topic || a.topics.includes(topic)) &&
+        (!q || `${a.title}\n${a.excerpt}\n${a.topics.join(' ')}`.toLowerCase().includes(q))
+    );
+  }, [articles, topic, query]);
+
+  // 左侧目录：按年份分组
+  const indexByYear = useMemo(() => {
+    const groups: { year: string; items: ArticleCard[] }[] = [];
+    for (const a of filtered) {
+      const year = a.date.slice(0, 4);
+      const last = groups[groups.length - 1];
+      if (last && last.year === year) last.items.push(a);
+      else groups.push({ year, items: [a] });
+    }
+    return groups;
+  }, [filtered]);
+  const bookArticles = filtered.slice(0, BOOK_SIZE);
+
+  return (
+    <div className={styles.page}>
+      {/* ---- 左：主题 ---- */}
+      <aside className={styles.sidebar}>
+        <h2 className={styles.sideTitle}>{t.topics}</h2>
+        <ul className={styles.topicList}>
+          <li>
+            <button className={`${styles.topicItem} ${!topic ? styles.topicActive : ''}`} onClick={() => setTopic('')}>
+              <span>{t.all}</span>
+              <span className={styles.count}>{articles.length}</span>
+            </button>
+          </li>
+          {topicCounts.map(([value, count]) => (
+            <li key={value}>
+              <button
+                className={`${styles.topicItem} ${topic === value ? styles.topicActive : ''}`}
+                onClick={() => setTopic((cur) => (cur === value ? '' : value))}
+              >
+                <span>{value}</span>
+                <span className={styles.count}>{count}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {indexByYear.length > 0 && (
+          <nav className={styles.index} aria-label={t.index}>
+            <h2 className={styles.sideTitle}>{t.index}</h2>
+            {indexByYear.map(({ year, items }) => (
+              <div key={year} className={styles.indexGroup}>
+                <div className={styles.indexYear}>
+                  {year}
+                  <span className={styles.count}>{items.length}</span>
                 </div>
-                <ul className={styles.sidebarList}>
-                  {yearPosts.map((post) => (
-                    <li key={post.id} className={styles.sidebarItem}>
-                      <Link href={`/blog/${post.id}`} className={styles.sidebarLink} title={post.title}>
-                        {post.title}
+                <ul className={styles.indexList}>
+                  {items.map((a) => (
+                    <li key={a.id}>
+                      <Link href={`/blog/${a.id}`} className={styles.indexLink} title={a.title}>
+                        {a.title}
                       </Link>
                     </li>
                   ))}
@@ -244,146 +271,66 @@ export default function ArticlesClient({ initialPosts, initialStats }: ArticlesC
               </div>
             ))}
           </nav>
-        </aside>
+        )}
+      </aside>
 
-        {/* 筛选区域 */}
-        <section className={styles.filterSection}>
-          {/* 搜索框 */}
-          <div className={styles.searchContainer}>
+      {/* ---- 右：标题、精选、全部 ---- */}
+      <main className={styles.main}>
+        <header className={styles.hero}>
+          <div>
+            <h1 className={styles.title}>{t.title}</h1>
+            <p className={styles.desc}>{t.desc}</p>
+          </div>
+          <div className={styles.searchBox}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
             <input
-              type="text"
+              type="search"
               className={styles.searchInput}
-              placeholder={t.searchPlaceholder}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t.search}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label={t.search}
             />
-            <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            {query && (
+              <button type="button" className={styles.searchClear} onClick={() => setQuery('')} aria-label={t.clearSearch}>
+                ×
+              </button>
+            )}
           </div>
+        </header>
 
-        {/* 年份筛选 - 带数量显示和月份下拉 */}
-        {stats.years.length > 0 && (
-          <div className={styles.yearFilter}>
-            <button
-              className={`${styles.filterChip} ${selectedYear === 'all' ? styles.active : ''}`}
-              onClick={() => applyFilter('all', 'all')}
-            >
-              {t.all}({posts.length})
-            </button>
-            {stats.years.map((year) => (
-              <div
-                key={year}
-                className={styles.yearChipWrapper}
-              >
-                <button
-                  className={`${styles.filterChip} ${selectedYear === year ? styles.active : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (selectedYear === year) {
-                      // 已选中该年份，切换月份下拉
-                      setOpenYear(openYear === year ? null : year);
-                    } else {
-                      // 首次点击，仅选中年份
-                      applyFilter(year, 'all');
-                      setOpenYear(null);
-                    }
-                  }}
-                >
-                  {year}{language === 'zh' ? t.year : ''}({yearCounts[year] || 0})
-                </button>
+        {filtered.length === 0 ? (
+          <p className={styles.empty}>{t.empty}</p>
+        ) : (
+          <>
+            {/* key 随主题和搜索变化：筛选条件变了就从第一页重新开始 */}
+            <FeaturedBook key={`${topic}|${query.trim()}`} articles={bookArticles} t={t} />
 
-                {/* 月份下拉菜单 */}
-                {openYear === year && yearMonthStats[year] && (
-                  <div className={styles.monthDropdown}>
-                    {Object.entries(yearMonthStats[year])
-                      .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
-                      .map(([month, count]) => {
-                        const monthNum = parseInt(month);
-                        const monthName = monthNames[language][monthNum];
-                        return (
-                          <button
-                            key={month}
-                            className={styles.monthItem}
-                            onClick={() => handleMonthSelect(year, month)}
-                          >
-                            {monthName}({count})
-                          </button>
-                        );
-                      })}
+            <h2 className={styles.sectionTitle}>
+              {t.allArticles}
+              <span className={styles.count}>{filtered.length}</span>
+            </h2>
+            <div className={styles.grid}>
+              {filtered.map((a) => (
+                <Link key={a.id} href={`/blog/${a.id}`} className={styles.card}>
+                  <div className={styles.cardHead}>
+                    <span className={styles.cardType}>{t.article}</span>
+                    <span>{dotDate(a.date)}</span>
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-          {/* 结果统计 */}
-          {filteredPosts.length !== posts.length && (
-            <p className={styles.resultCount}>
-              {t.showingResults} {filteredPosts.length} {t.of} {posts.length} {t.articles}
-            </p>
-          )}
-        </section>
-        {/* 错误提示 */}
-        {error && (
-          <div className={styles.error}>
-            {error}
-          </div>
-        )}
-
-        {/* 时间线内容 — 双段动效：exit 淡出 → 切数据 → enter stagger
-            section 自身保持挂载（避免 transition + unmount 撞车），
-            article 的 key 含 renderTick → 每次切换全部 article 重新挂载，触发 CSS animation */}
-        <section
-          className={`${styles.timeline} ${isExiting ? styles.timelineExit : ''}`}
-        >
-        {filteredPosts.map((post) => {
-          const isChinese = containsChinese(post.title);
-          return (
-            <article key={`${renderTick}-${post.id}`} className={styles.timelineItem}>
-              <div className={styles.timelineMarker}></div>
-              <div className={styles.timelineContent}>
-                <time className={styles.postDate}>
-                  {new Date(post.date).toLocaleDateString(language === 'zh' ? 'zh-CN' : 'en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </time>
-                <h2
-                  className={styles.postTitle}
-                  style={{
-                    fontFamily: isChinese ? "'SongTi', '宋体', 'SimSun', serif" : "'Times New Roman', serif"
-                  }}
-                >
-                  <Link href={`/blog/${post.id}`}>
-                    {post.title}
-                  </Link>
-                </h2>
-                <p className={styles.postExcerpt}>
-                  {post.summary || ''}
-                </p>
-                <Link href={`/blog/${post.id}`} className={styles.readMore}>
-                  {t.readMore} →
+                  <div className={styles.cardBody}>
+                    <h3 className={`${styles.cardTitle} ${styles.clamp2}`}>{a.title}</h3>
+                    {a.excerpt && <p className={`${styles.cardExcerpt} ${styles.clamp2}`}>{a.excerpt}</p>}
+                    {a.topics.length > 0 && <div className={styles.topicLine}>{a.topics.join(' · ')}</div>}
+                  </div>
                 </Link>
-              </div>
-            </article>
-          );
-          })}
-        </section>
-      </div>
-
-      {/* 底部信息 - 固定在页面底部 */}
-      <footer className={styles.fixedFooter}>
-        <span>{t.syncFrom}</span>
-        <a
-          href="https://github.com/Rain1601/rain.blog.repo"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.githubLink}
-        >
-          {t.githubRepo}
-        </a>
-      </footer>
+              ))}
+            </div>
+          </>
+        )}
+      </main>
     </div>
   );
 }

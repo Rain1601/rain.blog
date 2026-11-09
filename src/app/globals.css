@@ -64,10 +64,14 @@
   box-sizing: border-box;
 }
 
+/* overflow-x 用 clip 而不是 hidden：hidden 会让 html/body 变成滚动容器，
+   页面里的 position: sticky（侧栏、目录）就不会随窗口滚动固定 */
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: clip;
+  /* 滚到顶部/底部时不要回弹（橡皮筋效果），浏览更稳定 */
+  overscroll-behavior-y: none;
   font-family: 'Times New Roman', 'SimSun', '宋体', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -80,7 +84,6 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   letter-spacing: -0.011em;
-  overflow-x: hidden;
 }
 
 /* 链接样式 */

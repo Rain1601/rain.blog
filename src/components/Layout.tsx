@@ -14,24 +14,34 @@ interface LanguageContextType {
   setLanguage: (lang: Language) => void;
 }
 
-// 搜索上下文
-interface SearchContextType {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-}
-
 const LanguageContext = createContext<LanguageContextType>({
   language: 'zh',
   setLanguage: () => {},
 });
 
-const SearchContext = createContext<SearchContextType>({
-  searchQuery: '',
-  setSearchQuery: () => {},
-});
-
 export const useLanguage = () => useContext(LanguageContext);
-export const useSearch = () => useContext(SearchContext);
+
+/** 首页图标（线性房子，跟随文字颜色） */
+function HomeIcon() {
+  return (
+    <svg
+      className={styles.homeIcon}
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M5 12H3l9-9 9 9h-2" />
+      <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" />
+      <path d="M9 21v-6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6" />
+    </svg>
+  );
+}
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -40,8 +50,6 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [language, setLanguage] = useState<Language>('zh');
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement>(null);
 
@@ -55,45 +63,26 @@ export default function Layout({ children }: LayoutProps) {
     el.classList.add(styles.pageEnter);
   }, [pathname]);
 
-  // 判断是否在文章页
-  const isHomePage = pathname === '/articles';
-
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  // 滚动监听 - 仅在主页生效
-  useEffect(() => {
-    if (!isHomePage) {
-      setIsScrolled(false);
-      return;
-    }
-
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const triggerHeight = 100; // 滚动100px后触发隐藏
-      setIsScrolled(scrollTop > triggerHeight);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // 初始检查
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [isHomePage]);
-
+  // 顺序：首页（图标）· 随笔 · 文章 · 作品
   const navigationItems = language === 'zh' ? [
-    { name: '关于', href: '/about' },
+    { name: '首页', href: '/' },
+    { name: '随笔', href: '/notes' },
+    { name: '文章', href: '/articles' },
     { name: '作品', href: '/product' },
   ] : [
-    { name: 'About', href: '/about' },
+    { name: 'Home', href: '/' },
+    { name: 'Notes', href: '/notes' },
+    { name: 'Articles', href: '/articles' },
     { name: 'Portfolio', href: '/product' },
   ];
 
   const isNavActive = (href: string) => {
+    if (href === '/') return pathname === '/';
     if (href === '/articles') return pathname === '/articles' || pathname.startsWith('/blog');
-    if (href === '/about') return pathname === '/about' || pathname === '/';
     return pathname.startsWith(href);
   };
 
@@ -102,39 +91,28 @@ export default function Layout({ children }: LayoutProps) {
       {/* Navigation */}
       <nav className={styles.navbar}>
         <div className={styles.navContainer}>
-          {/* Logo - 左侧 */}
-          <Link href="/" className={styles.logo}>
-            Rain
+          {/* 左侧：仅手机端显示首页图标（桌面端首页图标在中间导航里） */}
+          <Link
+            href="/"
+            className={`${styles.mobileHome} ${pathname === '/' ? styles.navLinkActive : ''}`}
+            aria-label={language === 'zh' ? '首页' : 'Home'}
+          >
+            <HomeIcon />
           </Link>
 
           {/* Desktop Navigation - 中间 */}
           <div className={styles.navLinks}>
-            {!isScrolled ? (
-              // 显示导航链接
-              <>
-                {navigationItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`${styles.navLink} ${isNavActive(item.href) ? styles.navLinkActive : ''}`}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </>
-            ) : (
-              // 显示搜索框
-              <div className={styles.searchContainer}>
-                <input
-                  type="text"
-                  className={styles.searchInput}
-                  placeholder={language === 'zh' ? '搜索博客文章...' : 'Search blog posts...'}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <span className={styles.searchIcon}>🔍</span>
-              </div>
-            )}
+            {navigationItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`${styles.navLink} ${isNavActive(item.href) ? styles.navLinkActive : ''}`}
+                aria-label={item.href === '/' ? item.name : undefined}
+                title={item.href === '/' ? item.name : undefined}
+              >
+                {item.href === '/' ? <HomeIcon /> : item.name}
+              </Link>
+            ))}
           </div>
 
           {/* 右侧区域 - 语言切换 + GitHub */}

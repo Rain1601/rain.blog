@@ -23,18 +23,6 @@ export interface ProductArchitecture {
   }>;
 }
 
-/** A single utility listed inside a "tools" product card */
-export interface ProductTool {
-  id: string;
-  name: { zh: string; en: string };
-  desc: { zh: string; en: string };
-  /** Primary external link (download / open / try) */
-  link?: string;
-  /** Label for the primary link, defaults to "Open / 打开" if absent */
-  linkLabel?: { zh: string; en: string };
-  github?: string;
-}
-
 export interface ProductItem {
   id: string;
   title: { zh: string; en: string };
@@ -59,8 +47,6 @@ export interface ProductItem {
   architecture?: ProductArchitecture;
   /** Detail page highlights */
   highlights?: ProductHighlight[];
-  /** When present, this card renders a tools grid instead of a standard project hero */
-  tools?: ProductTool[];
 }
 
 export const productData: ProductItem[] = [
@@ -191,59 +177,6 @@ export const productData: ProductItem[] = [
           zh: 'Python 后端（FastAPI）+ React 前端（13+ 页面）+ Flutter 移动端 + VitePress 文档站。162 个 Python 文件，领域驱动设计，六大业务域独立分层。',
           en: 'Python backend (FastAPI) + React frontend (13+ pages) + Flutter mobile + VitePress docs. 162 Python files, DDD architecture, 6 bounded contexts.',
         },
-      },
-    ],
-  },
-  {
-    id: 'shinkai',
-    title: {
-      zh: 'Shinkai 深海 — 宏观投研',
-      en: 'Shinkai — Macro Research',
-    },
-    tagline: {
-      zh: '从宏观主题出发，沿产业链潜到深处，找出真正值得长期持有的优质公司。',
-      en: 'From macro themes, descend through the supply chain to surface companies worth holding.',
-    },
-    description: {
-      zh: '世界秩序、宏观变化、资金流向是水面 —— 问题不在表层，要往下沉。Shinkai 用 Agent 顺着产业链做深度研究，把宏观主题拆成可追踪的中观叙事和微观标的，每一层都保留证据与置信度。',
-      en: 'World order, macro shifts, capital flows — these are the surface. The signal lives below. Shinkai uses agents to descend through supply chains, turning macro themes into traceable mid-scale narratives and bottom-up picks, preserving evidence and confidence at every layer.',
-    },
-    coverGradient: 'linear-gradient(135deg, #02060f 0%, #03090f 50%, #050d18 100%)',
-    blobColors: ['#0a3a5c', '#155e75', '#0c4a6e', '#1e3a5f'],
-    blobBg: '#02050c',
-    techStack: ['Multi-Agent', 'ReAct', 'Context Engineering', 'GraphRAG', 'Python'],
-    link: '/shinkai',
-    github: 'https://github.com/Rain1601/shinkai',
-  },
-  {
-    id: 'tools',
-    title: {
-      zh: '小工具',
-      en: 'Small Tools',
-    },
-    tagline: {
-      zh: '不是产品 —— 是给自己用的趁手家伙。',
-      en: 'Not products — just tools I made for my own daily use.',
-    },
-    description: {
-      zh: '在主线项目之外做的一些小东西。先取悦自己，能帮到你就更好。',
-      en: 'Side utilities outside the main projects. Made to please myself first; happy if they help you too.',
-    },
-    coverGradient: 'linear-gradient(135deg, #1a1510 0%, #2d2418 50%, #3d3020 100%)',
-    blobColors: ['#d97149', '#b9a37a', '#c89a6b', '#a87a4f'],
-    blobBg: '#1a1510',
-    techStack: [],
-    tools: [
-      {
-        id: 'nemu',
-        name: { zh: 'Nemu', en: 'Nemu' },
-        desc: {
-          zh: 'Mac 桌面任务清单，可把 TODO 分派给 Claude Agent 后台跑',
-          en: 'Mac desktop task list — hands off TODOs to background Claude Agents',
-        },
-        link: 'https://github.com/Rain1601/Nemu/releases',
-        linkLabel: { zh: '下载', en: 'Download' },
-        github: 'https://github.com/Rain1601/Nemu',
       },
     ],
   },

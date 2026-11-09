@@ -1,0 +1,573 @@
+/* 首页：左侧个人信息，右侧「文章/随笔列表 ⇄ 个人介绍」。
+   桌面端整页一屏不滚动，右侧面板内部滚动；手机端正常上下排列。 */
+
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-3xl);
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: var(--spacing-3xl);
+  align-items: start;
+}
+
+/* ---- 左：与原「关于」页侧栏一致的尺寸 ---- */
+.avatar {
+  display: block;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 2px solid var(--border-light);
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.intro {
+  margin-top: 0.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.links {
+  list-style: none;
+  padding: var(--spacing-md) 0 0;
+  margin: var(--spacing-md) 0 0;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.links a {
+  color: var(--text-tertiary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.links a:hover {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+/* 「个人介绍」按钮 */
+.introBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--spacing-md);
+  padding: 0.5rem 1.125rem;
+  border: 1px solid var(--border-medium);
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.introBtn:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.introBtnActive {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--accent-lighter);
+}
+
+/* 两种文字叠在同一个网格单元里：宽度取较长者，文字居中，切换时淡入淡出 */
+.introLabels {
+  display: inline-grid;
+  justify-items: center;
+}
+
+.introLabels > span {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.labelHidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---- 右：两个视图左右滑动切换 ---- */
+.panel {
+  min-width: 0;
+  position: relative;
+}
+
+.view {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.4s ease,
+    visibility 0s linear 0s;
+}
+
+/* 列表在前；打开介绍时向左滑出 */
+.panelIntro .listView {
+  transform: translateX(-32px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.3s ease,
+    visibility 0s linear 0.5s;
+}
+
+/* 介绍默认在右侧隐藏；打开时滑入 */
+.introView {
+  transform: translateX(32px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.3s ease,
+    visibility 0s linear 0.5s;
+}
+
+.panelIntro .introView {
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) 0.06s,
+    opacity 0.4s ease 0.06s,
+    visibility 0s linear 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view,
+  .panelIntro .listView,
+  .introView,
+  .panelIntro .introView {
+    transition: none;
+  }
+}
+
+.scroll {
+  min-height: 0;
+}
+
+/* ---- 写作索引：最新一篇 + 文章 / 随笔两栏，一屏看全 ---- */
+.count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  margin-left: 0.375rem;
+  font-weight: 400;
+}
+
+.kindArticle {
+  color: var(--text-tertiary);
+}
+
+.kindNote {
+  color: var(--accent-primary);
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  padding: var(--spacing-sm) 0;
+}
+
+/* 最新一篇：大一号，整块可点 */
+.latest {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 0 var(--spacing-lg);
+  border-bottom: 1px solid var(--border-medium);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.latest:hover {
+  text-decoration: none;
+}
+
+.latestMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.latestBadge {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  border-radius: 999px;
+  padding: 0 0.5rem;
+  line-height: 1.6;
+}
+
+.latestTitle {
+  font-size: 1.625rem;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.15s ease;
+}
+
+.latest:hover .latestTitle {
+  color: var(--accent-primary);
+}
+
+.latestExcerpt {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--text-tertiary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 640px;
+}
+
+.latestRead {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  transition: color 0.15s ease, transform 0.2s ease;
+}
+
+.latest:hover .latestRead {
+  color: var(--accent-primary);
+}
+
+/* 两栏 */
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+}
+
+.columnHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.columnTitle {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.allLink {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.allLink:hover {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.rows {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 一行：日期 标题（单行省略）→ */
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.row:hover {
+  text-decoration: none;
+}
+
+.rowDate {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rowTitle {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.96875rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.15s ease;
+}
+
+.rowBadge {
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.rowArrow {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  color: var(--accent-primary);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.15s ease, transform 0.2s ease;
+}
+
+/* 超出条数时的末行：…… 还有 N 篇 → */
+.moreRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.625rem 0;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.moreRow:hover {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.moreDots {
+  letter-spacing: 0.1em;
+}
+
+.row:hover .rowTitle {
+  color: var(--accent-primary);
+}
+
+.row:hover .rowArrow {
+  opacity: 1;
+  transform: none;
+}
+
+/* 介绍视图 */
+.introHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.625rem;
+  border-bottom: 1px solid var(--border-medium);
+  flex-shrink: 0;
+}
+
+.introTitle {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border-medium);
+  border-radius: 50%;
+  background: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.backBtn:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.bio {
+  padding-top: var(--spacing-lg);
+}
+
+.bio p {
+  font-size: 1.125rem;
+  line-height: 1.85;
+  color: var(--text-secondary);
+}
+
+.bio p + p {
+  margin-top: 0.875rem;
+}
+
+.introSection {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: var(--spacing-xl) 0 0.5rem;
+}
+
+.introList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.introList li {
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.introList a {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.introList a:hover {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.expRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+}
+
+.expDetail {
+  margin-left: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.expPeriod {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  padding-bottom: var(--spacing-lg);
+}
+
+.interests span {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-medium);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+/* ---- 桌面端：整页一屏，右侧面板内部滚动 ---- */
+@media (min-width: 861px) {
+  .page {
+    /* 85px = Layout 里给固定导航栏留的高度 */
+    height: calc(100dvh - 85px);
+    padding-top: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    overflow: hidden;
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .profile {
+    align-self: start;
+  }
+
+  .panel {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .view {
+    position: absolute;
+    inset: 0;
+  }
+
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain; /* 内部滚到头时不带动整页，也不回弹 */
+    padding-right: 0.75rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-dark) transparent;
+  }
+}
+
+/* ---- 窄屏：个人信息在上，列表或介绍在下，正常滚动 ---- */
+@media (max-width: 860px) {
+  .page {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl) var(--spacing-sm) var(--spacing-2xl);
+  }
+
+  .avatar {
+    width: 88px;
+    height: 88px;
+  }
+
+  .name {
+    font-size: 1.375rem;
+  }
+
+  .links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+  }
+
+  /* 手机端只显示当前视图，避免两个视图叠在一起占高度 */
+  .panelIntro .listView,
+  .introView {
+    display: none;
+  }
+
+  .panelIntro .introView {
+    display: flex;
+  }
+
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-lg);
+  }
+
+  .latestTitle {
+    font-size: 1.375rem;
+  }
+}

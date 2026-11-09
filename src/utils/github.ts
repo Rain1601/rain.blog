@@ -1,3 +1,7 @@
+import { parseNoteMarkdown } from './notes-format';
+import { CONTENT_CACHE_TAG } from './content-cache';
+import { AboutContent, DEFAULT_ABOUT, normalizeAbout } from '@/content/about/default';
+
 export interface GitHubFile {
   name: string;
   path: string;
@@ -30,11 +34,30 @@ export interface BlogPost {
   summary?: string;
 }
 
+/** 随笔：notes/YYYY/MM/*.md，正文较短，不需要标题 */
+export interface Note {
+  id: string;
+  /** 可选标题，没有就只显示正文 */
+  title?: string;
+  /** 正文（已去掉 front matter） */
+  body: string;
+  date: string;
+  tags: string[];
+  /** 附件 / 延伸链接（front matter 的 link + linkTitle） */
+  link?: string;
+  linkTitle?: string;
+  /** 视频地址（站内 /notes/xxx.mp4 或外链）与封面 */
+  video?: string;
+  poster?: string;
+  url: string;
+}
+
 class GitHubAPI {
   private readonly REPO_OWNER = 'Rain1601';
   private readonly REPO_NAME = 'rain.blog.repo';
   private readonly BASE_URL = 'https://api.github.com';
   private readonly POSTS_PATH = 'posts';
+  private readonly NOTES_PATH = 'notes';
 
   /**
    * 获取GitHub API URL
@@ -46,7 +69,7 @@ class GitHubAPI {
   /**
    * 发送GitHub API请求
    */
-  private async fetchFromGitHub(url: string): Promise<unknown> {
+  private async fetchFromGitHub(url: string, options: { allowNotFound?: boolean } = {}): Promise<unknown> {
     try {
       const response = await fetch(url, {
         headers: {
@@ -56,8 +79,13 @@ class GitHubAPI {
             'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`
           })
         },
-        next: { revalidate: 300 } // 缓存5分钟
+        next: { revalidate: 300, tags: [CONTENT_CACHE_TAG] } // 缓存5分钟；后台发布后按 tag 立即失效
       });
+
+      // 调用方允许路径不存在（例如还没建的 notes/），按空目录处理，不打错误日志
+      if (response.status === 404 && options.allowNotFound) {
+        return [];
+      }
 
       // 详细的错误处理
       if (!response.ok) {
@@ -108,9 +136,9 @@ class GitHubAPI {
   /**
    * 递归获取所有博客文档
    */
-  private async getAllFiles(path: string = this.POSTS_PATH): Promise<GitHubFile[]> {
+  private async getAllFiles(path: string = this.POSTS_PATH, allowNotFound = false): Promise<GitHubFile[]> {
     const url = this.getApiUrl(path);
-    const items = await this.fetchFromGitHub(url);
+    const items = await this.fetchFromGitHub(url, { allowNotFound });
     
     if (!Array.isArray(items)) {
       return [];
@@ -137,7 +165,7 @@ class GitHubAPI {
   private async getFileContent(file: GitHubFile): Promise<string> {
     try {
       const response = await fetch(file.download_url, {
-        next: { revalidate: 300 }
+        next: { revalidate: 300, tags: [CONTENT_CACHE_TAG] }
       });
       
       if (!response.ok) {
@@ -416,6 +444,68 @@ GITHUB_TOKEN=your_token_here
       }
       
       return [];
+    }
+  }
+
+  /**
+   * 获取所有随笔（notes/ 目录不存在或请求失败时返回空数组）
+   * 日期优先取 front matter 的 date，其次取文件名开头的 YYYY-MM-DD，最后取路径 notes/YYYY/MM
+   */
+  async getAllNotes(): Promise<Note[]> {
+    let files: GitHubFile[];
+    try {
+      files = await this.getAllFiles(this.NOTES_PATH, true);
+    } catch (error) {
+      console.warn('获取随笔目录失败:', error);
+      return [];
+    }
+
+    const results = await Promise.all(
+      files.map(async (file): Promise<Note | null> => {
+        try {
+          const raw = await this.getFileContent(file);
+          const fm = parseNoteMarkdown(raw);
+          if (fm.draft) return null;
+          const [, year = '', month = ''] = file.path.split('/');
+          const fileDate = file.name.match(/^(\d{4}-\d{2}-\d{2})/)?.[1];
+          return {
+            id: this.generateId(file.path.replace(/^notes\//, '').replace(/\.(md|mdx)$/, '')),
+            title: fm.title,
+            body: fm.body,
+            date: fm.date || fileDate || `${year}-${month}-01`,
+            tags: fm.tags,
+            link: fm.link,
+            linkTitle: fm.linkTitle,
+            video: fm.video,
+            poster: fm.poster,
+            url: file.html_url,
+          };
+        } catch (error) {
+          console.warn(`跳过随笔 ${file.path}:`, error);
+          return null;
+        }
+      })
+    );
+
+    return results
+      .filter((n): n is Note => n !== null)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }
+
+  /**
+   * About 页内容：内容仓库根目录的 about.json；不存在或解析失败时用默认值
+   */
+  async getAbout(): Promise<AboutContent> {
+    try {
+      const res = await fetch(
+        `https://raw.githubusercontent.com/${this.REPO_OWNER}/${this.REPO_NAME}/main/about.json`,
+        { next: { revalidate: 300, tags: [CONTENT_CACHE_TAG] } }
+      );
+      if (!res.ok) return DEFAULT_ABOUT;
+      return normalizeAbout(await res.json());
+    } catch (error) {
+      console.warn('读取 about.json 失败，使用默认内容:', error);
+      return DEFAULT_ABOUT;
     }
   }
 

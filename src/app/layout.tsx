@@ -1,14 +1,7 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import Layout from '@/components/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
-
-const inter = Inter({ 
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-});
 
 export const metadata: Metadata = {
   title: "Rain's Blog",
@@ -26,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN" className={inter.variable}>
+    <html lang="zh-CN">
       <body suppressHydrationWarning>
         <ErrorBoundary>
           <Layout>

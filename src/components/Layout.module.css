@@ -17,6 +17,16 @@
   z-index: 100;
 }
 
+/* 页面把 --page-bg 设成深色时（如 /product），同时设置 html[data-nav-tone="dark"]，
+   在导航栏范围内把文字类变量换成浅色，否则浅色模式下黑字会落在深色背景上 */
+:global(html[data-nav-tone='dark']) .navbar {
+  --text-primary: #FAFAF9;
+  --text-secondary: #E7E5E4;
+  --text-tertiary: #D6D3D1;
+  --text-muted: #A8A29E;
+  --bg-secondary: rgba(255, 255, 255, 0.08);
+}
+
 
 .navContainer {
   max-width: 1080px;
@@ -43,22 +53,30 @@
 }
 
 /* Logo */
-.logo {
-  font-family: 'Times New Roman', serif;
-  font-size: 1.5rem;
-  font-weight: 700;
+/* 左侧首页图标：只在手机端显示（桌面端首页图标在中间导航里） */
+.mobileHome {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
   color: var(--text-primary);
   text-decoration: none;
-  letter-spacing: -0.01em;
-  transition: color 0.15s ease;
 }
 
-.logo:hover {
+.mobileHome:hover {
   color: var(--accent-primary);
+  text-decoration: none;
 }
 
-.logo:hover {
-  color: var(--accent-primary);
+@media (min-width: 768px) {
+  .mobileHome {
+    display: none;
+  }
+}
+
+.homeIcon {
+  display: block;
+  /* 中文字形的视觉重心偏下，图标略微下移才和文字看起来齐平 */
+  transform: translateY(1.5px);
 }
 
 /* Navigation Links - 居中位置 */
@@ -78,6 +96,8 @@
 }
 
 .navLink {
+  display: inline-flex;
+  align-items: center;
   color: var(--text-primary);
   text-decoration: none;
   font-size: 1rem;
@@ -166,6 +186,9 @@
   border: none;
   cursor: pointer;
   padding: 4px;
+  /* 导航栏是三列网格；手机端中间和右侧区域隐藏后，要显式放到第三列靠右，否则会落在中间列 */
+  grid-column: 3;
+  justify-self: end;
 }
 
 @media (min-width: 768px) {
@@ -327,41 +350,6 @@
   z-index: 150;
 }
 
-/* Search Container in Navigation */
-.searchContainer {
-  position: relative;
-  max-width: 400px;
-  width: 100%;
-}
-
-.searchInput {
-  width: 100%;
-  padding: 0.75rem 2.5rem 0.75rem 1rem;
-  border: 1px solid var(--border-medium);
-  border-radius: 6px;
-  font-size: 0.9rem;
-  background-color: var(--bg-white);
-  transition: all 0.15s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.searchInput:focus {
-  outline: none;
-  border-color: var(--accent-primary);
-  background-color: var(--bg-white);
-  box-shadow: 0 0 0 3px rgba(217, 113, 73, 0.1);
-}
-
-.searchIcon {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-  pointer-events: none;
-  font-size: 1rem;
-}
-
 /* Main Content */
 .main {
   flex: 1;
@@ -370,7 +358,9 @@
   background-color: var(--page-bg, var(--bg-primary));
   transition: background-color 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
   position: relative;
-  overflow-x: hidden;
+  /* 用 clip 而不是 hidden：hidden 会让 main 成为滚动容器，
+     导致子元素的 position: sticky 相对 main 而不是窗口，滚动时不固定 */
+  overflow-x: clip;
   padding-top: 60px; /* 给固定导航栏留出空间 */
 }
 
@@ -387,18 +377,21 @@
 }
 
 /* Page Transition — 应用在 Layout 的 <main> 上，每次 pathname 变化重启 */
+/* fill-mode 用 backwards 而不是 both：动画结束后不能在 main 上留下 transform，
+   否则 main 会成为 position: fixed 的参照物，文章页的侧栏和目录会随页面滚走 */
+/* 时长 0.3s、位移 6px：换页要有过渡，但不能让新页面半秒都是半透明的 */
 .pageEnter {
-  animation: pageEnter 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation: pageEnter 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
 }
 
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 

@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/components/Layout';
 import { productData, sectionTitles } from '@/content/product/config';
 import PixelRain from './PixelRain';
-import DeepSeaCanvas from '@/components/DeepSeaCanvas';
 import styles from './page.module.css';
 
 const SLIDE_OUT_MS = 240;
@@ -31,8 +30,8 @@ export default function ProductPage() {
   const product = productData[currentIndex];
   const total = productData.length;
   const isUteki = product.id === 'uteki';
-  const isShinkai = product.id === 'shinkai';
-  const isTools = !!(product.tools && product.tools.length > 0);
+  // 只有一个作品时不显示左右箭头和分页点（轮播逻辑保留，加第二个作品即可恢复）
+  const hasMultiple = total > 1;
   const hasDetail = !!(product.highlights && product.highlights.length > 0);
 
   useEffect(() => {
@@ -44,17 +43,18 @@ export default function ProductPage() {
   useEffect(() => {
     const themes: Record<string, string> = {
       uteki: '#1C1917',     // warm dark, matches PixelRain trail-fade
-      shinkai: '#03070c',   // deep sea, matches DeepSeaCanvas trail-fade
-      tools: '#1a1510',     // warm dark with slight terracotta tilt
     };
     const bg = themes[product.id] || '#1C1917';
     document.documentElement.style.setProperty('--page-bg', bg);
+    // 所有作品主题都是深色背景：让导航栏文字切换为浅色
+    document.documentElement.dataset.navTone = 'dark';
   }, [product.id]);
 
-  // Clean up on unmount so navbar reverts to default --bg-primary
+  // Clean up on unmount so navbar reverts to default --bg-primary and text colors
   useEffect(() => {
     return () => {
       document.documentElement.style.removeProperty('--page-bg');
+      delete document.documentElement.dataset.navTone;
     };
   }, []);
 
@@ -63,7 +63,7 @@ export default function ProductPage() {
     setIframeLoaded(false);
   }, [currentIndex]);
 
-  // Hash routing: /product#uteki ↔ slide 0, /product#shinkai ↔ slide 1, …
+  // Hash routing: /product#uteki ↔ slide 0, /product#<id> ↔ that slide, …
   // On mount + hashchange (back/forward / manual edit) sync state from URL.
   useEffect(() => {
     const applyHash = () => {
@@ -236,7 +236,6 @@ export default function ProductPage() {
       {/* ===== Hero view ===== */}
       <div className={`${styles.heroView} ${detailOpen ? styles.heroSlideUp : ''}`}>
         {isUteki && !detailOpen && <PixelRain />}
-        {isShinkai && !detailOpen && <DeepSeaCanvas className={styles.shinkaiSea} />}
         <div className={`${styles.content} ${contentClass}`}>
           <div className={styles.topLeft}>
             <span className={styles.tagline}>{language === 'zh' ? '作品集' : 'Portfolio'}</span>
@@ -297,67 +296,34 @@ export default function ProductPage() {
                 )}
               </div>
             )}
-
-            {isTools && product.tools && (
-              <div className={styles.toolsList}>
-                {product.tools.map((tool) => (
-                  <div key={tool.id} className={styles.toolRow}>
-                    <div className={styles.toolMain}>
-                      <span className={styles.toolName}>{tool.name[language]}</span>
-                      <span className={styles.toolDesc}>{tool.desc[language]}</span>
-                    </div>
-                    <div className={styles.toolActions}>
-                      {tool.github && (
-                        <a
-                          href={tool.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={styles.toolAction}
-                        >
-                          GitHub
-                          <span className={styles.toolActionArrow}>→</span>
-                        </a>
-                      )}
-                      {tool.link && (
-                        <a
-                          href={tool.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={styles.toolAction}
-                        >
-                          {tool.linkLabel?.[language] ?? (language === 'zh' ? '打开' : 'Open')}
-                          <span className={styles.toolActionArrow}>→</span>
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 
-        <button className={`${styles.arrow} ${styles.arrowLeft}`} onClick={goPrev} aria-label="Previous">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6"/>
-          </svg>
-        </button>
-        <button className={`${styles.arrow} ${styles.arrowRight}`} onClick={goNext} aria-label="Next">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 6 15 12 9 18"/>
-          </svg>
-        </button>
+        {hasMultiple && (
+          <>
+            <button className={`${styles.arrow} ${styles.arrowLeft}`} onClick={goPrev} aria-label="Previous">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <button className={`${styles.arrow} ${styles.arrowRight}`} onClick={goNext} aria-label="Next">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 6 15 12 9 18"/>
+              </svg>
+            </button>
 
-        <div className={styles.dots}>
-          {productData.map((_, i) => (
-            <button
-              key={i}
-              className={`${styles.dot} ${i === currentIndex ? styles.dotActive : ''}`}
-              onClick={() => goTo(i)}
-              aria-label={`Project ${i + 1}`}
-            />
-          ))}
-        </div>
+            <div className={styles.dots}>
+              {productData.map((_, i) => (
+                <button
+                  key={i}
+                  className={`${styles.dot} ${i === currentIndex ? styles.dotActive : ''}`}
+                  onClick={() => goTo(i)}
+                  aria-label={`Project ${i + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* ===== Detail view ===== */}

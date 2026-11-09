@@ -1,0 +1,461 @@
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-3xl);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  color: var(--text-secondary);
+}
+
+.narrow {
+  max-width: 720px;
+}
+
+/* ---- 顶栏 ---- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-xl);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.crumb {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.crumb:hover {
+  color: var(--accent-primary);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+
+/* ---- 按钮 ---- */
+.btn,
+.btnPrimary,
+.btnDanger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 36px;
+  padding: 0 0.875rem;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn {
+  background: var(--bg-white);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-dark);
+}
+
+.btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+}
+
+.btnPrimary {
+  background: var(--accent-primary);
+  color: #fff;
+  border: 1px solid var(--accent-primary);
+}
+
+.btnPrimary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btnDanger {
+  background: transparent;
+  color: #b42318;
+  border: 1px solid transparent;
+}
+
+.btnDanger:hover {
+  border-color: #b42318;
+}
+
+.btn:disabled,
+.btnPrimary:disabled,
+.btnDanger:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---- 提示 ---- */
+.notice,
+.error,
+.success {
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin-bottom: var(--spacing-md);
+}
+
+.notice {
+  background: var(--accent-lighter);
+  border: 1px solid var(--accent-light);
+  color: var(--text-secondary);
+}
+
+.notice code,
+.error code {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.8125rem;
+  background: var(--bg-secondary);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.error {
+  background: rgba(180, 35, 24, 0.08);
+  border: 1px solid rgba(180, 35, 24, 0.25);
+  color: #b42318;
+}
+
+.success {
+  background: rgba(16, 122, 72, 0.08);
+  border: 1px solid rgba(16, 122, 72, 0.25);
+  color: #107a48;
+}
+
+/* ---- 登录卡 ---- */
+.loginCard {
+  max-width: 380px;
+  margin: 12vh auto 0;
+  padding: var(--spacing-xl);
+  background: var(--bg-white);
+  border: 1px solid var(--border-medium);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.loginCard .title {
+  margin-bottom: 0.5rem;
+}
+
+.loginCard .btnPrimary {
+  margin-top: var(--spacing-lg);
+  width: 100%;
+  justify-content: center;
+  height: 42px;
+}
+
+/* ---- 卡片 / 区块 ---- */
+.card {
+  background: var(--bg-white);
+  border: 1px solid var(--border-medium);
+  border-radius: 12px;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-sm);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--spacing-xl) 0 var(--spacing-sm);
+}
+
+.sectionHead h2 {
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ---- 随笔列表 ---- */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border-medium);
+  border-radius: 12px;
+  background: var(--bg-white);
+  overflow: hidden;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0.875rem 1rem;
+  border-top: 1px solid var(--border-light);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.list li:first-child .listItem {
+  border-top: none;
+}
+
+.listItem:hover {
+  background: var(--bg-secondary);
+}
+
+.listDate {
+  flex-shrink: 0;
+  width: 92px;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.listText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+}
+
+.badge {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  padding: 1px 7px;
+  color: var(--accent-hover);
+  background: var(--accent-light);
+}
+
+.empty {
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* ---- 表单 ---- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-bottom: var(--spacing-sm);
+  min-width: 0;
+}
+
+.label {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.input,
+.textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-dark);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input {
+  height: 38px;
+}
+
+.textarea {
+  resize: vertical;
+  line-height: 1.7;
+}
+
+.bodyArea {
+  min-height: 360px;
+  font-family: 'Times New Roman', 'Songti SC', 'SimSun', serif;
+  font-size: 1rem;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 var(--spacing-sm);
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 var(--spacing-sm);
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+/* ---- 编辑器两栏 ---- */
+.editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+
+.preview {
+  position: sticky;
+  top: 88px;
+  background: var(--bg-primary);
+  border: 1px dashed var(--border-dark);
+  border-radius: 12px;
+  padding: var(--spacing-md);
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+}
+
+.previewLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.previewMeta {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+/* 和 /notes 一致：去掉 MarkdownRenderer 段落间的空 break 元素 */
+.previewBody > div > div:empty {
+  display: none;
+}
+
+.previewBody p {
+  margin: 0 0 0.75em;
+}
+
+.previewMedia {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border-medium);
+  margin-top: var(--spacing-sm);
+  display: block;
+}
+
+.actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  padding: var(--spacing-sm) 0;
+  margin-top: var(--spacing-sm);
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-light);
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* ---- About 编辑器里的重复块 ---- */
+.itemCard {
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  background: var(--bg-primary);
+}
+
+.itemHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.iconBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+@media (max-width: 860px) {
+  .editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .preview {
+    position: static;
+    max-height: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: var(--spacing-lg) var(--spacing-sm) var(--spacing-2xl);
+  }
+
+  .grid2,
+  .grid3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .listDate {
+    width: 76px;
+  }
+}

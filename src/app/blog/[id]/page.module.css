@@ -352,3 +352,48 @@
     font-size: 0.8125rem;
   }
 }
+
+/* ---- 加载骨架（loading.tsx）：与正文同宽，淡淡地呼吸 ---- */
+.skeleton {
+  max-width: 680px;
+  margin: 0 auto;
+  padding-top: var(--spacing-xl);
+}
+
+.skeletonTitle,
+.skeletonMeta,
+.skeletonLine {
+  border-radius: 6px;
+  background: var(--border-light);
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
+.skeletonTitle {
+  height: 2.25rem;
+  width: 70%;
+  margin-bottom: 1rem;
+}
+
+.skeletonMeta {
+  height: 0.875rem;
+  width: 30%;
+  margin-bottom: 2.5rem;
+}
+
+.skeletonLine {
+  height: 1rem;
+  margin-bottom: 1rem;
+}
+
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonTitle,
+  .skeletonMeta,
+  .skeletonLine {
+    animation: none;
+  }
+}

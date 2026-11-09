@@ -3,6 +3,10 @@ import createMDX from '@next/mdx';
 
 const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+  images: {
+    // 首页的 GitHub 头像
+    remotePatterns: [{ protocol: 'https', hostname: 'avatars.githubusercontent.com' }],
+  },
   webpack: (config, { isServer }) => {
     // 支持Pyodide在浏览器中运行
     if (!isServer) {
