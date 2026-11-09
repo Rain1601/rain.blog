@@ -254,11 +254,11 @@
 }
 
 /* Dark mode code block */
-@media (prefers-color-scheme: dark) {
-  .codeContent {
-    background-color: #0e0e0e;
-  }
+/* 跟随网站主题（html[data-theme]），而不是系统设置 */
+:global(html[data-theme='dark']) .codeContent {
+  background-color: #0e0e0e;
 }
+
 
 /* Blockquotes */
 .blockquote {
@@ -515,37 +515,36 @@
 }
 
 /* 深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  /* 视频播放器深色模式 */
-  .markdown .video-wrapper,
-  .markdown [data-youtube-video] {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  }
+/* 跟随网站主题（html[data-theme]），而不是系统设置 */
+/* 视频播放器深色模式 */
+:global(html[data-theme='dark']) .markdown .video-wrapper,
+:global(html[data-theme='dark']) .markdown [data-youtube-video] {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
 
-  .table {
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-    border-color: var(--border-medium);
-  }
+:global(html[data-theme='dark']) .table {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  border-color: var(--border-medium);
+}
 
-  .table thead {
-    background: var(--bg-secondary);
-    border-bottom-color: var(--accent-primary);
-  }
+:global(html[data-theme='dark']) .table thead {
+  background: var(--bg-secondary);
+  border-bottom-color: var(--accent-primary);
+}
 
-  .table thead th {
-    color: var(--text-primary);
-    border-right-color: var(--border-medium);
-  }
+:global(html[data-theme='dark']) .table thead th {
+  color: var(--text-primary);
+  border-right-color: var(--border-medium);
+}
 
-  .table tbody tr {
-    border-bottom-color: var(--border-medium);
-  }
+:global(html[data-theme='dark']) .table tbody tr {
+  border-bottom-color: var(--border-medium);
+}
 
-  .table tbody tr:hover {
-    background: rgba(217, 113, 73, 0.1);
-  }
+:global(html[data-theme='dark']) .table tbody tr:hover {
+  background: rgba(217, 113, 73, 0.1);
+}
 
-  .table tbody td {
-    border-right-color: var(--border-medium);
-  }
+:global(html[data-theme='dark']) .table tbody td {
+  border-right-color: var(--border-medium);
 }

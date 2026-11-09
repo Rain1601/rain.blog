@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useTheme } from '@/utils/theme';
 import styles from './CodeBlock.module.css';
 
 interface CodeBlockProps {
@@ -12,17 +13,8 @@ interface CodeBlockProps {
 
 export default function CodeBlock({ content, language }: CodeBlockProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isDark, setIsDark] = useState(false);
-
-  // 检测系统主题
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDark(mediaQuery.matches);
-
-    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
-  }, []);
+  // 代码高亮配色跟随网站的白天/黑夜主题
+  const isDark = useTheme() === 'dark';
 
   // 计算代码行数
   const lineCount = content.split('\n').length;

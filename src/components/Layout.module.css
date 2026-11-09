@@ -161,6 +161,50 @@
   font-size: 0.875rem;
 }
 
+/* 白天 / 黑夜切换：两个图标叠在一起，当前的那个转入，另一个转出 */
+.themeToggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.themeToggle:hover {
+  color: var(--accent-primary);
+  background-color: var(--bg-secondary);
+}
+
+.themeIcon {
+  position: absolute;
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.6);
+  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.themeIconOn {
+  opacity: 1;
+  transform: none;
+}
+
+.themeToggleMobile {
+  border: 1px solid var(--border-medium);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .themeIcon {
+    transition: none;
+  }
+}
+
 /* GitHub Button */
 .githubButton {
   display: flex;

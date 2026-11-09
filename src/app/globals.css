@@ -39,22 +39,35 @@
   unicode-range: U+4E00-9FFF;
 }
 
-/* 深色模式适配 - 保持浅色风格，仅微调 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #1C1917;
-    --bg-secondary: #292524;
-    --bg-white: #292524;
-    --text-primary: #FAFAF9;
-    --text-secondary: #E7E5E4;
-    --text-tertiary: #D6D3D1;
-    --text-muted: #A8A29E;
-    --accent-light: #3D2A22;
-    --accent-lighter: #2C2018;
-    --border-light: #3F3A36;
-    --border-medium: #57534E;
-    --border-dark: #78716C;
-  }
+/* 白天 / 黑夜：由 <html data-theme="light|dark"> 决定。
+   layout.tsx 里的内联脚本在页面绘制前设置它：用户选过就用选择的，否则跟随系统。
+   导航栏的 ThemeToggle 负责切换并记住选择。 */
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-primary: #1C1917;
+  --bg-secondary: #292524;
+  --bg-white: #292524;
+  --text-primary: #FAFAF9;
+  --text-secondary: #E7E5E4;
+  --text-tertiary: #D6D3D1;
+  --text-muted: #A8A29E;
+  --accent-light: #3D2A22;
+  --accent-lighter: #2C2018;
+  --border-light: #3F3A36;
+  --border-medium: #57534E;
+  --border-dark: #78716C;
+}
+
+/* 切换主题的那一刻临时加上这个 class，让颜色平滑过渡（0.3s 后移除，不影响其他动画） */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, fill 0.3s ease !important;
 }
 
 /* 全局样式重置和基础样式 */

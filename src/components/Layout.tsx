@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, createContext, useContext, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import ThemeToggle from './ThemeToggle';
 import styles from './Layout.module.css';
 
 // 语言类型
@@ -134,6 +135,9 @@ export default function Layout({ children }: LayoutProps) {
               </button>
             </div>
 
+            {/* 白天 / 黑夜 */}
+            <ThemeToggle language={language} />
+
             {/* GitHub Button */}
             <a
               href="https://github.com/Rain1601"
@@ -199,6 +203,12 @@ export default function Layout({ children }: LayoutProps) {
                   English
                 </button>
               </div>
+            </div>
+
+            {/* 白天 / 黑夜 */}
+            <div className={styles.mobileLangSection}>
+              <span className={styles.sectionTitle}>外观 / Theme</span>
+              <ThemeToggle language={language} className={styles.themeToggleMobile} />
             </div>
 
             <a

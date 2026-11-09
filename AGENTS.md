@@ -56,7 +56,7 @@ Standalone `.html` files in `public/` (`hero-*-demo.html`, `logos-*.html`, etc.)
 
 ### Theming
 
-- **CSS variables** (`src/app/globals.css`) are the only theme: light/dark modes, accent #D97149, warm beige (#FAF8F4) light background. Chinese text uses 宋体, English uses Times New Roman. A few components (`InteractiveCodeBlock`, `CodeEditor`, `ErrorBoundary`, `/posts/[slug]`) still use MUI components with MUI's default styling; there is no custom MUI theme.
+- **CSS variables** (`src/app/globals.css`) are the only theme: accent #D97149, warm beige (#FAF8F4) light background, warm stone grays for dark. Light/dark is driven by `<html data-theme="light|dark">`, not `prefers-color-scheme`: `THEME_INIT_SCRIPT` (`src/utils/theme.ts`, inlined in `layout.tsx` `<head>`) sets it before paint from `localStorage.theme` or the system setting; `ThemeToggle` (nav + mobile drawer) switches and persists it; `useTheme()` lets components react (e.g. `CodeBlock` syntax colors). Component CSS targets dark mode with `:global(html[data-theme='dark']) .x`, never a media query. Chinese text uses 宋体, English uses Times New Roman. A few components (`InteractiveCodeBlock`, `CodeEditor`, `ErrorBoundary`, `/posts/[slug]`) still use MUI components with MUI's default styling; there is no custom MUI theme.
 - **Per-page dark backgrounds**: a page can set `--page-bg` on `<html>` to recolor the navbar and page background (see `/product`). If that background is dark, also set `html[data-nav-tone="dark"]` so the navbar text switches to light colors (`Layout.module.css`), and remove both on unmount.
 
 ### Key Components
