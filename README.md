@@ -1,315 +1,112 @@
-# 📝 Rain's Blog - 个人技术博客平台
+# rain.blog
 
-一个基于 Next.js 15 构建的现代化博客平台，支持 GitHub 仓库同步、交互式 Python 代码执行、MDX 内容渲染等功能。
+这是我的个人网站 [raincraft.dev](https://raincraft.dev) 的代码。
 
-## ✨ 核心特性
+我在这里放三样东西：随手记下的**随笔**，写得比较完整的**文章**，还有正在做的**作品**（目前是投研 Agent Uteki）。网站本身用 Next.js 写，内容放在另一个仓库 [rain.blog.repo](https://github.com/Rain1601/rain.blog.repo) 里，两边分开：改样式不用碰内容，写东西也不用重新部署。
 
-### 内容管理
-- 📚 **GitHub 同步**: 自动从 GitHub 仓库 (Rain1601/rain.blog.repo) 同步博客内容
-- 📝 **MDX 支持**: 使用 MDX 格式编写博客，支持 React 组件嵌入
-- 🏷️ **YAML Front Matter**: 支持文章元数据解析（标题、日期、标签、分类等）
-- 🔍 **全文搜索**: 实时搜索文章标题和内容
-- 📅 **时间线视图**: 按年份和月份筛选文章
+## 网站里有什么
 
-### 用户体验
-- 🎨 **统一字体系统**: 英文使用 Times New Roman，中文使用宋体
-- 📑 **固定目录导航**: 右侧固定目录，支持 1-3 级标题跳转和高亮
-- 🎯 **动态导航栏**: 主页滚动时自动切换导航链接和搜索框
-- 🌐 **多语言支持**: 中英文界面切换
-- 📱 **响应式设计**: 完美适配桌面和移动设备
+- **首页 `/`**：左边是我，右边是最近写的东西。最新的一篇放在最上面，下面分成文章、随笔两栏，一屏能看全。点「个人介绍」会把右边换成我的经历。
+- **随笔 `/notes`**：短的想法和记录，按时间排。可以搜索、按月份或标签筛选，也能附视频和链接。
+- **文章 `/articles`**：长文。最上面的精选像一本书，可以一页页往后翻；左边是主题和目录，标题旁边可以搜索。
+- **作品 `/product`**：项目介绍，现在只有 Uteki。
+- **后台 `/admin`**：我自己写随笔、改个人介绍的地方，只有我的 GitHub 账号能登录。
 
-### 技术特色
-- 🚀 **交互式 Python**: 基于 Pyodide 在浏览器中运行 Python 代码
-- ⚡ **性能优化**: 静态生成、代码分割、懒加载
-- 🔧 **TypeScript**: 完整的类型定义和开发体验
-- 🎯 **错误边界**: 优雅的错误处理和降级
+另外，`/posts` 下有几篇早期的 MDX 文章，里面可以直接在浏览器里跑 Python（基于 Pyodide）。
 
-## 🛠️ 技术栈
+## 内容放在哪
 
-- **框架**: Next.js 15 (App Router)
-- **样式**: CSS Modules + 自定义主题系统
-- **语言**: TypeScript
-- **Python 运行时**: Pyodide (WebAssembly)
-- **代码编辑器**: Monaco Editor
-- **内容格式**: Markdown / MDX
-- **数据源**: GitHub API
-- **部署**: Vercel / Netlify
+所有正文都在 [rain.blog.repo](https://github.com/Rain1601/rain.blog.repo)，网站每 5 分钟去拉一次；从后台发布的话会立刻刷新。
 
-## 📦 支持的 Python 包
+**文章**放在 `posts/年/月/` 下，用 front matter 写元信息：
 
-- **NumPy** - 科学计算
-- **Pandas** - 数据分析
-- **Matplotlib** - 数据可视化
-- **SciPy** - 科学计算工具
-- **SymPy** - 符号数学
-- **Micropip** - 动态安装其他包
+```markdown
+---
+title: 文章标题
+date: 2026-01-11
+summary: 一两句话的摘要，会显示在卡片上
+tags: [Agent, 译文]
+---
 
-## 🚀 快速开始
+正文……
+```
 
-### 环境要求
+`summary` 和 `tags` 都可以不写，但写了会好看很多：没有摘要时卡片会从正文开头截一段，没有标签就不会出现在主题筛选里。
 
-- Node.js 18.x 或更高版本
-- npm 或 yarn
+**随笔**放在 `notes/年/月/日期-名字.md`，通常直接在后台写，不用手动建文件：
 
-### 安装和运行
+```markdown
+---
+date: 2026-11-05
+tags: [AI, Coding agent]
+video: /notes/2026-11-05-claude-codex.mp4
+poster: /notes/2026-11-05-claude-codex.jpg
+---
+
+正文……标题可以不写，列表里会用第一句话代替。
+```
+
+随笔用到的视频和封面放在本仓库的 `public/notes/` 里。
+
+## 本地跑起来
+
+需要 Node.js 18 以上。
 
 ```bash
-# 克隆项目
-git clone https://github.com/Rain1601/rain.blog.git
-cd rain.blog
-
-# 安装依赖
 npm install
-
-# 启动开发服务器 (端口 3001)
 npm run dev
-
-# 构建项目
-npm run build
-
-# 启动生产服务器
-npm start
 ```
 
-访问 [http://localhost:3001](http://localhost:3001) 查看应用。
+然后打开 <http://localhost:3001>。如果内容仓库里还没有随笔，本地开发时会显示几条示例，线上不会出现。
 
-## 📁 项目结构
-
-```
-rain.blog/
-├── src/
-│   ├── app/                           # Next.js App Router 页面
-│   │   ├── blog/[id]/                # GitHub 博客详情页
-│   │   ├── posts/[slug]/             # MDX 文章页面
-│   │   ├── about/                    # 关于页面
-│   │   ├── layout.tsx                # 根布局
-│   │   ├── page.tsx                  # 主页（博客列表）
-│   │   ├── page.module.css          # 主页样式
-│   │   └── globals.css              # 全局样式
-│   ├── components/                   # React 组件
-│   │   ├── Layout.tsx                # 导航布局组件
-│   │   ├── TableOfContents.tsx       # 文章目录组件
-│   │   ├── MarkdownRenderer.tsx      # Markdown 渲染器
-│   │   ├── InteractiveCodeBlock.tsx  # 交互式代码块
-│   │   ├── CodeEditor.tsx            # Monaco 编辑器
-│   │   └── ErrorBoundary.tsx         # 错误边界
-│   ├── utils/                        # 工具函数
-│   │   ├── github.ts                 # GitHub API 集成
-│   │   ├── api.ts                    # API 路由处理
-│   │   ├── pyodide.ts                # Pyodide 管理
-│   │   └── mdx.ts                    # MDX 处理
-│   └── content/blog/                 # 本地博客内容
-│       ├── posts/                    # MDX 文章
-│       └── config.ts                 # 博客配置
-├── public/                           # 静态资源
-├── mdx-components.tsx                # MDX 组件映射
-├── next.config.ts                    # Next.js 配置
-└── CLAUDE.md                         # AI 助手指南
-```
-
-## 📝 使用指南
-
-### 写作指南
-
-#### 创建 GitHub 同步文章
-
-文章将自动从 `Rain1601/rain.blog.repo` 仓库同步，支持以下结构：
-- `posts/年份/月份/文件名.md`
-- 支持 YAML Front Matter 元数据
-
-#### 创建本地 MDX 文章
-
-在 `src/content/blog/posts/` 创建 `.mdx` 文件：
-
-```mdx
----
-title: "文章标题"
-date: "2024-01-20"
-tags: ["Python", "教程"]
-categories: ["技术"]
-author: "Rain"
-summary: "文章摘要"
----
-
-# 文章内容
-
-这里是正文...
-```
-
-#### 使用交互式代码块
-
-在 MDX 文件中使用 `InteractiveCodeBlock` 组件：
-
-```mdx
-import { InteractiveCodeBlock } from '@/components/InteractiveCodeBlock';
-
-<InteractiveCodeBlock
-  code={`print("Hello, Python!")
-x = 10
-y = 20
-print(f"x + y = {x + y}")`}
-  title="Python基础示例"
-  description="这是一个基本的Python代码示例"
-  height={300}
-/>
-```
-
-### 组件属性
-
-- `code`: 默认代码内容
-- `height`: 编辑器高度（默认300px）
-- `title`: 代码块标题
-- `description`: 代码块描述
-- `readOnly`: 是否只读（默认false）
-- `enableClear`: 是否启用清空环境按钮（默认true）
-- `enableReset`: 是否启用重置代码按钮（默认true）
-
-### 开发命令
+其他常用命令：
 
 ```bash
-# 创建新文章
-npm run new-post
-
-# 转换 MD 为 MDX
-npm run md-to-mdx <file>
-
-# 批量转换
-npm run batch-md-to-mdx
-
-# 代码检查
+npm run build      # 生产构建，推送前最好跑一下
 npm run lint
-
-# 类型检查
-npm run type-check
+npm run new-post   # 交互式新建一篇本地 MDX 文章
 ```
 
-## 🚀 部署
+## 环境变量
 
-### 部署到Vercel
+本地放在 `.env.local`（已被 git 忽略），线上放在 Vercel 的 Production 环境里。
 
-1. 连接GitHub仓库到Vercel
-2. 配置项目设置：
-   - Framework: Next.js
-   - Build Command: `npm run build`
-   - Output Directory: `.next`
-3. 部署
+| 变量 | 用途 |
+|---|---|
+| `GITHUB_TOKEN` | 读写内容仓库。只读的话不配也能跑，但 GitHub 每小时只给 60 次请求；后台发布必须有。建议用 Fine-grained token，只给 `rain.blog.repo` 的 Contents 读写权限 |
+| `GITHUB_OAUTH_CLIENT_ID` / `GITHUB_OAUTH_CLIENT_SECRET` | 后台的 GitHub 登录。OAuth App 的回调地址填 `https://raincraft.dev/api/admin/auth/callback`，本地再加一条 `http://localhost:3001/api/admin/auth/callback` |
+| `ADMIN_SECRET` | 给登录 cookie 签名的随机字符串，可以用 `openssl rand -base64 32` 生成。换掉它会让所有登录失效 |
 
-详细部署说明请查看 [DEPLOYMENT.md](./DEPLOYMENT.md)
+## 代码大概在哪
 
-### 环境变量
-
-项目不需要额外的环境变量配置。
-
-## 🔧 配置指南
-
-### GitHub 仓库配置
-
-在 `src/utils/github.ts` 中配置仓库信息：
-
-```typescript
-const GITHUB_OWNER = 'Rain1601';
-const GITHUB_REPO = 'rain.blog.repo';
+```
+src/
+├── app/
+│   ├── page.tsx, HomeClient.tsx   首页
+│   ├── notes/                     随笔
+│   ├── articles/                  文章列表
+│   ├── blog/[id]/                 文章详情（构建时静态生成）
+│   ├── product/                   作品
+│   ├── admin/                     后台
+│   └── api/admin/auth/            GitHub 登录
+├── components/                    导航、Markdown 渲染、目录等
+├── content/
+│   ├── intro.ts                   首页「个人介绍」的内容
+│   └── product/config.ts          作品页的数据
+└── utils/
+    ├── github.ts                  从内容仓库读文章、随笔
+    ├── github-write.ts            后台写回内容仓库
+    └── notes-format.ts            随笔的 front matter 格式
 ```
 
-### 添加新的 Python 包
+想改首页的介绍文字，改 `src/content/intro.ts` 和 `HomeClient.tsx` 顶部的 `PROFILE` 就行。
 
-在 `src/utils/pyodide.ts` 中的 `loadPyodide` 函数中添加包：
+## 部署
 
-```typescript
-await pyodide.loadPackage(['numpy', 'pandas', 'matplotlib', 'new-package']);
-```
+推到 `main` 之后 Vercel 会自动部署。部署前跑一遍 `npm run build`：Vercel 上的构建遇到 lint 或类型错误（比如没用到的变量）会直接失败。
 
-### 自定义样式
+## 给以后的自己
 
-项目使用 CSS 变量系统，在 `src/app/globals.css` 中修改：
-
-```css
-:root {
-  --text-primary: #1a1a1a;
-  --accent-primary: #d97149;
-  --bg-primary: #faf8f4;
-  /* 更多变量... */
-}
-```
-
-### 添加新的MDX组件
-
-在 `mdx-components.tsx` 中添加组件映射：
-
-```typescript
-export function useMDXComponents(components: MDXComponents): MDXComponents {
-  return {
-    // 现有组件...
-    CustomComponent: ({ children }) => (
-      <div className="custom-component">{children}</div>
-    ),
-    ...components,
-  };
-}
-```
-
-## 🐛 问题排除
-
-### 常见问题
-
-1. **GitHub API 限制**
-   - API 速率限制：60 次/小时（未认证）
-   - 解决方案：添加 GitHub Token 或使用缓存
-
-2. **Pyodide 加载失败**
-   - 检查网络连接
-   - 确保浏览器支持 WebAssembly
-   - 清除浏览器缓存
-
-3. **目录导航不工作**
-   - 确保标题有正确的 ID
-   - 检查 Intersection Observer 兼容性
-
-4. **字体显示异常**
-   - 确保系统安装了宋体字体
-   - 检查 CSS 字体声明顺序
-
-### 性能优化
-
-1. **Pyodide优化**
-   - 使用懒加载
-   - 缓存Pyodide实例
-   - 按需加载Python包
-
-2. **构建优化**
-   - 启用Next.js静态生成
-   - 使用代码分割
-   - 优化图片和静态资源
-
-## 🌟 特色功能展示
-
-### 动态导航栏
-主页滚动时，导航链接自动切换为搜索框，优化屏幕空间利用。
-
-### 智能目录
-文章右侧固定目录，自动生成、滚动高亮、点击跳转。
-
-### GitHub 同步
-每 5 分钟自动同步 GitHub 仓库内容，保持博客实时更新。
-
-## 📄 许可证
-
-MIT License
-
-## 🤝 贡献指南
-
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/amazing`)
-3. 提交更改 (`git commit -m 'feat: 添加新功能'`)
-4. 推送分支 (`git push origin feature/amazing`)
-5. 创建 Pull Request
-
-## 📮 联系方式
-
-- GitHub: [@Rain1601](https://github.com/Rain1601)
-- 博客仓库: [rain.blog.repo](https://github.com/Rain1601/rain.blog.repo)
-- Issues: [提交问题](https://github.com/Rain1601/rain.blog/issues)
-
----
-
-*Built with ❤️ by Rain | Powered by Next.js & Pyodide*
+- `CLAUDE.md` 和 `AGENTS.md` 是写给 AI 编程助手看的项目说明，内容保持一致，改了一个记得同步另一个。
+- 页面最外层用的是 `overflow-x: clip` 而不是 `hidden`，切页动画结束后也不能留下 `transform`。不然侧栏的 sticky 和 fixed 会失效，滚动时跟着跑掉。
+- GitHub 接口被限流时，文章列表会退回演示数据。看到奇怪的示例文章，先检查 `GITHUB_TOKEN`。
