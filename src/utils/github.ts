@@ -32,6 +32,8 @@ export interface BlogPost {
   tags?: string[];
   categories?: string[];
   summary?: string;
+  language?: 'en' | 'zh';
+  translationPath?: string;
 }
 
 /** 随笔：notes/YYYY/MM/*.md，正文较短，不需要标题 */
@@ -209,6 +211,8 @@ class GitHubAPI {
     tags?: string[];
     categories?: string[];
     summary?: string;
+    language?: 'en' | 'zh';
+    translationPath?: string;
     contentWithoutFrontMatter: string;
   } {
     const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n/;
@@ -251,6 +255,16 @@ class GitHubAPI {
       }
     }
 
+    const language = metadata.lang;
+    if (language !== undefined && language !== 'en' && language !== 'zh') {
+      throw new Error(`无效的文章语言: ${language}`);
+    }
+    const translationPath = metadata.translationPath;
+    if (translationPath !== undefined &&
+        (typeof translationPath !== 'string' || !/^posts\/(?!.*\.\.)[^\s]+\.mdx?$/.test(translationPath))) {
+      throw new Error(`无效的译文路径: ${translationPath}`);
+    }
+
     return {
       title: typeof metadata.title === 'string' ? metadata.title : undefined,
       date: typeof metadata.date === 'string' ? metadata.date : undefined,
@@ -259,6 +273,8 @@ class GitHubAPI {
       tags: Array.isArray(metadata.tags) ? metadata.tags : [],
       categories: Array.isArray(metadata.categories) ? metadata.categories : [],
       summary: typeof metadata.summary === 'string' ? metadata.summary : undefined,
+      language,
+      translationPath,
       contentWithoutFrontMatter
     };
   }
@@ -369,7 +385,9 @@ GITHUB_TOKEN=your_token_here
               author,
               tags,
               categories,
-              summary
+              summary,
+              language,
+              translationPath
             } = this.parseFrontMatter(rawContent);
 
             // 决定使用的标题和日期
@@ -416,7 +434,9 @@ GITHUB_TOKEN=your_token_here
               author,
               tags,
               categories,
-              summary
+              summary,
+              language,
+              translationPath
             };
           } catch (error) {
             console.warn(`跳过文件 ${file.path}:`, error);

@@ -13,8 +13,12 @@ export default async function ArticlesPage() {
     title: post.title,
     date: post.date,
     excerpt: clip(post.summary || plainText(post.content), 140),
-    // 主题 = front matter 的 tags + categories（去重）
-    topics: Array.from(new Set([...(post.tags ?? []), ...(post.categories ?? [])].filter(Boolean))),
+    // 中文译文自动进入「翻译」主题
+    topics: Array.from(new Set([
+      ...(post.tags ?? []),
+      ...(post.categories ?? []),
+      ...(post.language === 'zh' && post.translationPath ? ['翻译'] : []),
+    ].filter(Boolean))),
   }));
 
   return <ArticlesClient articles={articles} />;

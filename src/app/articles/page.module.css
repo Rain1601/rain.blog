@@ -13,9 +13,9 @@
 /* ---- 左：主题 ---- */
 .sidebar {
   position: sticky;
-  top: 100px; /* 与首页、随笔页侧栏一致 */
+  top: calc(85px + var(--spacing-2xl));
   /* 目录很长时侧栏自己滚动，不会被屏幕截断 */
-  max-height: calc(100vh - 120px);
+  max-height: calc(100dvh - 85px - var(--spacing-2xl) - 20px);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: none;

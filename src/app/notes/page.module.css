@@ -19,7 +19,7 @@
 
 .sidebar {
   position: sticky;
-  top: 100px; /* 与首页、文章页侧栏一致 */
+  top: calc(85px + var(--spacing-xl));
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);

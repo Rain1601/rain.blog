@@ -60,6 +60,12 @@
   text-decoration: none;
 }
 
+.githubProfileLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* 「个人介绍」按钮 */
 .introBtn {
   display: inline-flex;

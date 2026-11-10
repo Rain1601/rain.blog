@@ -30,11 +30,16 @@ export function hasStoredTheme(): boolean {
   }
 }
 
-/** 应用主题；persist 为 true 时记住用户的选择。切换瞬间颜色平滑过渡 0.3s */
+let transitionTimer: number | undefined;
+
+/** 应用主题；persist 为 true 时记住用户的选择。 */
 export function applyTheme(theme: Theme, persist: boolean) {
   const root = document.documentElement;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!reduceMotion) root.classList.add('theme-transition');
+  if (!reduceMotion) {
+    window.clearTimeout(transitionTimer);
+    root.classList.add('theme-transition');
+  }
   root.setAttribute('data-theme', theme);
   if (persist) {
     try {
@@ -43,7 +48,7 @@ export function applyTheme(theme: Theme, persist: boolean) {
       /* 隐私模式等情况下存不了，本次访问内仍然生效 */
     }
   }
-  if (!reduceMotion) window.setTimeout(() => root.classList.remove('theme-transition'), 320);
+  if (!reduceMotion) transitionTimer = window.setTimeout(() => root.classList.remove('theme-transition'), 220);
 }
 
 function subscribe(onChange: () => void) {

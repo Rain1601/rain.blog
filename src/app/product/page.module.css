@@ -35,6 +35,9 @@
 
 /* ---- Page shell ---- */
 .page {
+  /* 文字、边框、浮层都用 rgba(var(--ink), a)：黑夜是白色，白天是暖黑 */
+  --ink: 255, 255, 255;
+  --shade: 0, 0, 0;
   position: relative;
   height: calc(100vh - 85px);
   width: 100vw;
@@ -48,13 +51,18 @@
   opacity: 1;
 }
 
+:global(html[data-theme='light']) .page {
+  --ink: 28, 25, 23;
+  --shade: 120, 100, 80;
+}
+
 /* ---- Solid dark background (matches site theme) ---- */
 .solidBg {
   position: absolute;
   inset: 0;
   /* Same --page-bg variable as the navbar — keeps header and body unified.
-     Fallback hardcodes warm-dark since /product is always dark-themed regardless of system pref. */
-  background-color: var(--page-bg, #1C1917);
+     白天不设置 --page-bg，直接用站点背景色。 */
+  background-color: var(--page-bg, var(--bg-primary));
   transition: background-color 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
   z-index: 0;
 }
@@ -121,12 +129,12 @@
 
 .tagline {
   font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.15em;
-  text-transform: uppercase; color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase; color: rgba(var(--ink), 0.5);
   display: block; margin-bottom: 0.375rem;
 }
 
 .heroTitle {
-  font-size: 1.25rem; font-weight: 400; color: rgba(255, 255, 255, 0.75);
+  font-size: 1.25rem; font-weight: 400; color: rgba(var(--ink), 0.75);
   letter-spacing: -0.01em; line-height: 1.35;
   font-family: 'Times New Roman', 'SimSun', '宋体', serif;
   white-space: pre-line; margin: 0;
@@ -150,6 +158,12 @@
   opacity: 0.9;
 }
 
+/* 动态插画比静态 logo 大一些，向上多占的空间用负 margin 抵掉，标题位置不变 */
+.productMark {
+  margin-top: -40px;
+  margin-bottom: 0.5rem;
+}
+
 /* 无 logo 的 slide 留同样的空间，保证标题水平一致 */
 .productLogoSpacer {
   visibility: hidden;
@@ -157,12 +171,12 @@
 
 .indexLabel {
   font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.35); font-variant-numeric: tabular-nums;
+  color: rgba(var(--ink), 0.35); font-variant-numeric: tabular-nums;
 }
 
 .productName {
   font-size: clamp(2rem, 4vw, 3.25rem); font-weight: 400;
-  color: rgba(255, 255, 255, 0.95); text-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+  color: rgba(var(--ink), 0.95); text-shadow: 0 4px 30px rgba(var(--shade), 0.15);
   letter-spacing: -0.02em; font-family: 'Times New Roman', 'SimSun', '宋体', serif;
   line-height: 1.2; margin: 0; max-width: 700px;
 }
@@ -170,7 +184,7 @@
 .productTagline {
   font-size: clamp(0.875rem, 1.05vw, 1rem);
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(var(--ink), 0.55);
   letter-spacing: 0.005em;
   line-height: 1.6;
   margin: 0;
@@ -182,8 +196,8 @@
 .exploreBtn {
   display: inline-flex; align-items: center; gap: 0.5rem;
   margin-top: 0.5rem; padding: 0.5rem 1.25rem; border-radius: 100px;
-  border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.55); font-size: 0.8125rem; font-weight: 400;
+  border: 1px solid rgba(var(--ink), 0.15); background: rgba(var(--ink), 0.06);
+  color: rgba(var(--ink), 0.55); font-size: 0.8125rem; font-weight: 400;
   letter-spacing: 0.04em; cursor: pointer;
   transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease,
               transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
@@ -194,10 +208,10 @@
 .exploreBtn svg { animation: bounceDown 2s ease-in-out 1.5s infinite; }
 
 .exploreBtn:hover {
-  border-color: rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(var(--ink), 0.4); background: rgba(var(--ink), 0.12);
+  color: rgba(var(--ink), 0.95);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 6px 20px rgba(var(--shade), 0.18);
 }
 
 .exploreBtn:active {
@@ -222,9 +236,9 @@
 .actionLink {
   display: inline-flex; align-items: center; gap: 0.4rem;
   padding: 0.5rem 1.25rem; border-radius: 100px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(var(--ink), 0.15);
+  background: rgba(var(--ink), 0.06);
+  color: rgba(var(--ink), 0.6);
   font-size: 0.8125rem; font-weight: 400;
   letter-spacing: 0.04em;
   text-decoration: none;
@@ -236,11 +250,11 @@
 }
 
 .actionLink:hover {
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(var(--ink), 0.4);
+  background: rgba(var(--ink), 0.12);
+  color: rgba(var(--ink), 0.95);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 6px 20px rgba(var(--shade), 0.18);
   text-decoration: none;
 }
 
@@ -259,40 +273,44 @@
   background: transparent; padding: 0;
 }
 
-.productDesc { font-size: 0.875rem; color: rgba(255, 255, 255, 0.7); line-height: 1.75; margin: 0 0 1rem; }
+.productDesc { font-size: 0.875rem; color: rgba(var(--ink), 0.7); line-height: 1.75; margin: 0 0 1rem; }
 
 .techStack { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 1rem; }
 
 .techTag {
-  background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.6);
+  background: rgba(var(--ink), 0.08); color: rgba(var(--ink), 0.6);
   padding: 0.25rem 0.625rem; border-radius: 4px; font-size: 0.6875rem;
-  font-weight: 500; letter-spacing: 0.02em; border: 1px solid rgba(255, 255, 255, 0.06);
+  font-weight: 500; letter-spacing: 0.02em; border: 1px solid rgba(var(--ink), 0.06);
 }
 
 .links { display: flex; gap: 1rem; align-items: center; }
 
 .linkPrimary {
   display: inline-flex; align-items: center; gap: 0.25rem;
-  font-size: 0.8125rem; color: #fff; text-decoration: none; font-weight: 500;
-  padding: 0.4rem 1rem; background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 6px; transition: background 0.2s ease;
+  font-size: 0.8125rem; color: rgb(var(--ink)); text-decoration: none; font-weight: 500;
+  padding: 0.4rem 1rem; background: rgba(var(--ink), 0.12);
+  border: 1px solid rgba(var(--ink), 0.18); border-radius: 6px; transition: background 0.2s ease;
 }
-.linkPrimary:hover { background: rgba(255, 255, 255, 0.22); color: #fff; text-decoration: none; }
+.linkPrimary:hover { background: rgba(var(--ink), 0.22); color: rgb(var(--ink)); text-decoration: none; }
+
+/* 白天：深色在浅底上显得更重，按钮底色减半 */
+:global(html[data-theme='light']) .linkPrimary { background: rgba(var(--ink), 0.05); border-color: rgba(var(--ink), 0.16); }
+:global(html[data-theme='light']) .linkPrimary:hover { background: rgba(var(--ink), 0.1); }
 
 .linkGhost {
   display: inline-flex; align-items: center; gap: 0.25rem;
-  font-size: 0.8125rem; color: rgba(255, 255, 255, 0.55); text-decoration: none;
+  font-size: 0.8125rem; color: rgba(var(--ink), 0.55); text-decoration: none;
   font-weight: 500; transition: color 0.2s ease;
 }
-.linkGhost:hover { color: rgba(255, 255, 255, 0.9); text-decoration: none; }
+.linkGhost:hover { color: rgba(var(--ink), 0.9); text-decoration: none; }
 
 /* Arrows — subtle on idle, more visible on hover */
 .arrow {
   position: absolute; top: 50%; z-index: 10;
   width: 44px; height: 44px; border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(var(--ink), 0.12); background: rgba(var(--shade), 0.18);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  color: rgba(255, 255, 255, 0.55); display: flex; align-items: center; justify-content: center;
+  color: rgba(var(--ink), 0.55); display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   transform: translateY(-50%);
   transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease,
@@ -301,7 +319,7 @@
 }
 
 .arrow:hover {
-  background: rgba(0, 0, 0, 0.32); border-color: rgba(255, 255, 255, 0.36); color: #fff;
+  background: rgba(var(--shade), 0.32); border-color: rgba(var(--ink), 0.36); color: rgb(var(--ink));
 }
 
 .arrowLeft:hover { transform: translate(-2px, -50%); }
@@ -322,15 +340,15 @@
 }
 
 .dot {
-  width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.25);
+  width: 8px; height: 8px; border-radius: 50%; background: rgba(var(--ink), 0.25);
   border: none; cursor: pointer; padding: 0;
   transition: background 0.3s ease,
               width 0.45s cubic-bezier(0.22, 0.61, 0.36, 1),
               border-radius 0.3s ease,
               transform 0.2s ease;
 }
-.dot:hover { background: rgba(255, 255, 255, 0.55); transform: scale(1.15); }
-.dotActive { background: rgba(255, 255, 255, 0.9); width: 26px; border-radius: 4px; }
+.dot:hover { background: rgba(var(--ink), 0.55); transform: scale(1.15); }
+.dotActive { background: rgba(var(--ink), 0.9); width: 26px; border-radius: 4px; }
 .dotActive:hover { transform: none; }
 
 /* ============================================
@@ -361,9 +379,9 @@
   gap: 0.375rem;
   padding: 0.4rem 0.875rem;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(var(--ink), 0.15);
   border-radius: 6px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(var(--ink), 0.5);
   font-size: 0.8125rem;
   font-weight: 400;
   cursor: pointer;
@@ -374,9 +392,9 @@
 }
 
 .backBtn:hover {
-  color: rgba(255, 255, 255, 0.9);
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.05);
+  color: rgba(var(--ink), 0.9);
+  border-color: rgba(var(--ink), 0.3);
+  background: rgba(var(--ink), 0.05);
 }
 
 /* Detail content */
@@ -411,7 +429,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(var(--ink), 0.3);
   display: block;
   margin-bottom: 0.75rem;
 }
@@ -419,7 +437,7 @@
 .detailTitle {
   font-size: clamp(1.75rem, 3.5vw, 2.75rem);
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(var(--ink), 0.95);
   letter-spacing: -0.02em;
   font-family: 'Times New Roman', 'SimSun', '宋体', serif;
   line-height: 1.2;
@@ -428,7 +446,7 @@
 
 .detailDesc {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(var(--ink), 0.55);
   line-height: 1.8;
   max-width: 640px;
   margin: 0 0 1.5rem;
@@ -455,7 +473,7 @@
 .demoEyebrow {
   display: block;
   margin-bottom: 0.375rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(var(--ink), 0.35);
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -464,7 +482,7 @@
 
 .demoTitle {
   margin: 0 0 0.5rem;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(var(--ink), 0.92);
   font-size: 1.25rem;
   font-weight: 500;
   letter-spacing: -0.01em;
@@ -474,7 +492,7 @@
 .demoDesc {
   max-width: 640px;
   margin: 0;
-  color: rgba(255, 255, 255, 0.52);
+  color: rgba(var(--ink), 0.52);
   font-size: 0.875rem;
   line-height: 1.7;
 }
@@ -485,32 +503,39 @@
   justify-content: center;
   flex-shrink: 0;
   padding: 0.45rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(var(--ink), 0.16);
   border-radius: 6px;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(var(--ink), 0.72);
   text-decoration: none;
   font-size: 0.8125rem;
   transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
 .demoOpenLink:hover {
-  border-color: rgba(255, 255, 255, 0.32);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(var(--ink), 0.32);
+  background: rgba(var(--ink), 0.06);
+  color: rgba(var(--ink), 0.95);
   text-decoration: none;
 }
 
 .demoFrameShell {
+  /* 嵌入的 Demo 本身是深色界面，框内始终用白色 */
+  --ink: 255, 255, 255;
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 8.4;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--ink), 0.1);
   border-radius: 10px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
+    linear-gradient(180deg, rgba(var(--ink), 0.04), rgba(var(--ink), 0.01)),
     #050505;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 24px 80px rgba(var(--shade), 0.35);
+}
+
+:global(html[data-theme='light']) .demoFrameShell {
+  border-color: rgba(28, 25, 23, 0.12);
+  box-shadow: 0 12px 40px rgba(120, 100, 80, 0.12);
 }
 
 /* iframe skeleton + fade-in on load */
@@ -523,7 +548,7 @@
   justify-content: center;
   background:
     radial-gradient(ellipse at 50% 35%, rgba(217, 119, 89, 0.08), transparent 60%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01));
+    linear-gradient(180deg, rgba(var(--ink), 0.045), rgba(var(--ink), 0.01));
   transition: opacity 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
   pointer-events: none;
 }
@@ -535,7 +560,7 @@
   background: linear-gradient(
     100deg,
     transparent 30%,
-    rgba(255, 255, 255, 0.045) 50%,
+    rgba(var(--ink), 0.045) 50%,
     transparent 70%
   );
   background-size: 220% 100%;
@@ -545,7 +570,7 @@
 .demoFrameSkeletonHint {
   position: relative;
   z-index: 1;
-  color: rgba(255, 255, 255, 0.42);
+  color: rgba(var(--ink), 0.42);
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   font-variant-numeric: tabular-nums;
@@ -613,7 +638,7 @@
 .utekiDetailDesc {
   max-width: 720px;
   margin: 0;
-  color: rgba(255, 255, 255, 0.52);
+  color: rgba(var(--ink), 0.52);
   font-size: 0.9rem;
   line-height: 1.75;
 }
@@ -665,21 +690,21 @@
   gap: 1rem;
   min-height: 0;
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(var(--ink), 0.09);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.028);
+  background: rgba(var(--ink), 0.028);
 }
 
 .utekiRuntimePanel p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(var(--ink), 0.5);
   font-size: 0.78rem;
   line-height: 1.65;
 }
 
 .utekiRuntimeTitle {
   margin: 0 0 0.5rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(var(--ink), 0.9);
   font-size: 1.05rem;
   font-weight: 500;
   font-family: 'Times New Roman', 'SimSun', '宋体', serif;
@@ -695,12 +720,12 @@
   grid-template-columns: 2rem minmax(0, 1fr);
   gap: 0.625rem;
   padding-top: 0.625rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid rgba(var(--ink), 0.07);
   animation: staggerIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
 .utekiStageItem > span {
-  color: rgba(255, 255, 255, 0.34);
+  color: rgba(var(--ink), 0.34);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -709,7 +734,7 @@
 
 .utekiStageItem h4 {
   margin: 0 0 0.25rem;
-  color: rgba(255, 255, 255, 0.84);
+  color: rgba(var(--ink), 0.84);
   font-size: 0.88rem;
   font-weight: 500;
 }
@@ -729,26 +754,26 @@
   display: grid;
   gap: 0.25rem;
   padding: 0.625rem;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(var(--ink), 0.07);
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.035);
+  background: rgba(var(--ink), 0.035);
   animation: staggerIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
   transition: border-color 0.25s ease, background 0.25s ease;
 }
 
 .utekiCapabilityRail div:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(var(--ink), 0.16);
+  background: rgba(var(--ink), 0.06);
 }
 
 .utekiCapabilityRail strong {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(var(--ink), 0.8);
   font-size: 0.76rem;
   font-weight: 500;
 }
 
 .utekiCapabilityRail span {
-  color: rgba(255, 255, 255, 0.46);
+  color: rgba(var(--ink), 0.46);
   font-size: 0.68rem;
   line-height: 1.45;
 }
@@ -780,7 +805,7 @@
 
 .architectureTitle {
   margin: 0 0 0.75rem;
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(var(--ink), 0.95);
   font-size: clamp(1.75rem, 3vw, 2.5rem);
   font-weight: 400;
   letter-spacing: -0.02em;
@@ -790,7 +815,7 @@
 
 .architectureDesc {
   margin: 0;
-  color: rgba(255, 255, 255, 0.56);
+  color: rgba(var(--ink), 0.56);
   font-size: 0.95rem;
   line-height: 1.8;
 }
@@ -799,17 +824,17 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--ink), 0.1);
   border-radius: 10px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.035);
+  background: rgba(var(--ink), 0.035);
 }
 
 .architectureStage {
   position: relative;
   min-height: 260px;
   padding: 1.5rem;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid rgba(var(--ink), 0.08);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -828,8 +853,8 @@
   z-index: 1;
   width: 14px;
   height: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
-  border-right: 1px solid rgba(255, 255, 255, 0.22);
+  border-top: 1px solid rgba(var(--ink), 0.22);
+  border-right: 1px solid rgba(var(--ink), 0.22);
   transform: rotate(45deg);
   background: var(--bg-primary);
 }
@@ -842,7 +867,7 @@
   position: absolute;
   top: 1.25rem;
   left: 1.5rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(var(--ink), 0.3);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -851,7 +876,7 @@
 
 .architectureStage h4 {
   margin: 0 0 0.75rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(var(--ink), 0.9);
   font-size: 1.1rem;
   font-weight: 500;
   font-family: 'Times New Roman', 'SimSun', '宋体', serif;
@@ -859,7 +884,7 @@
 
 .architectureStage p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(var(--ink), 0.5);
   font-size: 0.8125rem;
   line-height: 1.75;
 }
@@ -872,22 +897,22 @@
 
 .capabilityCard {
   padding: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(var(--ink), 0.09);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
+  background: rgba(var(--ink), 0.035);
   animation: staggerIn 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
   transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
 }
 
 .capabilityCard:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(var(--ink), 0.18);
+  background: rgba(var(--ink), 0.06);
   transform: translateY(-2px);
 }
 
 .capabilityCard h4 {
   margin: 0 0 1rem;
-  color: rgba(255, 255, 255, 0.86);
+  color: rgba(var(--ink), 0.86);
   font-size: 0.95rem;
   font-weight: 500;
 }
@@ -900,10 +925,10 @@
 
 .capabilityItems span {
   padding: 0.25rem 0.55rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(var(--ink), 0.08);
   border-radius: 4px;
-  color: rgba(255, 255, 255, 0.56);
-  background: rgba(255, 255, 255, 0.05);
+  color: rgba(var(--ink), 0.56);
+  background: rgba(var(--ink), 0.05);
   font-size: 0.6875rem;
   letter-spacing: 0.01em;
 }
@@ -918,7 +943,7 @@
   width: 100%;
   max-height: 480px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(var(--ink), 0.08);
   background: #000;
   object-fit: contain;
 }
@@ -932,8 +957,8 @@
 }
 
 .highlightCard {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(var(--ink), 0.04);
+  border: 1px solid rgba(var(--ink), 0.08);
   border-radius: 12px;
   padding: 1.5rem;
   animation: staggerIn 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
@@ -941,22 +966,22 @@
 }
 
 .highlightCard:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(var(--ink), 0.18);
+  background: rgba(var(--ink), 0.06);
   transform: translateY(-2px);
 }
 
 .highlightTitle {
   font-size: 1rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(var(--ink), 0.9);
   margin: 0 0 0.75rem;
   letter-spacing: -0.01em;
 }
 
 .highlightDesc {
   font-size: 0.8125rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(var(--ink), 0.5);
   line-height: 1.7;
   margin: 0;
 }
@@ -971,7 +996,7 @@
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(var(--ink), 0.35);
   display: block;
   margin-bottom: 0.75rem;
 }
@@ -1036,7 +1061,7 @@
   .utekiTech .detailTechLabel { margin-bottom: 0.75rem; }
   .demoFrameShell { aspect-ratio: 4 / 3; }
   .architectureFlow { grid-template-columns: 1fr; }
-  .architectureStage { min-height: 180px; border-right: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+  .architectureStage { min-height: 180px; border-right: 0; border-bottom: 1px solid rgba(var(--ink), 0.08); }
   .architectureStage:last-child { border-bottom: 0; }
   .architectureStage::after { display: none; }
   .capabilityGrid { grid-template-columns: 1fr; }
