@@ -13,11 +13,9 @@ export default async function ArticlesPage() {
     title: post.title,
     date: post.date,
     excerpt: clip(post.summary || plainText(post.content), 140),
-    // 中文译文自动进入「翻译」主题
     topics: Array.from(new Set([
       ...(post.tags ?? []),
       ...(post.categories ?? []),
-      ...(post.language === 'zh' && post.translationPath ? ['翻译'] : []),
     ].filter(Boolean))),
   }));
 

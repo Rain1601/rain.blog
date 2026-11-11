@@ -4,25 +4,29 @@
  * 文件位置：notes/YYYY/MM/YYYY-MM-DD-slug.md
  * front matter 是简单的 `key: value` 一行一个（不是完整 YAML）：
  *   date: 2026-11-05
- *   title: 可选
+ *   title / titleEn: 可选
  *   tags: [AI, Coding agent]
- *   video / poster / link / linkTitle: 可选
+ *   video / poster / link / linkTitle / linkTitleEn: 可选
  *   draft: true            （草稿，不在 /notes 显示）
  */
 
 export interface NoteFields {
   title?: string;
+  titleEn?: string;
   date: string;
   tags: string[];
   link?: string;
   linkTitle?: string;
+  linkTitleEn?: string;
   video?: string;
   poster?: string;
   draft: boolean;
   body: string;
+  bodyEn?: string;
 }
 
 const FRONT_MATTER = /^---\s*\n([\s\S]*?)\n---\s*(?:\n|$)/;
+const ENGLISH_BODY_MARKER = '<!-- lang: en -->';
 
 export function parseNoteMarkdown(raw: string): NoteFields {
   const match = raw.match(FRONT_MATTER);
@@ -38,16 +42,21 @@ export function parseNoteMarkdown(raw: string): NoteFields {
   }
   const opt = (key: string) => meta[key] || undefined;
   const tags = (meta.tags ?? '').replace(/^\[|\]$/g, '');
+  const content = match ? raw.slice(match[0].length) : raw;
+  const marker = /^<!-- lang: en -->[ \t]*\r?$/m.exec(content);
   return {
     title: opt('title'),
+    titleEn: opt('titleEn'),
     date: meta.date ?? '',
     tags: tags ? tags.split(',').map((s) => s.trim()).filter(Boolean) : [],
     link: opt('link'),
     linkTitle: opt('linkTitle'),
+    linkTitleEn: opt('linkTitleEn'),
     video: opt('video'),
     poster: opt('poster'),
     draft: meta.draft === 'true',
-    body: (match ? raw.slice(match[0].length) : raw).trim(),
+    body: (marker ? content.slice(0, marker.index) : content).trim(),
+    bodyEn: marker ? content.slice(marker.index + marker[0].length).trim() || undefined : undefined,
   };
 }
 
@@ -57,14 +66,17 @@ const clean = (v: string) => v.replace(/[\r\n]+/g, ' ').trim();
 export function serializeNote(note: NoteFields): string {
   const lines = [`date: ${clean(note.date)}`];
   if (note.title?.trim()) lines.push(`title: ${clean(note.title)}`);
+  if (note.titleEn?.trim()) lines.push(`titleEn: ${clean(note.titleEn)}`);
   const tags = note.tags.map((t) => clean(t).replace(/,/g, ' ')).filter(Boolean);
   if (tags.length) lines.push(`tags: [${tags.join(', ')}]`);
-  for (const key of ['video', 'poster', 'link', 'linkTitle'] as const) {
+  for (const key of ['video', 'poster', 'link', 'linkTitle', 'linkTitleEn'] as const) {
     const value = note[key]?.trim();
     if (value) lines.push(`${key}: ${clean(value)}`);
   }
   if (note.draft) lines.push('draft: true');
-  return `---\n${lines.join('\n')}\n---\n${note.body.trim()}\n`;
+  const english = note.bodyEn?.trim();
+  const body = english ? `${note.body.trim()}\n\n${ENGLISH_BODY_MARKER}\n\n${english}` : note.body.trim();
+  return `---\n${lines.join('\n')}\n---\n${body}\n`;
 }
 
 export function isValidDate(date: string): boolean {

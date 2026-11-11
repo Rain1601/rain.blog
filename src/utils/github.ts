@@ -48,13 +48,16 @@ export interface Note {
   id: string;
   /** 可选标题，没有就只显示正文 */
   title?: string;
+  titleEn?: string;
   /** 正文（已去掉 front matter） */
   body: string;
+  bodyEn?: string;
   date: string;
   tags: string[];
   /** 附件 / 延伸链接（front matter 的 link + linkTitle） */
   link?: string;
   linkTitle?: string;
+  linkTitleEn?: string;
   /** 视频地址（站内 /notes/xxx.mp4 或外链）与封面 */
   video?: string;
   poster?: string;
@@ -488,11 +491,14 @@ GITHUB_TOKEN=your_token_here
           return {
             id: this.generateId(file.path.replace(/^notes\//, '').replace(/\.(md|mdx)$/, '')),
             title: fm.title,
+            titleEn: fm.titleEn,
             body: fm.body,
+            bodyEn: fm.bodyEn,
             date: fm.date || fileDate || `${year}-${month}-01`,
             tags: fm.tags,
             link: fm.link,
             linkTitle: fm.linkTitle,
+            linkTitleEn: fm.linkTitleEn,
             video: fm.video,
             poster: fm.poster,
             url: file.html_url,

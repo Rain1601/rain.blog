@@ -126,7 +126,7 @@ export default function NotesClient({ notes, isSample }: { notes: Note[]; isSamp
       (n) =>
         (!month || monthKey(n.date) === month) &&
         (!tag || n.tags.includes(tag)) &&
-        (!q || `${n.title ?? ''}\n${n.body}`.toLowerCase().includes(q))
+        (!q || [n.title, n.body, n.titleEn, n.bodyEn].some((value) => value?.toLowerCase().includes(q)))
     );
   }, [notes, query, month, tag]);
 
@@ -242,7 +242,11 @@ export default function NotesClient({ notes, isSample }: { notes: Note[]; isSamp
             <ol className={styles.stream}>
               {filtered.map((note) => {
                 const { day, year } = formatDate(note.date);
-                const isLong = note.body.length > COLLAPSE_THRESHOLD;
+                const english = language === 'en' ? note.bodyEn : undefined;
+                const body = english || note.body;
+                const title = english ? note.titleEn : note.title;
+                const linkTitle = english ? note.linkTitleEn || note.linkTitle : note.linkTitle;
+                const isLong = body.length > COLLAPSE_THRESHOLD;
                 const isOpen = !isLong || expanded[note.id];
                 return (
                   <li key={note.id} id={note.id} className={styles.note}>
@@ -256,10 +260,10 @@ export default function NotesClient({ notes, isSample }: { notes: Note[]; isSamp
                     </div>
 
                     <div className={styles.content}>
-                      {note.title && <h2 className={styles.noteTitle}>{note.title}</h2>}
+                      {title && <h2 className={styles.noteTitle} lang={english ? 'en' : 'zh'}>{title}</h2>}
 
-                      <div className={`${styles.body} ${isOpen ? '' : styles.bodyCollapsed}`}>
-                        <MarkdownRenderer content={note.body} />
+                      <div className={`${styles.body} ${isOpen ? '' : styles.bodyCollapsed}`} lang={english ? 'en' : 'zh'}>
+                        <MarkdownRenderer content={body} />
                       </div>
                       {isLong && (
                         <button
@@ -293,7 +297,7 @@ export default function NotesClient({ notes, isSample }: { notes: Note[]; isSamp
                             <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
                             <path d="M9 13h6M9 17h4" />
                           </svg>
-                          <span className={styles.attachmentTitle}>{note.linkTitle || note.link}</span>
+                          <span className={styles.attachmentTitle}>{linkTitle || note.link}</span>
                           <span className={styles.attachmentArrow} aria-hidden="true">↗</span>
                         </a>
                       )}

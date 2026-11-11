@@ -12,6 +12,7 @@ export interface HomeItem {
   key: string;
   title: string;
   excerpt: string;
+  english?: { title: string; excerpt: string };
   /** YYYY-MM-DD，部分旧文章只有 YYYY-MM */
   date: string;
   href: string;
@@ -132,9 +133,10 @@ function Column({
   );
 }
 
-export default function HomeClient({ items }: { items: HomeItem[] }) {
+export default function HomeClient({ items: sourceItems }: { items: HomeItem[] }) {
   const { language } = useLanguage();
   const t = translations[language];
+  const items = language === 'en' ? sourceItems.map((item) => ({ ...item, ...item.english })) : sourceItems;
   const [view, setView] = useState<View>('list');
   const backRef = useRef<HTMLButtonElement>(null);
   const introBtnRef = useRef<HTMLButtonElement>(null);

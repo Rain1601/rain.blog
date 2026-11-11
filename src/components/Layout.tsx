@@ -31,6 +31,10 @@ type ArticleTranslation =
   | null;
 const ArticleTranslationContext = createContext<React.Dispatch<React.SetStateAction<ArticleTranslation>> | null>(null);
 export const useSetArticleTranslation = () => useContext(ArticleTranslationContext)!;
+const readIn = {
+  zh: { en: '阅读英文版', zh: '阅读中文版' },
+  en: { en: 'Read in English', zh: 'Read in Chinese' },
+};
 
 /** 首页图标（线性房子，跟随文字颜色） */
 function HomeIcon() {
@@ -83,14 +87,12 @@ export default function Layout({ children }: LayoutProps) {
   const translationGlyph = currentTranslation?.targetId && currentTranslation.sourceLanguage === 'en' ? 'A' : '文';
   const translationMark = <span key={articleId} className={styles.translationMark} aria-hidden="true">{translationGlyph}</span>;
   const translationLabel = currentTranslation?.targetId
-    ? language === 'zh'
-      ? (currentTranslation.sourceLanguage === 'zh' ? '原文' : '译文')
-      : (currentTranslation.sourceLanguage === 'zh' ? 'Original' : 'Translation')
+    ? readIn[language][currentTranslation.sourceLanguage === 'zh' ? 'en' : 'zh']
     : (language === 'zh' ? '暂无译文' : 'No translation');
   const translationControl = isArticle && (currentTranslation === null ? (
     <span className={`${styles.articleTranslation} ${styles.translationPlaceholder}`} aria-hidden="true" />
   ) : currentTranslation.targetId ? (
-    <Link href={`/blog/${currentTranslation.targetId}`} className={styles.articleTranslation} aria-label={language === 'zh' ? `切换到${translationLabel}` : `Read ${translationLabel.toLowerCase()}`} title={language === 'zh' ? `切换到${translationLabel}` : `Read ${translationLabel.toLowerCase()}`}>
+    <Link href={`/blog/${currentTranslation.targetId}`} className={styles.articleTranslation} aria-label={translationLabel} title={translationLabel}>
       {translationMark}
     </Link>
   ) : (

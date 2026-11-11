@@ -21,6 +21,6 @@ export function clip(text: string, max: number): string {
 
 /** 取第一句话（到第一个句号/问号/感叹号为止） */
 export function firstSentence(text: string): string {
-  const match = text.match(/^.*?[。！？!?](?=\s|$|[^。！？!?])/);
+  const match = text.match(/^.*?(?:[。！？!?](?=\s|$|[^。！？!?])|\.(?=\s|$))/);
   return match ? match[0] : text;
 }

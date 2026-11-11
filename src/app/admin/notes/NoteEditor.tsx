@@ -128,17 +128,30 @@ export default function NoteEditor({ initial, path, sha: initialSha }: Props) {
           </div>
 
           <label className={styles.field}>
-            <span className={styles.label}>标题（可选）</span>
+            <span className={styles.label}>中文标题（可选）</span>
             <input className={styles.input} value={fields.title ?? ''} onChange={(e) => update('title', e.target.value)} />
           </label>
 
           <label className={styles.field}>
-            <span className={styles.label}>正文（Markdown）</span>
+            <span className={styles.label}>中文正文（Markdown）</span>
             <textarea
               className={`${styles.textarea} ${styles.bodyArea}`}
               value={fields.body}
               onChange={(e) => update('body', e.target.value)}
               placeholder="想到什么写什么……"
+            />
+          </label>
+
+          <label className={styles.field}>
+            <span className={styles.label}>英文标题（可选）</span>
+            <input className={styles.input} value={fields.titleEn ?? ''} onChange={(e) => update('titleEn', e.target.value)} />
+          </label>
+          <label className={styles.field}>
+            <span className={styles.label}>英文正文（Markdown）</span>
+            <textarea
+              className={`${styles.textarea} ${styles.bodyArea}`}
+              value={fields.bodyEn ?? ''}
+              onChange={(e) => update('bodyEn', e.target.value)}
             />
           </label>
 
@@ -162,8 +175,12 @@ export default function NoteEditor({ initial, path, sha: initialSha }: Props) {
               <input className={styles.input} value={fields.link ?? ''} placeholder="https://…" onChange={(e) => update('link', e.target.value)} />
             </label>
             <label className={styles.field}>
-              <span className={styles.label}>附件名称</span>
+              <span className={styles.label}>中文附件名称</span>
               <input className={styles.input} value={fields.linkTitle ?? ''} placeholder="Codex Agents.md · 2026.11.04" onChange={(e) => update('linkTitle', e.target.value)} />
+            </label>
+            <label className={styles.field}>
+              <span className={styles.label}>英文附件名称（可选）</span>
+              <input className={styles.input} value={fields.linkTitleEn ?? ''} onChange={(e) => update('linkTitleEn', e.target.value)} />
             </label>
           </div>
         </div>
@@ -175,6 +192,13 @@ export default function NoteEditor({ initial, path, sha: initialSha }: Props) {
           <div className={styles.previewBody}>
             {fields.body.trim() ? <MarkdownRenderer content={fields.body} /> : <p className={styles.muted}>正文预览会显示在这里</p>}
           </div>
+          {fields.bodyEn?.trim() && (
+            <div className={styles.previewBody} lang="en">
+              <div className={styles.previewLabel}>English</div>
+              {fields.titleEn && <h2>{fields.titleEn}</h2>}
+              <MarkdownRenderer content={fields.bodyEn} />
+            </div>
+          )}
           {fields.video && (
             <video className={styles.previewMedia} src={fields.video} poster={fields.poster} controls playsInline preload="none" />
           )}
