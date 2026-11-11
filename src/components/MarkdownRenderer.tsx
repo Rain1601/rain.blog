@@ -13,6 +13,7 @@ interface MarkdownRendererProps {
 interface ParsedElement {
   type: string;
   content: string;
+  annotation?: string;
   level?: number;
   language?: string;
   items?: string[];
@@ -106,6 +107,17 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       // 在代码块内
       if (inCodeBlock) {
         currentCodeBlock.push(line);
+        continue;
+      }
+
+      const comment = line.trim().match(/^<!--\s*rain-comment:\s*(.+?)\s*-->$/);
+      if (comment) {
+        const previous = elements[elements.length - 1];
+        const paragraph = previous?.type === 'break' ? elements[elements.length - 2] : previous;
+        if (inTable || inList || paragraph?.type !== 'paragraph') {
+          throw new Error('rain-comment 必须紧跟在正文段落后面');
+        }
+        paragraph.annotation = comment[1];
         continue;
       }
 
@@ -205,9 +217,11 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       }
 
       // 普通段落
+      const annotated = line.trimEnd().match(/^(.+?)\s+<!--\s*rain-comment:\s*(.+?)\s*-->$/);
       elements.push({
         type: 'paragraph',
-        content: line
+        content: annotated ? annotated[1] : line,
+        annotation: annotated?.[2]
       });
     }
 
@@ -385,7 +399,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
     console.log('Rows:', rows);
 
     return (
-      <div key={index} className={styles.table} style={{border: '3px solid red', background: 'yellow'}}>
+      <div key={index} className={styles.table}>
         <div className={styles.tableWrapper}>
           <table>
             <thead>
@@ -432,6 +446,13 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
         );
 
       case 'paragraph':
+        if (element.annotation) {
+          return (
+            <p key={index} className={styles.paragraph} data-rain-comment={element.annotation}>
+              <span className={styles.annotatedText} dangerouslySetInnerHTML={{ __html: processInlineStyles(element.content) }} />
+            </p>
+          );
+        }
         return (
           <p
             key={index}
@@ -586,7 +607,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   // 检查是否是HTML内容 - 更准确的检测
   const hasHTMLTags = content.includes('<') && content.includes('>');
   const hasTableTag = content.includes('<table');
-  const hasParagraphTag = content.includes('<p>') || content.includes('<h1>');
+  const hasParagraphTag = /<(?:p|h1)(?:\s|>)/i.test(content);
   const isHTML = hasHTMLTags && (hasTableTag || hasParagraphTag);
 
   if (isHTML) {
@@ -595,6 +616,11 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
     let processedHTML = content;
     const frontMatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
     processedHTML = processedHTML.replace(frontMatterRegex, '');
+
+    processedHTML = processedHTML.replace(
+      /(<p\b[^>]*\bdata-rain-comment\b[^>]*>)([\s\S]*?)(<\/p>)/gi,
+      (_, open, text, close) => `${open}<span class="${styles.annotatedText}">${text}</span>${close}`
+    );
 
     // 包装表格以应用样式
     processedHTML = processedHTML.replace(
@@ -804,8 +830,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
                 styles[`h${element.level || 1}`] : styles.paragraph;
 
               return (
-                <TagName key={index} className={className}>
-                  {renderHTMLWithEnhancedLinks(processedContent)}
+                <TagName key={index} className={className} data-rain-comment={element.annotation}>
+                  {element.annotation ? (
+                    <span className={styles.annotatedText}>{renderHTMLWithEnhancedLinks(processedContent)}</span>
+                  ) : renderHTMLWithEnhancedLinks(processedContent)}
                 </TagName>
               );
             }

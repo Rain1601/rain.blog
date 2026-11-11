@@ -53,6 +53,16 @@
 }
 
 /* 视频播放器样式 */
+.markdown video {
+  display: block;
+  width: 100%;
+  max-width: 680px;
+  height: auto;
+  margin: var(--spacing-lg) auto;
+  border-radius: 4px;
+  background: #000;
+}
+
 /* B站视频容器 - 已有样式的保持 */
 .markdown .video-wrapper {
   position: relative;
@@ -151,6 +161,22 @@
 .paragraph {
   margin-bottom: var(--spacing-md);
   color: var(--text-secondary);
+}
+
+.annotatedText {
+  padding: 0.08em 0.08em 0.09em;
+  margin: 0 -0.08em;
+  background:
+    linear-gradient(179deg, transparent 0 8%, rgba(236, 174, 94, 0.24) 15% 84%, transparent 92%),
+    linear-gradient(181deg, transparent 0 17%, rgba(217, 113, 73, 0.1) 23% 88%, transparent 96%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+:global(html[data-theme='dark']) .annotatedText {
+  background:
+    linear-gradient(179deg, transparent 0 8%, rgba(217, 113, 73, 0.31) 15% 84%, transparent 92%),
+    linear-gradient(181deg, transparent 0 17%, rgba(217, 113, 73, 0.15) 23% 88%, transparent 96%);
 }
 
 /* Links - 精致设计 */

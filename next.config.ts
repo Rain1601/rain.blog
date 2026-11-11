@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import createMDX from '@next/mdx';
 
 const nextConfig: NextConfig = {
+  distDir: process.env.NODE_ENV === 'development' ? '.next-dev' : '.next',
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   images: {
     // 首页的 GitHub 头像

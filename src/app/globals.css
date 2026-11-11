@@ -62,12 +62,12 @@
   --border-dark: #78716C;
 }
 
-/* 切换主题的那一刻临时加上这个 class，让颜色平滑过渡（0.3s 后移除，不影响其他动画） */
+/* 切换主题时保留图标的透明度和位移动画 */
 html.theme-transition,
 html.theme-transition *,
 html.theme-transition *::before,
 html.theme-transition *::after {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, fill 0.3s ease !important;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out, border-color 0.2s ease-out, fill 0.2s ease-out, opacity 0.18s ease-out, transform 0.18s ease-out !important;
 }
 
 /* 全局样式重置和基础样式 */
@@ -83,12 +83,15 @@ html,
 body {
   max-width: 100vw;
   overflow-x: clip;
-  /* 滚到顶部/底部时不要回弹（橡皮筋效果），浏览更稳定 */
-  overscroll-behavior-y: none;
   font-family: 'Times New Roman', 'SimSun', '宋体', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: 'cv01', 'cv09';
+}
+
+/* 只在真正的根滚动元素上禁用回弹，避免 body 截住滚轮事件 */
+html {
+  overscroll-behavior-y: none;
 }
 
 body {

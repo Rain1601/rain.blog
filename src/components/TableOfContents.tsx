@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { useLanguage } from '@/components/Layout';
 import styles from './TableOfContents.module.css';
 
@@ -10,127 +10,80 @@ interface TOCItem {
   level: number;
 }
 
-export default function TableOfContents() {
+export default function TableOfContents({
+  articleRef,
+  visible,
+  readingMode,
+}: {
+  articleRef: RefObject<HTMLElement | null>;
+  visible: boolean;
+  readingMode: boolean;
+}) {
   const { language } = useLanguage();
   const [headings, setHeadings] = useState<TOCItem[]>([]);
-  const [activeId, setActiveId] = useState<string>('');
+  const [activeId, setActiveId] = useState('');
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    // 获取所有标题元素
-    const elements = document.querySelectorAll('h1, h2, h3');
-    const tocItems: TOCItem[] = [];
-    const idCounts: Record<string, number> = {}; // 记录ID出现次数
-
-    elements.forEach((elem, index) => {
-      // 生成基础ID
-      const baseId = elem.id || elem.textContent?.toLowerCase().replace(/\s+/g, '-') || `heading-${index}`;
-
-      // 如果ID已存在，添加数字后缀
-      if (idCounts[baseId]) {
-        idCounts[baseId]++;
-        const uniqueId = `${baseId}-${idCounts[baseId]}`;
-        if (!elem.id) {
-          elem.id = uniqueId;
-        }
-        tocItems.push({
-          id: uniqueId,
-          text: elem.textContent || '',
-          level: parseInt(elem.tagName.substring(1))
-        });
-      } else {
-        idCounts[baseId] = 1;
-        if (!elem.id) {
-          elem.id = baseId;
-        }
-        tocItems.push({
-          id: baseId,
-          text: elem.textContent || '',
-          level: parseInt(elem.tagName.substring(1))
-        });
-      }
+    const elements = articleRef.current?.querySelectorAll<HTMLElement>('h1, h2, h3');
+    if (!elements) return;
+    const counts = new Map<string, number>();
+    const items = Array.from(elements, (element, index) => {
+      const base = element.id || element.textContent?.trim().toLowerCase().replace(/\s+/g, '-') || `heading-${index}`;
+      const count = (counts.get(base) ?? 0) + 1;
+      counts.set(base, count);
+      const id = count === 1 ? base : `${base}-${count}`;
+      element.id = id;
+      return { id, text: element.textContent ?? '', level: Number(element.tagName.slice(1)) };
     });
+    setHeadings(items);
 
-    setHeadings(tocItems);
-  }, []);
+    const observer = new IntersectionObserver((entries) => {
+      const first = entries.find((entry) => entry.isIntersecting);
+      if (first) setActiveId(first.target.id);
+    }, { rootMargin: '-100px 0px -60% 0px' });
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, [articleRef]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntries = entries.filter(entry => entry.isIntersecting);
-
-        if (visibleEntries.length > 0) {
-          // 找到第一个进入视口的标题
-          const firstVisible = visibleEntries[0];
-          setActiveId(firstVisible.target.id);
-        }
-      },
-      {
-        rootMargin: '-100px 0px -60% 0px',
-        threshold: [0, 0.5, 1]
-      }
-    );
-
-    const elements = document.querySelectorAll('h1, h2, h3');
-    elements.forEach((elem) => observer.observe(elem));
-
-    return () => {
-      elements.forEach((elem) => observer.unobserve(elem));
-    };
-  }, [headings]);
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      const yOffset = -100;
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    }
+  const goTo = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    event.preventDefault();
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setMobileOpen(false);
   };
 
-  if (headings.length === 0) {
-    return null;
-  }
+  if (headings.length === 0) return null;
 
-  // 目录内容组件
-  const tocContent = (
-    <>
-      <div className={styles.tocHeader}>{language === 'zh' ? '文章目录' : 'Contents'}</div>
-      <ul className={styles.tocList}>
-        {headings.map((heading) => (
-          <li
-            key={heading.id}
-            className={`${styles.tocItem} ${styles[`level${heading.level}`]} ${
-              activeId === heading.id ? styles.active : ''
-            }`}
-          >
-            <a
-              href={`#${heading.id}`}
-              onClick={(e) => handleClick(e, heading.id)}
-              title={heading.text}
-            >
-              {heading.text}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </>
+  const contents = (
+    <ul className={styles.tocList}>
+      {headings.map((heading) => (
+        <li key={heading.id} className={`${styles.tocItem} ${styles[`level${heading.level}`]} ${activeId === heading.id ? styles.active : ''}`}>
+          <a href={`#${heading.id}`} onClick={(event) => goTo(event, heading.id)} title={heading.text}>
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
   );
 
   return (
     <>
-      {/* 大屏幕固定目录 */}
-      <nav className={styles.toc}>
-        {tocContent}
+      <nav className={`${styles.toc} ${visible ? '' : styles.tocHidden} ${readingMode ? styles.tocReadingHidden : ''}`} aria-label={language === 'zh' ? '本文目录' : 'Article contents'}>
+        {contents}
       </nav>
-
-      {/* 小屏幕悬浮按钮 */}
-      <div className={styles.tocButton}>
-        <button className={styles.tocToggle} aria-label="目录" title="查看目录">
-        </button>
-        <div className={styles.tocPanel}>
-          {tocContent}
-        </div>
+      <div className={`${styles.tocButton} ${readingMode ? styles.tocReadingHidden : ''}`}>
+        <button
+          type="button"
+          className={styles.tocToggle}
+          aria-label={language === 'zh' ? '本文目录' : 'Article contents'}
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-article-contents"
+          onClick={() => setMobileOpen((open) => !open)}
+        />
+        <nav id="mobile-article-contents" className={`${styles.tocPanel} ${mobileOpen ? styles.tocPanelOpen : ''}`} aria-label={language === 'zh' ? '本文目录' : 'Article contents'}>
+          <div className={styles.tocHeader}>{language === 'zh' ? '本文目录' : 'Contents'}</div>
+          {contents}
+        </nav>
       </div>
     </>
   );

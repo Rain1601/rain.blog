@@ -22,6 +22,16 @@ const LanguageContext = createContext<LanguageContextType>({
 
 export const useLanguage = () => useContext(LanguageContext);
 
+const ReadingModeContext = createContext(false);
+export const useReadingMode = () => useContext(ReadingModeContext);
+
+type ArticleTranslation =
+  | { sourceId: string; targetId: string; sourceLanguage: Language }
+  | { sourceId: string; targetId: null }
+  | null;
+const ArticleTranslationContext = createContext<React.Dispatch<React.SetStateAction<ArticleTranslation>> | null>(null);
+export const useSetArticleTranslation = () => useContext(ArticleTranslationContext)!;
+
 /** 首页图标（线性房子，跟随文字颜色） */
 function HomeIcon() {
   return (
@@ -51,6 +61,8 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [language, setLanguage] = useState<Language>('zh');
+  const [readingMode, setReadingMode] = useState(false);
+  const [articleTranslation, setArticleTranslation] = useState<ArticleTranslation>(null);
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement>(null);
 
@@ -62,7 +74,55 @@ export default function Layout({ children }: LayoutProps) {
     // 强制 reflow，让 remove + add 生效
     void el.offsetHeight;
     el.classList.add(styles.pageEnter);
+    if (!pathname.startsWith('/blog/')) setReadingMode(false);
   }, [pathname]);
+
+  const isArticle = pathname.startsWith('/blog/');
+  const articleId = isArticle ? pathname.slice('/blog/'.length) : null;
+  const currentTranslation = articleTranslation?.sourceId === articleId ? articleTranslation : null;
+  const translationGlyph = currentTranslation?.targetId && currentTranslation.sourceLanguage === 'en' ? 'A' : '文';
+  const translationMark = <span key={articleId} className={styles.translationMark} aria-hidden="true">{translationGlyph}</span>;
+  const translationLabel = currentTranslation?.targetId
+    ? language === 'zh'
+      ? (currentTranslation.sourceLanguage === 'zh' ? '原文' : '译文')
+      : (currentTranslation.sourceLanguage === 'zh' ? 'Original' : 'Translation')
+    : (language === 'zh' ? '暂无译文' : 'No translation');
+  const translationControl = isArticle && (currentTranslation === null ? (
+    <span className={`${styles.articleTranslation} ${styles.translationPlaceholder}`} aria-hidden="true" />
+  ) : currentTranslation.targetId ? (
+    <Link href={`/blog/${currentTranslation.targetId}`} className={styles.articleTranslation} aria-label={language === 'zh' ? `切换到${translationLabel}` : `Read ${translationLabel.toLowerCase()}`} title={language === 'zh' ? `切换到${translationLabel}` : `Read ${translationLabel.toLowerCase()}`}>
+      {translationMark}
+    </Link>
+  ) : (
+    <span className={`${styles.articleTranslation} ${styles.translationUnavailable}`} aria-label={translationLabel} title={translationLabel}>
+      {translationMark}
+    </span>
+  ));
+  const languageLabel = language === 'zh' ? '切换为英文' : 'Switch to Chinese';
+  const languageButton = (
+    <button type="button" className={styles.languageToggle} onClick={() => setLanguage(language === 'zh' ? 'en' : 'zh')} aria-label={languageLabel} title={languageLabel}>
+      <span className={`${styles.languageText} ${language === 'zh' ? styles.languageTextActive : ''}`} aria-hidden="true">EN</span>
+      <span className={`${styles.languageText} ${language === 'en' ? styles.languageTextActive : ''}`} aria-hidden="true">中</span>
+    </button>
+  );
+  const readingLabel = language === 'zh'
+    ? (readingMode ? '退出阅读模式' : '进入阅读模式')
+    : (readingMode ? 'Exit reading mode' : 'Enter reading mode');
+  const readingButton = isArticle && (
+    <button
+      type="button"
+      className={`${styles.readingButton} ${readingMode ? styles.readingButtonActive : ''}`}
+      onClick={() => { setReadingMode((current) => !current); setMobileOpen(false); }}
+      aria-label={readingLabel}
+      aria-pressed={readingMode}
+      title={readingLabel}
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12Z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    </button>
+  );
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -90,7 +150,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className={styles.layout}>
       {/* Navigation */}
-      <nav className={styles.navbar}>
+      <nav className={`${styles.navbar} ${isArticle && readingMode ? styles.navbarReading : ''}`}>
         <div className={styles.navContainer}>
           {/* 左侧：仅手机端显示首页图标（桌面端首页图标在中间导航里） */}
           <Link
@@ -116,52 +176,30 @@ export default function Layout({ children }: LayoutProps) {
             ))}
           </div>
 
-          {/* 右侧区域 - 语言切换 + GitHub */}
+          {/* 右侧区域 - 语言、主题与文章阅读模式 */}
           <div className={styles.rightSection}>
-            {/* Language Switcher */}
-            <div className={styles.langSwitcher}>
-              <button
-                className={`${styles.langBtn} ${language === 'zh' ? styles.active : ''}`}
-                onClick={() => setLanguage('zh')}
-              >
-                中文
-              </button>
-              <span className={styles.langDivider}>/</span>
-              <button
-                className={`${styles.langBtn} ${language === 'en' ? styles.active : ''}`}
-                onClick={() => setLanguage('en')}
-              >
-                EN
-              </button>
-            </div>
-
+            {translationControl}
+            {languageButton}
             {/* 白天 / 黑夜 */}
             <ThemeToggle language={language} />
 
-            {/* GitHub Button */}
-            <a
-              href="https://github.com/Rain1601"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.githubButton}
-              aria-label="GitHub"
-            >
-              <svg viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
-                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-              </svg>
-            </a>
+            {readingButton}
           </div>
 
-          {/* Mobile menu button */}
-          <button
-            className={styles.mobileMenuButton}
-            onClick={handleDrawerToggle}
-            aria-label="Toggle navigation menu"
-          >
-            <span className={styles.hamburger}></span>
-            <span className={styles.hamburger}></span>
-            <span className={styles.hamburger}></span>
-          </button>
+          <div className={styles.mobileControls}>
+            {translationControl}
+            <ThemeToggle language={language} />
+            {readingButton}
+            <button
+              className={styles.mobileMenuButton}
+              onClick={handleDrawerToggle}
+              aria-label="Toggle navigation menu"
+            >
+              <span className={styles.hamburger}></span>
+              <span className={styles.hamburger}></span>
+              <span className={styles.hamburger}></span>
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -189,40 +227,9 @@ export default function Layout({ children }: LayoutProps) {
             {/* 语言切换 */}
             <div className={styles.mobileLangSection}>
               <span className={styles.sectionTitle}>语言 / Language</span>
-              <div className={styles.mobileLangButtons}>
-                <button
-                  className={`${styles.mobileLangBtn} ${language === 'zh' ? styles.active : ''}`}
-                  onClick={() => setLanguage('zh')}
-                >
-                  中文
-                </button>
-                <button
-                  className={`${styles.mobileLangBtn} ${language === 'en' ? styles.active : ''}`}
-                  onClick={() => setLanguage('en')}
-                >
-                  English
-                </button>
-              </div>
+              {languageButton}
             </div>
 
-            {/* 白天 / 黑夜 */}
-            <div className={styles.mobileLangSection}>
-              <span className={styles.sectionTitle}>外观 / Theme</span>
-              <ThemeToggle language={language} className={styles.themeToggleMobile} />
-            </div>
-
-            <a
-              href="https://github.com/Rain1601"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.mobileGithubLink}
-              onClick={handleDrawerToggle}
-            >
-              <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-              </svg>
-              GitHub 仓库
-            </a>
           </div>
         </div>
       </div>
@@ -237,9 +244,13 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Main content */}
       <LanguageContext.Provider value={{ language, setLanguage }}>
-        <main ref={mainRef} className={`${styles.main} ${styles.pageEnter}`}>
-          {children}
-        </main>
+        <ReadingModeContext.Provider value={readingMode}>
+          <ArticleTranslationContext.Provider value={setArticleTranslation}>
+            <main ref={mainRef} className={`${styles.main} ${styles.pageEnter}`}>
+              {children}
+            </main>
+          </ArticleTranslationContext.Provider>
+        </ReadingModeContext.Provider>
       </LanguageContext.Provider>
     </div>
   );

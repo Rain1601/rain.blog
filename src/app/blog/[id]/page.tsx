@@ -37,6 +37,13 @@ export default async function BlogPostPage({ params }: Params) {
   const post = posts[idx];
   const next = posts[idx + 1];
   const index = posts.map((p) => ({ id: p.id, title: p.title, year: p.year }));
+  const translation = post.language && post.translationPath
+    ? posts.find((p) =>
+        p.path === post.translationPath &&
+        p.translationPath === post.path &&
+        p.language && p.language !== post.language
+      )
+    : undefined;
 
   return (
     <PostClient
@@ -44,6 +51,7 @@ export default async function BlogPostPage({ params }: Params) {
       post={post}
       index={index}
       nextPost={next ? { id: next.id, title: next.title, year: next.year } : null}
+      translation={translation?.language ? { id: translation.id, language: translation.language } : null}
     />
   );
 }

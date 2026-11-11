@@ -2,6 +2,13 @@ import { parseNoteMarkdown } from './notes-format';
 import { CONTENT_CACHE_TAG } from './content-cache';
 import { AboutContent, DEFAULT_ABOUT, normalizeAbout } from '@/content/about/default';
 
+// 公开文章及其展示顺序；新增译文时将两种语言相邻列在这里。
+const PUBLISHED_POST_PATHS = [
+  'posts/2026/01/2026-01-11-effective-harnesses-for-long-running-agents-anthropic-zh/index.md',
+  'posts/2026/01/2026-01-11-effective-harnesses-for-long-running-agents-anthropic/index.md',
+];
+const publishedPostOrder = new Map(PUBLISHED_POST_PATHS.map((path, index) => [path, index]));
+
 export interface GitHubFile {
   name: string;
   path: string;
@@ -32,6 +39,8 @@ export interface BlogPost {
   tags?: string[];
   categories?: string[];
   summary?: string;
+  language?: 'en' | 'zh';
+  translationPath?: string;
 }
 
 /** 随笔：notes/YYYY/MM/*.md，正文较短，不需要标题 */
@@ -209,6 +218,8 @@ class GitHubAPI {
     tags?: string[];
     categories?: string[];
     summary?: string;
+    language?: 'en' | 'zh';
+    translationPath?: string;
     contentWithoutFrontMatter: string;
   } {
     const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n/;
@@ -251,6 +262,16 @@ class GitHubAPI {
       }
     }
 
+    const language = metadata.lang;
+    if (language !== undefined && language !== 'en' && language !== 'zh') {
+      throw new Error(`无效的文章语言: ${language}`);
+    }
+    const translationPath = metadata.translationPath;
+    if (translationPath !== undefined &&
+        (typeof translationPath !== 'string' || !/^posts\/(?!.*\.\.)[^\s]+\.mdx?$/.test(translationPath))) {
+      throw new Error(`无效的译文路径: ${translationPath}`);
+    }
+
     return {
       title: typeof metadata.title === 'string' ? metadata.title : undefined,
       date: typeof metadata.date === 'string' ? metadata.date : undefined,
@@ -259,6 +280,8 @@ class GitHubAPI {
       tags: Array.isArray(metadata.tags) ? metadata.tags : [],
       categories: Array.isArray(metadata.categories) ? metadata.categories : [],
       summary: typeof metadata.summary === 'string' ? metadata.summary : undefined,
+      language,
+      translationPath,
       contentWithoutFrontMatter
     };
   }
@@ -352,7 +375,7 @@ GITHUB_TOKEN=your_token_here
    */
   async getAllPosts(): Promise<BlogPost[]> {
     try {
-      const files = await this.getAllFiles();
+      const files = (await this.getAllFiles()).filter(file => publishedPostOrder.has(file.path));
 
       // 并发拉取所有文件内容（替代原本串行的 for-await）
       const results = await Promise.all(
@@ -369,7 +392,9 @@ GITHUB_TOKEN=your_token_here
               author,
               tags,
               categories,
-              summary
+              summary,
+              language,
+              translationPath
             } = this.parseFrontMatter(rawContent);
 
             // 决定使用的标题和日期
@@ -416,7 +441,9 @@ GITHUB_TOKEN=your_token_here
               author,
               tags,
               categories,
-              summary
+              summary,
+              language,
+              translationPath
             };
           } catch (error) {
             console.warn(`跳过文件 ${file.path}:`, error);
@@ -427,21 +454,11 @@ GITHUB_TOKEN=your_token_here
 
       const posts = results.filter((p): p is BlogPost => p !== null);
 
-      // 按日期排序（最新的在前）
-      posts.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return dateB.getTime() - dateA.getTime();
-      });
+      posts.sort((a, b) => publishedPostOrder.get(a.path)! - publishedPostOrder.get(b.path)!);
 
       return posts;
     } catch (error) {
-      console.error('获取博客文章失败，使用演示数据:', error);
-      
-      // 如果是速率限制错误，返回演示数据而不是空数组
-      if (error instanceof Error && error.message.includes('速率限制')) {
-        return this.createDemoData();
-      }
+      console.error('获取博客文章失败:', error);
       
       return [];
     }

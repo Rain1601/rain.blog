@@ -33,6 +33,27 @@ tags: [Agent, 译文]
 
 `summary` 和 `tags` 都可以不写，但写了会好看很多：没有摘要时卡片会从正文开头截一段，没有标签就不会出现在主题筛选里。
 
+文章可以做中英对照：两篇 Markdown 分别写 `lang: en`、`lang: zh`，并用 `translationPath` 指向对方在内容仓库中的完整路径。未配对的文章会显示「暂无译文」；两边互相指向后，文章页会显示「原文 / 译文」和 `EN / 中` 切换，中文篇也会自动进入「翻译」主题。例如英文篇写：
+
+```yaml
+lang: en
+translationPath: posts/2026/01/example-zh.md
+```
+
+对应中文篇写 `lang: zh` 和 `translationPath: posts/2026/01/example-en.md`。路径必须与仓库中的实际文件一致。
+
+公开文章及其展示顺序由 `src/utils/github.ts` 中的 `PUBLISHED_POST_PATHS` 控制；未列入的内容仍保留在内容仓库，但不会显示在网站上。新增译文时，将中英文路径相邻加入清单即可。
+
+要给正文段落添加文章批注，在段落后面加一行 Markdown 注释，右侧会显示批注，正文不会显示标记：
+
+```markdown
+这是一段正文，里面也可以有[链接](https://example.com)。
+
+<!-- rain-comment: 这里写对这段的补充说明。 -->
+```
+
+也支持把标记放在段落同一行的末尾。对于从外部同步来的 HTML 文章，直接在对应的段落标签上写 `<p data-rain-comment="批注内容">正文</p>`。每条批注跟随它所在的段落，不需要另外维护编号或位置。
+
 **随笔**放在 `notes/年/月/日期-名字.md`，通常直接在后台写，不用手动建文件：
 
 ```markdown

@@ -33,7 +33,7 @@ export default async function HomePage() {
         hasVideo: Boolean(note.video),
       };
     }),
-  ].sort((a, b) => b.date.localeCompare(a.date));
+  ].sort((a, b) => b.date.slice(0, 10).localeCompare(a.date.slice(0, 10)));
 
   return <HomeClient items={items} />;
 }

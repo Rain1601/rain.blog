@@ -1,0 +1,104 @@
+/* Uteki 动态插画。--ink 由 /product 页面提供（黑夜白、白天暖黑） */
+.mark {
+  display: block;
+  width: 96px;
+  height: 96px;
+  overflow: visible;
+  --mark-ink: rgb(var(--ink, 28, 25, 23));
+  --mark-accent: #D97149;
+  --loop: 3.6s;
+}
+
+/* 线条：进场时按 --d 的顺序依次画出 */
+.line {
+  stroke: var(--mark-ink);
+  stroke-width: 2.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  /* 圆角线帽在长度为 0 时也会画出一个点，开始画之前先隐藏 */
+  opacity: 0;
+  animation: draw 0.7s cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0s) forwards;
+}
+
+.body { fill: transparent; transition: fill 0.4s ease; }
+.bodyAccent { animation: draw 0.7s cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0s) forwards, fillIn 0.5s ease calc(var(--d, 0s) + 0.5s) forwards; }
+
+@keyframes draw { 0% { opacity: 1; } 100% { opacity: 1; stroke-dashoffset: 0; } }
+@keyframes fillIn { to { fill: var(--mark-accent); stroke: var(--mark-accent); } }
+
+/* K 线轻轻起伏，像一张还在跳动的盘面 */
+.candle {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: bob var(--loop) ease-in-out 1.4s infinite;
+}
+.c2 { animation-delay: 1.7s; }
+.c3 { animation-delay: 2s; }
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* ---- 放大镜：反复"画"出来 ----
+   一个 5.6s 循环：镜框一笔画圆 → 手柄接着画出 → 镜片泛起浅灰 → 停留，
+   轻轻左右扫一下像在看盘 → 顺着同一方向收笔擦掉 → 短暂留白，再画一次 */
+.mark { --lens-loop: 5.6s; }
+
+.lens,
+.glass,
+.handle {
+  animation-duration: var(--lens-loop);
+  animation-delay: 0.6s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear; /* 每段缓动写在关键帧里 */
+  animation-fill-mode: backwards;
+}
+
+.glass { animation-name: glassLoop; }
+.handle { animation-name: handleLoop; }
+
+@keyframes glassLoop {
+  0% {
+    opacity: 1;
+    stroke-dashoffset: 1;
+    fill: transparent;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  17% { stroke-dashoffset: 0; fill: transparent; animation-timing-function: ease; }
+  25%, 70% { stroke-dashoffset: 0; fill: rgba(var(--ink, 28, 25, 23), 0.06); animation-timing-function: ease; }
+  76% { stroke-dashoffset: 0; fill: transparent; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+  89% { opacity: 1; stroke-dashoffset: -1; fill: transparent; }
+  90%, 100% { opacity: 0; stroke-dashoffset: -1; fill: transparent; }
+}
+
+@keyframes handleLoop {
+  0%, 14% { opacity: 0; stroke-dashoffset: 1; }
+  14.1% { opacity: 1; stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1); }
+  21%, 72% { opacity: 1; stroke-dashoffset: 0; animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+  77% { opacity: 1; stroke-dashoffset: -1; }
+  77.1%, 100% { opacity: 0; stroke-dashoffset: -1; }
+}
+
+/* 画好之后往右上轻轻扫一下（避开 K 线），再回到原位 */
+.lens {
+  transform-box: fill-box;
+  transform-origin: 30% 30%;
+  animation-name: lensScan;
+}
+
+@keyframes lensScan {
+  0%, 27% { transform: translate(0, 0) rotate(0); animation-timing-function: ease-in-out; }
+  40% { transform: translate(1.8px, -1px) rotate(1.2deg); animation-timing-function: ease-in-out; }
+  55% { transform: translate(-0.4px, 0.2px) rotate(-0.3deg); animation-timing-function: ease-in-out; }
+  66%, 100% { transform: translate(0, 0) rotate(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line, .bodyAccent, .glass, .handle, .candle, .lens { animation: none; }
+  .line { stroke-dashoffset: 0; opacity: 1; }
+  .bodyAccent { fill: var(--mark-accent); stroke: var(--mark-accent); }
+  .glass { fill: rgba(var(--ink, 28, 25, 23), 0.06); opacity: 1; stroke-dashoffset: 0; }
+}

@@ -3,7 +3,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/components/Layout';
 import { productData, sectionTitles } from '@/content/product/config';
+import { useTheme } from '@/utils/theme';
 import PixelRain from './PixelRain';
+import UtekiMark from './UtekiMark';
 import styles from './page.module.css';
 
 const SLIDE_OUT_MS = 240;
@@ -14,6 +16,7 @@ const ARM_SCROLL_PX = 8;            // user must scroll down at least this far f
 export default function ProductPage() {
   const { language } = useLanguage();
   const t = sectionTitles[language];
+  const theme = useTheme();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
@@ -39,16 +42,21 @@ export default function ProductPage() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Per-product theme color — drives navbar + .solidBg via --page-bg CSS var
+  // 黑夜：每个作品一个深色主题色，驱动导航栏和 .solidBg（--page-bg），导航文字换成浅色。
+  // 白天：不覆盖，沿用站点的米白背景。
   useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'light') {
+      root.style.removeProperty('--page-bg');
+      delete root.dataset.navTone;
+      return;
+    }
     const themes: Record<string, string> = {
       uteki: '#1C1917',     // warm dark, matches PixelRain trail-fade
     };
-    const bg = themes[product.id] || '#1C1917';
-    document.documentElement.style.setProperty('--page-bg', bg);
-    // 所有作品主题都是深色背景：让导航栏文字切换为浅色
-    document.documentElement.dataset.navTone = 'dark';
-  }, [product.id]);
+    root.style.setProperty('--page-bg', themes[product.id] || '#1C1917');
+    root.dataset.navTone = 'dark';
+  }, [product.id, theme]);
 
   // Clean up on unmount so navbar reverts to default --bg-primary and text colors
   useEffect(() => {
@@ -243,7 +251,9 @@ export default function ProductPage() {
           </div>
 
           <div className={styles.center}>
-            {product.logo ? (
+            {isUteki ? (
+              <UtekiMark className={styles.productMark} />
+            ) : product.logo ? (
               <img src={product.logo} alt="" className={styles.productLogo} />
             ) : (
               <div className={styles.productLogoSpacer} aria-hidden="true" />
