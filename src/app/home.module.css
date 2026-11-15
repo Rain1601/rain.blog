@@ -465,22 +465,41 @@
 }
 
 .expRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: var(--spacing-sm);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--spacing-xs);
+}
+
+.expLogo {
+  width: var(--spacing-md);
+  height: var(--spacing-md);
+  object-fit: contain;
+}
+
+.expText {
+  display: grid;
 }
 
 .expDetail {
-  margin-left: 0.75rem;
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: var(--text-tertiary);
+}
+
+.introList a.expDetail {
+  justify-self: start;
+  color: var(--text-tertiary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.introList a.expDetail:is(:hover, :focus-visible, :active) {
+  color: var(--text-primary);
 }
 
 .expPeriod {
-  flex-shrink: 0;
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--text-tertiary);
   font-variant-numeric: tabular-nums;
 }
 

@@ -277,7 +277,7 @@ export default function HomeClient({ items: sourceItems }: { items: HomeItem[] }
             <ul className={styles.introList}>
               {INTRO.now.map((n) => (
                 <li key={n.title.en}>
-                  {n.href ? <Link href={n.href}>{n.title[language]} →</Link> : <span>{n.title[language]}</span>}
+                  {n.href ? <Link href={n.href}>{n.title[language]}</Link> : <span>{n.title[language]}</span>}
                 </li>
               ))}
             </ul>
@@ -285,12 +285,17 @@ export default function HomeClient({ items: sourceItems }: { items: HomeItem[] }
             <h3 className={styles.introSection}>{t.experience}</h3>
             <ul className={styles.introList}>
               {INTRO.experience.map((e) => (
-                <li key={`${e.title.en}-${e.period}`} className={styles.expRow}>
-                  <span>
-                    {e.title[language]}
-                    <span className={styles.expDetail}>{e.detail[language]}</span>
+                <li key={`${e.title.en}-${e.period.en}`} className={styles.expRow}>
+                  <Image className={styles.expLogo} src={e.logo} alt="" width={24} height={24} unoptimized />
+                  <span className={styles.expText}>
+                    <span>{e.title[language]}</span>
+                    {e.href ? (
+                      <a className={styles.expDetail} href={e.href}>
+                        {e.detail[language]}
+                      </a>
+                    ) : <span className={styles.expDetail}>{e.detail[language]}</span>}
                   </span>
-                  <span className={styles.expPeriod}>{e.period}</span>
+                  <span className={styles.expPeriod}>{e.period[language]}</span>
                 </li>
               ))}
             </ul>
