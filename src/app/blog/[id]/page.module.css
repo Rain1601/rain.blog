@@ -374,6 +374,10 @@
   margin-bottom: var(--spacing-2xl);
 }
 
+.content :global(a[href^='http'])::after {
+  display: none;
+}
+
 .content :global(h1),
 .content :global(h2),
 .content :global(h3),
