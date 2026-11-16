@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, createContext, useContext, useEffect, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
 import styles from './Layout.module.css';
@@ -62,12 +63,67 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+const LANGUAGE_FADE_OUT_MS = 240;
+const INLINE_TEXT = 'a, abbr, b, br, code, em, i, kbd, mark, s, samp, small, span, strong, sub, sup, time, u, wbr';
+
+function visibleTextElements(root: HTMLElement) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const elements = new Set<HTMLElement>();
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    const element = node.parentElement;
+    if (!(element instanceof HTMLElement) || !node.textContent?.trim() || elements.has(element)) continue;
+    if (element.closest('[aria-hidden="true"], [inert]') || element.querySelector(`:not(${INLINE_TEXT})`)) continue;
+
+    const bounds = element.getBoundingClientRect();
+    const left = Math.max(bounds.left, 0);
+    const top = Math.max(bounds.top, 0);
+    const right = Math.min(bounds.right, window.innerWidth);
+    const bottom = Math.min(bounds.bottom, window.innerHeight);
+    if (left >= right || top >= bottom) continue;
+    if (element.contains(document.elementFromPoint((left + right) / 2, (top + bottom) / 2))) elements.add(element);
+  }
+
+  // A paragraph with inline links or emphasis fades as one piece.
+  return [...elements].filter((element) => {
+    for (let parent = element.parentElement; parent !== null && parent !== root; parent = parent.parentElement) {
+      if (elements.has(parent)) return false;
+    }
+    return true;
+  });
+}
+
+async function fadePageText(root: HTMLElement, update: () => void) {
+  const outgoing: Animation[] = [];
+  for (const element of visibleTextElements(root)) {
+    const opacity = Number(getComputedStyle(element).opacity);
+    if (opacity === 0) continue;
+    element.getAnimations().find((animation) => animation.id === 'language-text')?.cancel();
+    outgoing.push(element.animate({ opacity: [opacity, 0] }, {
+      duration: LANGUAGE_FADE_OUT_MS, easing: 'ease-in', fill: 'forwards',
+    }));
+  }
+
+  await Promise.all(outgoing.map((animation) => animation.finished));
+  flushSync(update);
+  outgoing.forEach((animation) => animation.cancel());
+
+  for (const element of visibleTextElements(root)) {
+    element.getAnimations().find((animation) => animation.id === 'language-text')?.cancel();
+    const opacity = Number(getComputedStyle(element).opacity);
+    if (opacity > 0) {
+      element.animate({ opacity: [0, opacity] }, { id: 'language-text', duration: 1000, easing: 'ease-in-out' });
+    }
+  }
+}
+
 export default function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [language, setLanguage] = useState<Language>('zh');
   const [readingMode, setReadingMode] = useState(false);
   const [articleTranslation, setArticleTranslation] = useState<ArticleTranslation>(null);
   const pathname = usePathname();
+  const layoutRef = useRef<HTMLDivElement>(null);
+  const languageFadeOut = useRef(false);
   const mainRef = useRef<HTMLElement>(null);
 
   // 页面切换时重启 main 元素上的 pageEnter 动画（不重挂载，避免 removeChild 雷）
@@ -101,10 +157,25 @@ export default function Layout({ children }: LayoutProps) {
     </span>
   ));
   const languageLabel = language === 'zh' ? '切换为英文' : 'Switch to Chinese';
+  // 只切换界面语言，不换文章（看译文用旁边的「文 / A」按钮）
+  const toggleLanguage = async () => {
+    if (languageFadeOut.current) return;
+    const next = language === 'zh' ? 'en' : 'zh';
+    const root = layoutRef.current!;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !root.animate || !root.getAnimations) {
+      setLanguage(next);
+      return;
+    }
+    languageFadeOut.current = true;
+    await fadePageText(root, () => setLanguage(next));
+    languageFadeOut.current = false;
+  };
   const languageButton = (
-    <button type="button" className={styles.languageToggle} onClick={() => setLanguage(language === 'zh' ? 'en' : 'zh')} aria-label={languageLabel} title={languageLabel}>
-      <span className={`${styles.languageText} ${language === 'zh' ? styles.languageTextActive : ''}`} aria-hidden="true">EN</span>
-      <span className={`${styles.languageText} ${language === 'en' ? styles.languageTextActive : ''}`} aria-hidden="true">中</span>
+    <button type="button" className={styles.languageToggle} onClick={toggleLanguage} aria-label={languageLabel} title={languageLabel}>
+      {/* 两种语言并排显示，当前的加深加粗，另一个变灰：一眼就知道现在是哪种语言 */}
+      <span className={`${styles.languageText} ${styles.languageZh} ${language === 'zh' ? styles.languageTextActive : ''}`} aria-hidden="true">中</span>
+      <span className={styles.languageSep} aria-hidden="true">/</span>
+      <span className={`${styles.languageText} ${styles.languageEn} ${language === 'en' ? styles.languageTextActive : ''}`} aria-hidden="true">EN</span>
     </button>
   );
   const readingLabel = language === 'zh'
@@ -150,7 +221,7 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className={styles.layout}>
+    <div ref={layoutRef} className={styles.layout}>
       {/* Navigation */}
       <nav className={`${styles.navbar} ${isArticle && readingMode ? styles.navbarReading : ''}`}>
         <div className={styles.navContainer}>
@@ -167,13 +238,13 @@ export default function Layout({ children }: LayoutProps) {
           <div className={styles.navLinks}>
             {navigationItems.map((item) => (
               <Link
-                key={item.name}
+                key={item.href}
                 href={item.href}
                 className={`${styles.navLink} ${isNavActive(item.href) ? styles.navLinkActive : ''}`}
                 aria-label={item.href === '/' ? item.name : undefined}
                 title={item.href === '/' ? item.name : undefined}
               >
-                {item.href === '/' ? <HomeIcon /> : item.name}
+                {item.href === '/' ? <HomeIcon /> : <span>{item.name}</span>}
               </Link>
             ))}
           </div>
@@ -218,12 +289,12 @@ export default function Layout({ children }: LayoutProps) {
           <div className={styles.mobileNavLinks}>
             {navigationItems.map((item) => (
               <Link
-                key={item.name}
+                key={item.href}
                 href={item.href}
                 className={`${styles.mobileNavLink} ${isNavActive(item.href) ? styles.mobileNavLinkActive : ''}`}
                 onClick={handleDrawerToggle}
               >
-                {item.name}
+                <span>{item.name}</span>
               </Link>
             ))}
             {/* 语言切换 */}
